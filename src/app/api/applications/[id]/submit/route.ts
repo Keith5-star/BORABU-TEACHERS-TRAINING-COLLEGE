@@ -1,0 +1,149 @@
+import { NextResponse } from 'next/server';
+import { prisma } from '@/lib/db';
+import { getSessionUser } from '@/lib/auth';
+import { checkEligibility } from '@/lib/eligibility';
+import { generateApplicationSummaryPdf } from '@/lib/pdf';
+
+export async function POST(
+  req: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const user = await getSessionUser();
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized.' }, { status: 401 });
+    }
+
+    const { id } = await params;
+    const ipAddress = req.headers.get('x-forwarded-for') || '127.0.0.1';
+
+    // Fetch application details with programme rules
+    const application = await prisma.application.findUnique({
+      where: { id },
+      include: { 
+        programme: true,
+        secondaryProgramme: true,
+      },
+    });
+
+    if (!application) {
+      return NextResponse.json({ error: 'Application not found.' }, { status: 404 });
+    }
+
+    if (application.userId !== user.id) {
+      return NextResponse.json({ error: 'Forbidden.' }, { status: 403 });
+    }
+
+    if (application.status !== 'draft') {
+      return NextResponse.json(
+        { error: 'Application has already been submitted.' },
+        { status: 400 }
+      );
+    }
+
+    // Validate that payment is complete
+    if (application.paymentStatus !== 'paid') {
+      return NextResponse.json(
+        { error: 'Application processing fee (KES 1,000) must be paid and verified before final submission.' },
+        { status: 400 }
+      );
+    }
+
+    // Validate that personal details and grades are complete
+    if (!application.kcseMeanGrade || !application.kcseIndexNo || !application.subjectGrades) {
+      return NextResponse.json(
+        { error: 'Academic results and index number must be complete before submitting.' },
+        { status: 400 }
+      );
+    }
+
+    const personal = JSON.parse(application.personalDetails || '{}');
+    if (!personal.dob || !personal.gender || !personal.idNumber || !personal.county) {
+      return NextResponse.json(
+        { error: 'Personal details must be complete before submitting.' },
+        { status: 400 }
+      );
+    }
+
+    // Run Eligibility Engine
+    const eligibility = checkEligibility(
+      application.programme.minGradeRequirement,
+      application.kcseMeanGrade,
+      application.subjectGrades
+    );
+
+    // Determine target status
+    const targetStatus = eligibility.eligible ? 'submitted' : 'eligibility_failed';
+    const submittedTime = new Date();
+
+    // Generate application summary PDF
+    const summaryPdfUrl = await generateApplicationSummaryPdf(id, {
+      applicantName: user.fullName,
+      email: user.email,
+      phone: user.phone,
+      dob: personal.dob,
+      gender: personal.gender,
+      idNumber: personal.idNumber,
+      county: personal.county,
+      guardianContact: personal.guardianContact || 'N/A',
+      kcseIndexNo: application.kcseIndexNo,
+      kcseYear: application.kcseYear,
+      kcseMeanGrade: application.kcseMeanGrade,
+      subjectGrades: JSON.parse(application.subjectGrades || '{}'),
+      programmeName: application.programme.name,
+      programmeCode: application.programme.code,
+      secondaryProgrammeName: application.secondaryProgramme?.name,
+      paymentReference: application.paymentReference || 'N/A',
+      paymentStatus: application.paymentStatus,
+      submittedAt: submittedTime,
+    });
+
+    const updated = await prisma.application.update({
+      where: { id },
+      data: {
+        status: targetStatus,
+        eligibilityResult: JSON.stringify(eligibility),
+        submittedAt: submittedTime,
+        summaryReceiptUrl: summaryPdfUrl,
+      },
+    });
+
+    // Create Audit Log with IP address
+    await prisma.auditLog.create({
+      data: {
+        actorId: user.id,
+        action: 'submit_application',
+        entity: 'Application',
+        entityId: application.id,
+        ipAddress: ipAddress,
+      },
+    });
+
+    // Create Notification
+    await prisma.notification.create({
+      data: {
+        userId: user.id,
+        channel: 'email',
+        subject: `Application Submission - ${application.programme.code}`,
+        message: `Your application for ${application.programme.name} has been received. Status: ${
+          eligibility.eligible ? 'Submitted (Provisional Pass)' : 'Not Eligible (Requirements Not Met)'
+        }. ${eligibility.message}`,
+        status: 'sent',
+      },
+    });
+
+    return NextResponse.json({
+      message: 'Application submitted successfully.',
+      status: targetStatus,
+      eligibilityResult: eligibility,
+      summaryReceiptUrl: summaryPdfUrl,
+    });
+  } catch (error: any) {
+    console.error('Submit application error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error while submitting application.' },
+      { status: 500 }
+    );
+  }
+}
+
