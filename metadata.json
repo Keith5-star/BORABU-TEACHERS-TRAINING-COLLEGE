@@ -1,0 +1,6 @@
+{
+  "name": "Borabu Technical Training Institute",
+  "description": "Admissions portal, course catalog, applicant dashboard, and letter verification for Borabu Technical Training Institute (BTTI).",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

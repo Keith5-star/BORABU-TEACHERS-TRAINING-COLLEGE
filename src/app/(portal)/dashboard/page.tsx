@@ -224,7 +224,7 @@ export default function DashboardPage() {
           <div style={{ fontSize: '64px', marginBottom: '20px' }}>📁</div>
           <h2 style={{ fontSize: '22px', marginBottom: '10px', color: 'var(--text-dark)' }}>No Active Applications</h2>
           <p style={{ color: 'var(--text-light)', fontSize: '14px', maxWidth: '440px', margin: '0 auto 24px' }}>
-            You haven't submitted any teacher training applications yet. Click below to explore programmes and start a draft.
+            You haven&apos;t submitted any teacher training applications yet. Click below to explore programmes and start a draft.
           </p>
           <Link href="/dashboard/apply" className="btn btn-primary" style={{ padding: '12px 24px' }}>
             Start Application File
@@ -291,7 +291,7 @@ export default function DashboardPage() {
                   <div>
                     <strong>Academic Entry Requirements Not Met:</strong>
                     <p style={{ fontSize: '13px', marginTop: '4px' }}>
-                      The system's eligibility engine has flagged that your grades do not meet the minimum criteria for this program. You must select another course (e.g. CECTE) or re-verify details.
+                      The system&apos;s eligibility engine has flagged that your grades do not meet the minimum criteria for this program. You must select another course (e.g. CECTE) or re-verify details.
                     </p>
                     <p style={{ fontSize: '12px', marginTop: '8px', fontStyle: 'italic' }}>
                       Auto-Check audit: {app.eligibilityResult?.message || 'KCSE grades check failed.'}

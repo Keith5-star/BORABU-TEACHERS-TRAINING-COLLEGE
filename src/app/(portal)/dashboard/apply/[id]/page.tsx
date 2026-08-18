@@ -274,16 +274,17 @@ export default function ApplicationWizardPage() {
     }
 
     setError('');
-    let percent = 0;
-    setUploadProgress((prev) => ({ ...prev, [type]: { status: 'Uploading...', percent } }));
+    setUploadProgress((prev) => ({ ...prev, [type]: { status: 'Uploading...', percent: 10 } }));
 
     const progressInterval = setInterval(() => {
-      percent += Math.floor(Math.random() * 15) + 5;
-      if (percent >= 95) {
-        percent = 95;
-        clearInterval(progressInterval);
-      }
-      setUploadProgress((prev) => ({ ...prev, [type]: { status: 'Uploading...', percent } }));
+      setUploadProgress((prev) => {
+        const current = prev[type]?.percent || 10;
+        const next = Math.min(current + Math.floor(Math.random() * 15) + 5, 95);
+        if (next >= 95) {
+          clearInterval(progressInterval);
+        }
+        return { ...prev, [type]: { status: 'Uploading...', percent: next } };
+      });
     }, 120);
 
     const formData = new FormData();
