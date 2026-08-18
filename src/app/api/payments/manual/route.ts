@@ -89,19 +89,23 @@ export async function POST(req: Request) {
         return NextResponse.json({ error: 'Allowed deposit slip formats: PDF, JPG, PNG' }, { status: 400 });
       }
 
-      // Save slip
-      const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
-      if (!fs.existsSync(uploadsDir)) {
-        fs.mkdirSync(uploadsDir, { recursive: true });
-      }
-
+      // Save slip with serverless fallback
       const arrayBuffer = await file.arrayBuffer();
       const buffer = Buffer.from(arrayBuffer);
-      const uniqueFileName = `${applicationId}_slip_${Date.now()}${fileExtension}`;
-      const filePath = path.join(uploadsDir, uniqueFileName);
-      fs.writeFileSync(filePath, buffer);
-      
-      fileUrl = `/uploads/${uniqueFileName}`;
+
+      try {
+        const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
+        if (!fs.existsSync(uploadsDir)) {
+          fs.mkdirSync(uploadsDir, { recursive: true });
+        }
+        const uniqueFileName = `${applicationId}_slip_${Date.now()}${fileExtension}`;
+        const filePath = path.join(uploadsDir, uniqueFileName);
+        fs.writeFileSync(filePath, buffer);
+        fileUrl = `/uploads/${uniqueFileName}`;
+      } catch (fsErr) {
+        const mimeType = file.type || 'image/jpeg';
+        fileUrl = `data:${mimeType};base64,${buffer.toString('base64')}`;
+      }
     } else {
       return NextResponse.json({ error: 'Invalid payment method.' }, { status: 400 });
     }

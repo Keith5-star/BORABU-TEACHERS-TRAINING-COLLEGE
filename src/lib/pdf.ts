@@ -200,18 +200,20 @@ export async function generateAdmissionLetterPdf(
   doc.setFillColor(30, 41, 59);
   doc.rect(0, 289, 210, 8, 'F');
 
-  // Save to disk
-  const lettersDir = path.join(process.cwd(), 'public', 'letters');
-  if (!fs.existsSync(lettersDir)) {
-    fs.mkdirSync(lettersDir, { recursive: true });
-  }
-
-  const pdfPath = path.join(lettersDir, `${serialSafe}.pdf`);
+  // Save to disk with serverless safe fallback
   const pdfBuffer = Buffer.from(doc.output('arraybuffer'));
-  fs.writeFileSync(pdfPath, pdfBuffer);
-
-  const relativeUrl = `/letters/${serialSafe}.pdf`;
-  return relativeUrl;
+  try {
+    const lettersDir = path.join(process.cwd(), 'public', 'letters');
+    if (!fs.existsSync(lettersDir)) {
+      fs.mkdirSync(lettersDir, { recursive: true });
+    }
+    const pdfPath = path.join(lettersDir, `${serialSafe}.pdf`);
+    fs.writeFileSync(pdfPath, pdfBuffer);
+    return `/letters/${serialSafe}.pdf`;
+  } catch (fsErr) {
+    // In serverless read-only environments, return base64 Data URI
+    return `data:application/pdf;base64,${pdfBuffer.toString('base64')}`;
+  }
 }
 
 export interface PaymentReceiptData {
@@ -338,18 +340,19 @@ export async function generatePaymentReceiptPdf(
   doc.setFillColor(30, 41, 59);
   doc.rect(0, 289, 210, 8, 'F');
 
-  // Save to disk
-  const receiptsDir = path.join(process.cwd(), 'public', 'receipts');
-  if (!fs.existsSync(receiptsDir)) {
-    fs.mkdirSync(receiptsDir, { recursive: true });
-  }
-
-  const pdfPath = path.join(receiptsDir, `${serialSafe}.pdf`);
+  // Save to disk with serverless safe fallback
   const pdfBuffer = Buffer.from(doc.output('arraybuffer'));
-  fs.writeFileSync(pdfPath, pdfBuffer);
-
-  const relativeUrl = `/receipts/${serialSafe}.pdf`;
-  return relativeUrl;
+  try {
+    const receiptsDir = path.join(process.cwd(), 'public', 'receipts');
+    if (!fs.existsSync(receiptsDir)) {
+      fs.mkdirSync(receiptsDir, { recursive: true });
+    }
+    const pdfPath = path.join(receiptsDir, `${serialSafe}.pdf`);
+    fs.writeFileSync(pdfPath, pdfBuffer);
+    return `/receipts/${serialSafe}.pdf`;
+  } catch (fsErr) {
+    return `data:application/pdf;base64,${pdfBuffer.toString('base64')}`;
+  }
 }
 
 export interface ApplicationSummaryData {
@@ -486,17 +489,18 @@ export async function generateApplicationSummaryPdf(
   doc.setFillColor(30, 41, 59);
   doc.rect(0, 289, 210, 8, 'F');
 
-  // Save
-  const receiptsDir = path.join(process.cwd(), 'public', 'receipts');
-  if (!fs.existsSync(receiptsDir)) {
-    fs.mkdirSync(receiptsDir, { recursive: true });
-  }
-
-  const pdfPath = path.join(receiptsDir, `${serialSafe}.pdf`);
+  // Save with serverless safe fallback
   const pdfBuffer = Buffer.from(doc.output('arraybuffer'));
-  fs.writeFileSync(pdfPath, pdfBuffer);
-
-  const relativeUrl = `/receipts/${serialSafe}.pdf`;
-  return relativeUrl;
+  try {
+    const receiptsDir = path.join(process.cwd(), 'public', 'receipts');
+    if (!fs.existsSync(receiptsDir)) {
+      fs.mkdirSync(receiptsDir, { recursive: true });
+    }
+    const pdfPath = path.join(receiptsDir, `${serialSafe}.pdf`);
+    fs.writeFileSync(pdfPath, pdfBuffer);
+    return `/receipts/${serialSafe}.pdf`;
+  } catch (fsErr) {
+    return `data:application/pdf;base64,${pdfBuffer.toString('base64')}`;
+  }
 }
 

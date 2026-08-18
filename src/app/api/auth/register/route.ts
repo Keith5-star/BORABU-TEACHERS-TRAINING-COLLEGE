@@ -1,28 +1,46 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { hashPassword, signToken } from '@/lib/auth';
+import { checkRateLimit, sanitizeEmail, sanitizeString, validatePasswordStrength } from '@/lib/security';
 import { cookies } from 'next/headers';
 
 export async function POST(req: Request) {
   try {
+    // 1. Rate Limiting: Max 5 registration attempts per minute per IP
+    const rateLimit = checkRateLimit(req, {
+      limit: 5,
+      windowMs: 60 * 1000,
+      keyPrefix: 'auth-register',
+    });
+    if (!rateLimit.allowed && rateLimit.errorResponse) {
+      return rateLimit.errorResponse;
+    }
+
     const body = await req.json();
-    const { fullName, email, phone, password } = body;
+    const { fullName: rawName, email: rawEmail, phone: rawPhone, password } = body;
 
-    if (!fullName || !email || !phone || !password) {
+    // 2. Input Sanitization & Validation
+    const fullName = sanitizeString(rawName);
+    const phone = sanitizeString(rawPhone);
+    const { valid: emailValid, email } = sanitizeEmail(rawEmail);
+
+    if (!fullName || !emailValid || !phone || !password) {
       return NextResponse.json(
-        { error: 'All fields (fullName, email, phone, password) are required.' },
+        { error: 'Valid fullName, valid email address, phone, and password are required.' },
         { status: 400 }
       );
     }
 
-    if (password.length < 6) {
+    // 3. Password Strength Enforcement
+    const pwdCheck = validatePasswordStrength(password);
+    if (!pwdCheck.valid) {
       return NextResponse.json(
-        { error: 'Password must be at least 6 characters long.' },
+        { error: pwdCheck.message || 'Password does not meet strength requirements.' },
         { status: 400 }
       );
     }
 
-    // Check if user exists
+    // 4. Check if user already exists
     const existingUser = await prisma.user.findUnique({
       where: { email },
     });
@@ -34,40 +52,44 @@ export async function POST(req: Request) {
       );
     }
 
-    // Create user
+    // 5. Create applicant user securely
     const newUser = await prisma.user.create({
       data: {
         fullName,
         email,
         phone,
         passwordHash: hashPassword(password),
-        role: 'applicant', // default role
+        role: 'applicant', // default role always enforced
         isVerified: false,
       },
     });
 
-    // Sign token
+    // 6. Sign secure token
     const token = signToken({ userId: newUser.id, role: newUser.role });
 
-    // Set cookie
+    // 7. Set secure HttpOnly cookie
     const cookieStore = await cookies();
     cookieStore.set('auth-token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      sameSite: 'lax',
       maxAge: 7 * 24 * 60 * 60, // 7 days
       path: '/',
     });
 
-    // Create audit log
-    await prisma.auditLog.create({
-      data: {
-        actorId: newUser.id,
-        action: 'register',
-        entity: 'User',
-        entityId: newUser.id,
-      },
-    });
+    // 8. Audit Log
+    try {
+      await prisma.auditLog.create({
+        data: {
+          actorId: newUser.id,
+          action: 'register',
+          entity: 'User',
+          entityId: newUser.id,
+        },
+      });
+    } catch (auditErr) {
+      console.warn('Audit log creation error:', auditErr);
+    }
 
     return NextResponse.json(
       {

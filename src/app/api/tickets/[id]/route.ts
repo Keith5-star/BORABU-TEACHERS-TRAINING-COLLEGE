@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { getSessionUser } from '@/lib/auth';
+import { sanitizeString } from '@/lib/security';
 
 export async function GET(
   req: Request,
@@ -70,9 +71,10 @@ export async function POST(
 
     const { id } = await params;
     const body = await req.json();
-    const { message } = body;
+    const { message: rawMessage } = body;
+    const message = sanitizeString(rawMessage);
 
-    if (!message || !message.trim()) {
+    if (!message) {
       return NextResponse.json({ error: 'Message content cannot be empty.' }, { status: 400 });
     }
 

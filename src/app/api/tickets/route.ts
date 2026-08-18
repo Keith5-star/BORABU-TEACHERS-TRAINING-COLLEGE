@@ -1,9 +1,10 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { getSessionUser } from '@/lib/auth';
+import { checkRateLimit, sanitizeString } from '@/lib/security';
 
 // GET: Fetch tickets
-export async function GET() {
+export async function GET(req: Request) {
   try {
     const user = await getSessionUser();
     if (!user) {
@@ -57,8 +58,22 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Unauthorized.' }, { status: 401 });
     }
 
+    // Rate limit ticket submissions: 10 per minute per IP
+    const rateLimit = checkRateLimit(req, {
+      limit: 10,
+      windowMs: 60 * 1000,
+      keyPrefix: 'ticket-create',
+    });
+    if (!rateLimit.allowed && rateLimit.errorResponse) {
+      return rateLimit.errorResponse;
+    }
+
     const body = await req.json();
-    const { subject, category, message } = body;
+    const { subject: rawSubject, category: rawCategory, message: rawMessage } = body;
+
+    const subject = sanitizeString(rawSubject);
+    const category = sanitizeString(rawCategory);
+    const message = sanitizeString(rawMessage);
 
     if (!subject || !category || !message) {
       return NextResponse.json(
