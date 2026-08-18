@@ -68,7 +68,7 @@ export default function ApplicationWizardPage() {
   // Step 1: Personal Details & Preferences
   const [personalDetails, setPersonalDetails] = useState({
     dob: '',
-    gender: 'Male',
+    gender: '',
     idNumber: '',
     county: '',
     guardianContact: '',
@@ -77,15 +77,15 @@ export default function ApplicationWizardPage() {
 
   // Step 2: KCSE details
   const [kcseIndexNo, setKcseIndexNo] = useState('');
-  const [kcseYear, setKcseYear] = useState(2025);
-  const [kcseMeanGrade, setKcseMeanGrade] = useState('C');
+  const [kcseYear, setKcseYear] = useState<number | string>('');
+  const [kcseMeanGrade, setKcseMeanGrade] = useState('');
 
   // Step 3: Subject Grades
   const [subjectGrades, setSubjectGrades] = useState<Record<string, string>>({
-    english: 'C',
-    kiswahili: 'C',
-    mathematics: 'C',
-    science: 'C-',
+    english: '',
+    kiswahili: '',
+    mathematics: '',
+    science: '',
   });
 
   // Step 4: Documents Upload states
@@ -128,27 +128,27 @@ export default function ApplicationWizardPage() {
 
       setApp(loadedApp);
       
-      // Load form states
+      // Load form states without forcing generic defaults
       if (loadedApp.personalDetails && Object.keys(loadedApp.personalDetails).length > 0) {
         setPersonalDetails({
           dob: loadedApp.personalDetails.dob || '',
-          gender: loadedApp.personalDetails.gender || 'Male',
+          gender: loadedApp.personalDetails.gender || '',
           idNumber: loadedApp.personalDetails.idNumber || '',
           county: loadedApp.personalDetails.county || '',
           guardianContact: loadedApp.personalDetails.guardianContact || '',
         });
       }
       setKcseIndexNo(loadedApp.kcseIndexNo || '');
-      setKcseYear(loadedApp.kcseYear || 2025);
-      setKcseMeanGrade(loadedApp.kcseMeanGrade || 'C');
+      setKcseYear(loadedApp.kcseYear && loadedApp.kcseYear > 0 ? loadedApp.kcseYear : '');
+      setKcseMeanGrade(loadedApp.kcseMeanGrade || '');
       setSecondaryProgrammeId(loadedApp.secondaryProgrammeId || '');
 
       if (loadedApp.subjectGrades && Object.keys(loadedApp.subjectGrades).length > 0) {
         setSubjectGrades({
-          english: loadedApp.subjectGrades.english || 'C',
-          kiswahili: loadedApp.subjectGrades.kiswahili || 'C',
-          mathematics: loadedApp.subjectGrades.mathematics || 'C',
-          science: loadedApp.subjectGrades.science || 'C-',
+          english: loadedApp.subjectGrades.english || '',
+          kiswahili: loadedApp.subjectGrades.kiswahili || '',
+          mathematics: loadedApp.subjectGrades.mathematics || '',
+          science: loadedApp.subjectGrades.science || '',
         });
       }
 
@@ -208,15 +208,15 @@ export default function ApplicationWizardPage() {
   const handleNextStep = async () => {
     // Step 1: Personal Details validation
     if (currentStep === 1) {
-      if (!personalDetails.dob || !personalDetails.idNumber || !personalDetails.county) {
-        showToast('Please fill in all personal details fields.', 'error');
+      if (!personalDetails.dob || !personalDetails.gender || !personalDetails.idNumber || !personalDetails.county) {
+        showToast('Please fill in all personal details including gender, date of birth, and county.', 'error');
         return;
       }
-      if (!/^\d{7,10}$/.test(personalDetails.idNumber)) {
+      if (!/^\d{7,10}$/.test(personalDetails.idNumber.trim())) {
         showToast('Please enter a valid National ID / Birth Certificate number (7-10 digits).', 'error');
         return;
       }
-      if (!/^\+?254\d{9}$|^\d{10}$/.test(personalDetails.guardianContact.replace(/[\s-]/g, ''))) {
+      if (!personalDetails.guardianContact.trim() || !/^\+?254\d{9}$|^\d{10}$/.test(personalDetails.guardianContact.replace(/[\s-]/g, ''))) {
         showToast('Please enter a valid emergency contact telephone number (e.g. 0711223344).', 'error');
         return;
       }
@@ -228,10 +228,25 @@ export default function ApplicationWizardPage() {
         showToast('Please enter your KCSE Index Number.', 'error');
         return;
       }
-      // Relaxed validation format check: allow slashes or letters if requested, but verify basic format
-      // Typical format: 11 digit code, or optional index/year formatting
       if (!/^\d{11}$|^\d{11}\/\d{4}$/.test(kcseIndexNo.trim())) {
         showToast('Please enter a valid KCSE Index format (e.g. 40732101001 or 40732101001/2024).', 'error');
+        return;
+      }
+      const numYear = Number(kcseYear);
+      if (!kcseYear || isNaN(numYear) || numYear < 1980 || numYear > 2026) {
+        showToast('Please enter a valid KCSE examination year (between 1980 and 2026).', 'error');
+        return;
+      }
+      if (!kcseMeanGrade) {
+        showToast('Please select your KCSE Mean Grade.', 'error');
+        return;
+      }
+    }
+
+    // Step 3: Subject specific grades validation
+    if (currentStep === 3) {
+      if (!subjectGrades.english || !subjectGrades.kiswahili || !subjectGrades.mathematics || !subjectGrades.science) {
+        showToast('Please select grades for all required subjects (English, Kiswahili, Math, Science).', 'error');
         return;
       }
     }
@@ -464,6 +479,14 @@ export default function ApplicationWizardPage() {
   // Real-time precheck comparison
   const runLocalCheck = () => {
     if (!app) return { eligible: false, message: '' };
+    if (!kcseMeanGrade) {
+      return {
+        eligible: false,
+        message: 'ℹ️ Please fill in your KCSE details in Step 2 to compute provisional eligibility.',
+        meanPassed: false,
+        subjectsPassed: false,
+      };
+    }
     const requiredMean = app.programme.minGradeRequirement.meanGrade;
     const grades = GRADE_OPTIONS;
     const meanVal = grades.indexOf(kcseMeanGrade);
@@ -477,7 +500,7 @@ export default function ApplicationWizardPage() {
       const appG = subjectGrades[sub.toLowerCase()];
       if (!appG) {
         subjectsPassed = false;
-        details.push(`${sub} grade not entered`);
+        details.push(`${sub}: Not yet selected`);
       } else {
         const val = grades.indexOf(appG);
         const reqVal = grades.indexOf(minG as string);
@@ -491,8 +514,8 @@ export default function ApplicationWizardPage() {
     return {
       eligible,
       message: eligible 
-        ? '✅ Provisional precheck passed. Your entered credentials meet minimal guidelines.' 
-        : `❌ Precheck failed. Minimum criteria not met. (Mean grade check: ${meanPassed ? 'Pass' : 'Fail'}). Details: ${details.join(', ')}`,
+        ? '✅ Provisional precheck passed. Your entered credentials meet the minimum requirements for this programme.' 
+        : `❌ Precheck criteria: (Mean grade check: ${meanPassed ? 'Pass' : 'Fail'}). Details: ${details.join(', ')}`,
       meanPassed,
       subjectsPassed
     };
@@ -617,6 +640,7 @@ export default function ApplicationWizardPage() {
                 onChange={(e) => setPersonalDetails({ ...personalDetails, gender: e.target.value })}
                 className="form-input"
               >
+                <option value="">-- Select Gender --</option>
                 <option value="Male">Male</option>
                 <option value="Female">Female</option>
                 <option value="Other">Other</option>
@@ -628,7 +652,7 @@ export default function ApplicationWizardPage() {
               <input
                 type="text"
                 required
-                placeholder="e.g. 34556677"
+                placeholder="Enter ID / Birth Certificate No"
                 value={personalDetails.idNumber}
                 onChange={(e) => setPersonalDetails({ ...personalDetails, idNumber: e.target.value })}
                 className="form-input"
@@ -640,7 +664,7 @@ export default function ApplicationWizardPage() {
               <input
                 type="text"
                 required
-                placeholder="e.g. Nyamira"
+                placeholder="Enter County of Residence"
                 value={personalDetails.county}
                 onChange={(e) => setPersonalDetails({ ...personalDetails, county: e.target.value })}
                 className="form-input"
@@ -652,7 +676,7 @@ export default function ApplicationWizardPage() {
               <input
                 type="tel"
                 required
-                placeholder="e.g. 0712345678"
+                placeholder="Enter Guardian / Sponsor Phone (e.g. 0712345678)"
                 value={personalDetails.guardianContact}
                 onChange={(e) => setPersonalDetails({ ...personalDetails, guardianContact: e.target.value })}
                 className="form-input"
@@ -688,7 +712,7 @@ export default function ApplicationWizardPage() {
               <input
                 type="text"
                 required
-                placeholder="e.g. 40732101001"
+                placeholder="Enter 11-digit KNEC Index Number (e.g. 40732101001)"
                 value={kcseIndexNo}
                 onChange={(e) => setKcseIndexNo(e.target.value)}
                 className="form-input"
@@ -704,10 +728,11 @@ export default function ApplicationWizardPage() {
               <input
                 type="number"
                 required
-                min={2000}
+                min={1990}
                 max={2026}
+                placeholder="e.g. 2024"
                 value={kcseYear}
-                onChange={(e) => setKcseYear(Number(e.target.value))}
+                onChange={(e) => setKcseYear(e.target.value === '' ? '' : Number(e.target.value))}
                 className="form-input"
               />
             </div>
@@ -720,6 +745,7 @@ export default function ApplicationWizardPage() {
                 className="form-input"
                 style={{ fontWeight: '700' }}
               >
+                <option value="">-- Select KCSE Mean Grade --</option>
                 {GRADE_OPTIONS.map((g) => (
                   <option key={g} value={g}>{g}</option>
                 ))}
@@ -742,6 +768,7 @@ export default function ApplicationWizardPage() {
                   onChange={(e) => setSubjectGrades({ ...subjectGrades, english: e.target.value })}
                   className="form-input"
                 >
+                  <option value="">-- Select Grade --</option>
                   {GRADE_OPTIONS.map((g) => (
                     <option key={g} value={g}>{g}</option>
                   ))}
@@ -755,6 +782,7 @@ export default function ApplicationWizardPage() {
                   onChange={(e) => setSubjectGrades({ ...subjectGrades, kiswahili: e.target.value })}
                   className="form-input"
                 >
+                  <option value="">-- Select Grade --</option>
                   {GRADE_OPTIONS.map((g) => (
                     <option key={g} value={g}>{g}</option>
                   ))}
@@ -768,6 +796,7 @@ export default function ApplicationWizardPage() {
                   onChange={(e) => setSubjectGrades({ ...subjectGrades, mathematics: e.target.value })}
                   className="form-input"
                 >
+                  <option value="">-- Select Grade --</option>
                   {GRADE_OPTIONS.map((g) => (
                     <option key={g} value={g}>{g}</option>
                   ))}
@@ -781,6 +810,7 @@ export default function ApplicationWizardPage() {
                   onChange={(e) => setSubjectGrades({ ...subjectGrades, science: e.target.value })}
                   className="form-input"
                 >
+                  <option value="">-- Select Grade --</option>
                   {GRADE_OPTIONS.map((g) => (
                     <option key={g} value={g}>{g}</option>
                   ))}

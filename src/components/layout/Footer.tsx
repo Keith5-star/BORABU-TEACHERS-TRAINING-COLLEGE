@@ -10,12 +10,12 @@ export default function Footer() {
       <div className="container">
         <div className="footer-grid">
           <div className="footer-brand">
-            <h2>BORABU BTTI</h2>
+            <h2>BORABU TTC</h2>
             <p className="footer-desc">
-              To provide Competent Human Resource for Sustainable Development in Science and Technology through quality technical training and hands-on skill acquisition.
+              To provide Competent, Ethical, and Transformative Educators for sustainable national development through quality teacher education, pedagogical research, and innovative teaching practice.
             </p>
             <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.5)', marginTop: '8px' }}>
-              Registered by the Ministry of Education & TVETA.
+              Registered by the Ministry of Education & Teachers Service Commission (TSC).
             </p>
           </div>
 
@@ -50,7 +50,7 @@ export default function Footer() {
             <ul className="footer-links">
               <li>
                 <Link href="/about" className="footer-link">
-                  About the Institute
+                  About the College
                 </Link>
               </li>
               <li>
@@ -66,6 +66,11 @@ export default function Footer() {
               <li>
                 <Link href="/news" className="footer-link">
                   News & Events
+                </Link>
+              </li>
+              <li>
+                <Link href="/faqs" className="footer-link">
+                  Admissions FAQs
                 </Link>
               </li>
               <li>
@@ -89,14 +94,14 @@ export default function Footer() {
                 <strong>Phone:</strong> 0746 211 764 | 0727 433 205
               </li>
               <li style={{ marginBottom: '10px' }}>
-                <strong>Email:</strong> info@borabutti.ac.ke
+                <strong>Email:</strong> info@borabuttc.ac.ke
               </li>
             </ul>
           </div>
         </div>
 
         <div className="footer-bottom">
-          <p>&copy; {currentYear} Borabu Technical Training Institute. All Rights Reserved.</p>
+          <p>&copy; {currentYear} Borabu Teachers Training College. All Rights Reserved.</p>
           <div style={{ display: 'flex', gap: '20px' }}>
             <Link href="/verify/check" style={{ color: 'var(--accent-gold)', fontWeight: '600' }}>
               Verify Admission Letter

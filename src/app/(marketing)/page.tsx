@@ -7,12 +7,12 @@ export default function HomePage() {
       <section className="hero">
         <div className="container hero-grid">
           <div className="hero-content">
-            <span className="section-tag">Technical Excellence</span>
+            <span className="section-tag">Pedagogical Excellence</span>
             <h1 className="hero-title">
-              Shaping the Future of <span>Technical Education & Leadership</span>
+              Shaping the Future of <span>Teacher Education & Leadership</span>
             </h1>
             <p className="hero-subtitle">
-              Welcome to Borabu Technical Training Institute (BTTI), Nyamira County. We provide world-class technical, vocational, and entrepreneurship training designed to inspire innovation and career excellence.
+              Welcome to Borabu Teachers Training College (BTTC), Nyamira County. We provide world-class teacher education, pedagogical training, and educational leadership designed to inspire classroom excellence.
             </p>
             <div className="hero-buttons">
               <Link href="/register" className="btn btn-primary">
@@ -27,15 +27,15 @@ export default function HomePage() {
             <div className="hero-stats">
               <div className="stat-item">
                 <h3>3,500+</h3>
-                <p>Accredited Graduates</p>
+                <p>Accredited Teachers</p>
               </div>
               <div className="stat-item">
-                <h3>95%</h3>
-                <p>Employment & Self-Employment</p>
+                <h3>98%</h3>
+                <p>TSC Employment & Placement</p>
               </div>
               <div className="stat-item">
-                <h3>57</h3>
-                <p>Accredited Courses</p>
+                <h3>100%</h3>
+                <p>Curriculum Compliance</p>
               </div>
             </div>
           </div>
@@ -43,9 +43,9 @@ export default function HomePage() {
           <div className="hero-image-container">
             <div className="hero-image-placeholder">
               <div style={{ fontSize: '72px', marginBottom: '20px' }}>🎓</div>
-              <h3 style={{ color: 'white', marginBottom: '10px' }}>BTTI Campus Life</h3>
+              <h3 style={{ color: 'white', marginBottom: '10px' }}>BTTC Campus Life</h3>
               <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '14px' }}>
-                A vibrant learning community centered on research, values, and technical excellence.
+                A vibrant learning community centered on pedagogical research, professional ethics, and teaching excellence.
               </p>
             </div>
           </div>
@@ -106,7 +106,7 @@ export default function HomePage() {
         <div className="container" style={{ maxWidth: '600px' }}>
           <h2 style={{ fontSize: '28px', marginBottom: '16px' }}>Verify an Admission Letter</h2>
           <p style={{ color: 'var(--text-light)', marginBottom: '24px' }}>
-            Are you a sponsor, employer, or government official looking to confirm the validity of a Borabu BTTI admission letter? Use our digital verification tool.
+            Are you a sponsor, employer, TSC official, or ministry officer looking to confirm the validity of a Borabu TTC admission letter? Use our digital verification tool.
           </p>
           <Link href="/verify/check" className="btn btn-secondary">
             Verify Letter Authenticity

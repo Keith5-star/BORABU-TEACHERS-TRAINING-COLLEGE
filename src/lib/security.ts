@@ -11,7 +11,7 @@ interface RateLimitRecord {
 
 const rateLimitStore = new Map<string, RateLimitRecord>();
 
-// Clean up stale IP records every 5 minutes to prevent memory leak
+// Clean up stale IP records periodically to prevent memory leaks
 if (typeof setInterval !== 'undefined') {
   setInterval(() => {
     const now = Date.now();
@@ -20,20 +20,34 @@ if (typeof setInterval !== 'undefined') {
         rateLimitStore.delete(key);
       }
     }
-  }, 5 * 60 * 1000);
+  }, 3 * 60 * 1000);
 }
+
+export interface RateLimitTier {
+  limit: number;
+  windowMs: number;
+  keyPrefix: string;
+}
+
+export const RATE_LIMIT_TIERS = {
+  AUTH: { limit: 15, windowMs: 15 * 60 * 1000, keyPrefix: 'rl:auth' }, // 15 reqs per 15 mins
+  PAYMENT: { limit: 20, windowMs: 60 * 1000, keyPrefix: 'rl:pay' }, // 20 reqs per minute
+  SUBMIT: { limit: 25, windowMs: 60 * 1000, keyPrefix: 'rl:sub' }, // 25 reqs per minute
+  VERIFY: { limit: 40, windowMs: 60 * 1000, keyPrefix: 'rl:ver' }, // 40 reqs per minute
+  GENERAL: { limit: 150, windowMs: 60 * 1000, keyPrefix: 'rl:gen' }, // 150 reqs per minute
+};
 
 export function checkRateLimit(
   req: Request | NextRequest,
   options: {
-    limit?: number; // max requests per window
-    windowMs?: number; // window size in milliseconds
+    limit?: number;
+    windowMs?: number;
     keyPrefix?: string;
   } = {}
-): { allowed: boolean; remaining: number; resetInSec: number; errorResponse?: NextResponse } {
-  const limit = options.limit || 30;
-  const windowMs = options.windowMs || 60 * 1000;
-  const prefix = options.keyPrefix || 'global';
+): { allowed: boolean; remaining: number; resetInSec: number; limit: number; errorResponse?: NextResponse } {
+  const limit = options.limit || RATE_LIMIT_TIERS.GENERAL.limit;
+  const windowMs = options.windowMs || RATE_LIMIT_TIERS.GENERAL.windowMs;
+  const prefix = options.keyPrefix || RATE_LIMIT_TIERS.GENERAL.keyPrefix;
 
   // Extract client IP safely
   const forwardedFor = req.headers.get('x-forwarded-for');
@@ -53,6 +67,7 @@ export function checkRateLimit(
       allowed: true,
       remaining: limit - 1,
       resetInSec: Math.ceil(windowMs / 1000),
+      limit,
     };
   }
 
@@ -62,9 +77,10 @@ export function checkRateLimit(
       allowed: false,
       remaining: 0,
       resetInSec,
+      limit,
       errorResponse: NextResponse.json(
         {
-          error: 'Too many requests. Please slow down and try again.',
+          error: 'Too many requests. Please slow down and try again later.',
           retryAfter: resetInSec,
         },
         {
@@ -73,6 +89,7 @@ export function checkRateLimit(
             'Retry-After': resetInSec.toString(),
             'X-RateLimit-Limit': limit.toString(),
             'X-RateLimit-Remaining': '0',
+            'X-RateLimit-Reset': Math.ceil(record.resetAt / 1000).toString(),
           },
         }
       ),
@@ -84,12 +101,13 @@ export function checkRateLimit(
     allowed: true,
     remaining: limit - record.count,
     resetInSec: Math.ceil((record.resetAt - now) / 1000),
+    limit,
   };
 }
 
 /**
  * XSS & HTML Injection Sanitization
- * Strips script tags, iframe, dangerous URI schemes, and control characters.
+ * Strips script tags, iframes, dangerous URI schemes, and control characters.
  */
 export function sanitizeString(input: unknown): string {
   if (typeof input !== 'string') return '';
@@ -100,11 +118,16 @@ export function sanitizeString(input: unknown): string {
     .replace(/<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi, '') // remove <iframe>
     .replace(/<object\b[^<]*(?:(?!<\/object>)<[^<]*)*<\/object>/gi, '') // remove <object>
     .replace(/<embed\b[^<]*(?:(?!<\/embed>)<[^<]*)*<\/embed>/gi, '') // remove <embed>
+    .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, '') // remove <style>
     .replace(/javascript:/gi, '') // remove javascript: URI scheme
+    .replace(/vbscript:/gi, '') // remove vbscript: URI scheme
     .replace(/data:text\/html/gi, '') // remove inline data HTML
     .replace(/onload\s*=/gi, '')
     .replace(/onerror\s*=/gi, '')
     .replace(/onclick\s*=/gi, '')
+    .replace(/onmouseover\s*=/gi, '')
+    .replace(/onfocus\s*=/gi, '')
+    .replace(/onblur\s*=/gi, '')
     .trim();
 }
 
@@ -145,6 +168,29 @@ export function sanitizeEmail(email: unknown): { valid: boolean; email: string }
 }
 
 /**
+ * Kenyan & International Phone Number Sanitizer
+ */
+export function sanitizePhone(phone: unknown): string {
+  if (typeof phone !== 'string') return '';
+  const digits = phone.replace(/[^0-9+]/g, '').trim();
+  if (digits.startsWith('07') || digits.startsWith('01')) {
+    return '+254' + digits.substring(1);
+  }
+  if (digits.startsWith('254')) {
+    return '+' + digits;
+  }
+  return digits;
+}
+
+/**
+ * KCSE Index Number Sanitizer
+ */
+export function sanitizeIndexNo(indexNo: unknown): string {
+  if (typeof indexNo !== 'string') return '';
+  return indexNo.replace(/[^0-9]/g, '').slice(0, 15);
+}
+
+/**
  * Password Strength Validation
  * Enforces minimum 8 characters, with letters and numbers.
  */
@@ -172,21 +218,75 @@ export function validatePasswordStrength(password: unknown): { valid: boolean; m
 }
 
 /**
- * CSRF / Origin Validation for Mutating Requests
+ * CSRF / Origin Validation for State-Changing Requests (POST, PUT, PATCH, DELETE)
+ * Verifies Origin and Referer headers against the host and trusted origins.
  */
-export function validateCsrfOrigin(req: Request): boolean {
+export function validateCsrfRequest(req: Request | NextRequest): { valid: boolean; reason?: string } {
+  const method = req.method.toUpperCase();
+  const stateChangingMethods = ['POST', 'PUT', 'PATCH', 'DELETE'];
+
+  // Safe methods (GET, HEAD, OPTIONS) do not require CSRF origin validation
+  if (!stateChangingMethods.includes(method)) {
+    return { valid: true };
+  }
+
+  // Extract Host & X-Forwarded-Host
+  const forwardedHost = req.headers.get('x-forwarded-host');
+  const rawHost = req.headers.get('host');
+  const hostList = [forwardedHost, rawHost].filter(Boolean).map((h) => h!.replace(/:(80|443)$/, '').toLowerCase());
+
+  // Extract Origin
   const origin = req.headers.get('origin');
-  const host = req.headers.get('host');
+  if (origin) {
+    try {
+      const originUrl = new URL(origin);
+      const originHost = originUrl.host.replace(/:(80|443)$/, '').toLowerCase();
 
-  if (!origin || !host) {
-    // Non-browser or same-origin GET/direct requests
-    return true;
+      // Check if origin matches any host or recognized development / preview domain
+      const isHostMatch = hostList.some((h) => h === originHost || originHost.includes(h) || h.includes(originHost));
+      const isTrustedDomain =
+        originHost.endsWith('.run.app') ||
+        originHost.includes('localhost') ||
+        originHost.includes('127.0.0.1') ||
+        originHost.endsWith('.google.com') ||
+        originHost.endsWith('.ai.studio');
+
+      if (isHostMatch || isTrustedDomain) {
+        return { valid: true };
+      }
+      return { valid: false, reason: `Origin '${originHost}' is not recognized.` };
+    } catch {
+      return { valid: false, reason: 'Malformed Origin header provided.' };
+    }
   }
 
-  try {
-    const originHost = new URL(origin).host;
-    return originHost === host;
-  } catch {
-    return false;
+  // Extract Referer (fallback check)
+  const referer = req.headers.get('referer');
+  if (referer) {
+    try {
+      const refererUrl = new URL(referer);
+      const refererHost = refererUrl.host.replace(/:(80|443)$/, '').toLowerCase();
+
+      const isHostMatch = hostList.some((h) => h === refererHost || refererHost.includes(h) || h.includes(refererHost));
+      const isTrustedDomain =
+        refererHost.endsWith('.run.app') ||
+        refererHost.includes('localhost') ||
+        refererHost.includes('127.0.0.1') ||
+        refererHost.endsWith('.google.com') ||
+        refererHost.endsWith('.ai.studio');
+
+      if (isHostMatch || isTrustedDomain) {
+        return { valid: true };
+      }
+      return { valid: false, reason: `Referer '${refererHost}' is not recognized.` };
+    } catch {
+      return { valid: false, reason: 'Malformed Referer header provided.' };
+    }
   }
+
+  return { valid: true };
+}
+
+export function validateCsrfOrigin(req: Request): boolean {
+  return validateCsrfRequest(req).valid;
 }

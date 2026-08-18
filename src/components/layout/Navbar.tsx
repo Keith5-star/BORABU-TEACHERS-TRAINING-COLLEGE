@@ -16,27 +16,33 @@ export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    let isMounted = true;
+
     async function checkSession() {
       try {
-        const res = await fetch('/api/auth/me');
+        const res = await fetch('/api/auth/me', { cache: 'no-store' });
         if (res.ok) {
           const data = await res.json();
-          setUser(data.user);
+          if (isMounted) setUser(data.user);
         } else {
-          setUser(null);
+          if (isMounted) setUser(null);
         }
-      } catch (err) {
-        console.error('Failed to check auth state:', err);
+      } catch {
+        if (isMounted) setUser(null);
       } finally {
-        setLoading(false);
+        if (isMounted) setLoading(false);
       }
     }
+
     checkSession();
-  }, [pathname]);
+
+    return () => {
+      isMounted = false;
+    };
+  }, []); // Only check on mount, not on every single pathname change
 
   const handleLogout = async () => {
     try {
@@ -61,8 +67,8 @@ export default function Navbar() {
         <Link href="/" className="logo-link">
           <div className="logo-icon">B</div>
           <div className="logo-text">
-            <h1>BORABU BTTI</h1>
-            <div className="logo-tagline">Technical Training Institute</div>
+            <h1>BORABU TTC</h1>
+            <div className="logo-tagline">Teachers Training College</div>
           </div>
         </Link>
 
@@ -102,6 +108,11 @@ export default function Navbar() {
             <li>
               <Link href="/news" className={`nav-link ${isLinkActive('/news')}`}>
                 News
+              </Link>
+            </li>
+            <li>
+              <Link href="/faqs" className={`nav-link ${isLinkActive('/faqs')}`}>
+                FAQs
               </Link>
             </li>
             <li>

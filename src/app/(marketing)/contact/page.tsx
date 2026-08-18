@@ -116,7 +116,7 @@ export default function ContactPage() {
               </li>
               <li>
                 <strong>📧 General Email:</strong><br />
-                <span style={{ color: 'var(--text-light)' }}>info@borabutti.ac.ke</span>
+                <span style={{ color: 'var(--text-light)' }}>info@borabuttc.ac.ke</span>
               </li>
               <li>
                 <strong>🏫 Working Hours:</strong><br />

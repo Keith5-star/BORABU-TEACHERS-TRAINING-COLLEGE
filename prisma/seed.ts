@@ -1,771 +1,247 @@
-import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
-import { PrismaClient } from '../src/generated/prisma/client';
+import { prisma } from '../src/lib/db';
 import bcrypt from 'bcryptjs';
 
-const databaseUrl = process.env.DATABASE_URL || 'file:./prisma/dev.db';
-const adapter = new PrismaBetterSqlite3({ url: databaseUrl });
-const prisma = new PrismaClient({ adapter });
-
 async function main() {
-  console.log('Clearing database...');
-  await prisma.auditLog.deleteMany({});
-  await prisma.notification.deleteMany({});
-  await prisma.admissionLetter.deleteMany({});
-  await prisma.document.deleteMany({});
-  await prisma.ticketMessage.deleteMany({});
-  await prisma.ticket.deleteMany({});
-  await prisma.application.deleteMany({});
-  await prisma.user.deleteMany({});
-  await prisma.programme.deleteMany({});
+  console.log('Clearing database tables...');
+  await prisma.auditLog.deleteMany();
+  await prisma.notification.deleteMany();
+  await prisma.admissionLetter.deleteMany();
+  await prisma.document.deleteMany();
+  await prisma.application.deleteMany();
+  await prisma.user.deleteMany();
+  await prisma.programme.deleteMany();
 
-  console.log('Seeding BTTI programmes...');
-  await prisma.programme.create({
-    data: {
-      name: 'Diploma in Information Communication Technology',
-      code: 'DICT',
+  console.log('Seeding Borabu Teachers Training College programmes...');
+
+  const programmesData = [
+    {
+      name: 'Diploma in Primary Teacher Education (DPTE)',
+      code: 'DPTE',
       level: 'Diploma',
-      duration: '3 Years',
-      minGradeRequirement: JSON.stringify({'meanGrade': 'C-', 'subjects': {}}),
-      intakeCapacity: 100,
-      intakePeriod: 'September 2026',
+      duration: '3 Years (9 Terms)',
+      intakeCapacity: 250,
+      intakePeriod: 'September / May',
       isActive: true,
-      feesStructure: JSON.stringify([{'semester': 'Year 1 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 37895}, {'semester': 'Year 1 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}, {'semester': 'Year 2 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 33595}, {'semester': 'Year 2 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}, {'semester': 'Year 3 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 33595}, {'semester': 'Year 3 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}])
-    }
-  });
-  await prisma.programme.create({
-    data: {
-      name: 'Certificate in Information Technology',
-      code: 'CIT',
+      minGradeRequirement: JSON.stringify({
+        meanGrade: 'C',
+        subjects: {
+          english: 'C',
+          kiswahili: 'C',
+          mathematics: 'C',
+        },
+      }),
+      feesStructure: JSON.stringify([
+        { semester: 'Year 1 Term 1', tuition: 18500, boarding: 12000, activity: 2500, total: 33000 },
+        { semester: 'Year 1 Term 2', tuition: 16500, boarding: 12000, activity: 1000, total: 29500 },
+        { semester: 'Year 1 Term 3', tuition: 16500, boarding: 12000, activity: 1000, total: 29500 },
+        { semester: 'Year 2 Term 1 (Teaching Practice 1)', tuition: 18500, boarding: 12000, activity: 3500, total: 34000 },
+        { semester: 'Year 2 Term 2', tuition: 16500, boarding: 12000, activity: 1000, total: 29500 },
+        { semester: 'Year 2 Term 3 (Teaching Practice 2)', tuition: 18500, boarding: 12000, activity: 3500, total: 34000 },
+        { semester: 'Year 3 Term 1', tuition: 18500, boarding: 12000, activity: 2000, total: 32500 },
+        { semester: 'Year 3 Term 2 (Final Practicum)', tuition: 18500, boarding: 12000, activity: 3500, total: 34000 },
+        { semester: 'Year 3 Term 3 (KNEC Assessments)', tuition: 16500, boarding: 12000, activity: 2500, total: 31000 },
+      ]),
+    },
+    {
+      name: 'Diploma in Early Childhood Teacher Education (DECTE)',
+      code: 'DECTE',
+      level: 'Diploma',
+      duration: '3 Years (9 Terms)',
+      intakeCapacity: 160,
+      intakePeriod: 'September / May',
+      isActive: true,
+      minGradeRequirement: JSON.stringify({
+        meanGrade: 'C',
+        subjects: {
+          english: 'C',
+          mathematics: 'D+',
+        },
+      }),
+      feesStructure: JSON.stringify([
+        { semester: 'Year 1 Term 1', tuition: 17500, boarding: 12000, activity: 2500, total: 32000 },
+        { semester: 'Year 1 Term 2', tuition: 15500, boarding: 12000, activity: 1000, total: 28500 },
+        { semester: 'Year 1 Term 3', tuition: 15500, boarding: 12000, activity: 1000, total: 28500 },
+        { semester: 'Year 2 Term 1 (Practicum 1)', tuition: 17500, boarding: 12000, activity: 3000, total: 32500 },
+        { semester: 'Year 2 Term 2', tuition: 15500, boarding: 12000, activity: 1000, total: 28500 },
+        { semester: 'Year 2 Term 3 (Practicum 2)', tuition: 17500, boarding: 12000, activity: 3000, total: 32500 },
+        { semester: 'Year 3 Term 1', tuition: 17500, boarding: 12000, activity: 1500, total: 31000 },
+        { semester: 'Year 3 Term 2 (Final Practicum)', tuition: 17500, boarding: 12000, activity: 3000, total: 32500 },
+        { semester: 'Year 3 Term 3 (KNEC Exam)', tuition: 15500, boarding: 12000, activity: 2000, total: 29500 },
+      ]),
+    },
+    {
+      name: 'Upgrade Diploma in Primary Teacher Education (UDPTE)',
+      code: 'UDPTE',
+      level: 'Diploma Upgrade',
+      duration: '1 Year (4 Terms / School Holidays & Distance)',
+      intakeCapacity: 200,
+      intakePeriod: 'April / August / December',
+      isActive: true,
+      minGradeRequirement: JSON.stringify({
+        meanGrade: 'P1 Certificate',
+        subjects: {},
+      }),
+      feesStructure: JSON.stringify([
+        { semester: 'Term 1 (Holiday Module)', tuition: 16000, boarding: 6000, activity: 1500, total: 23500 },
+        { semester: 'Term 2 (Holiday Module)', tuition: 16000, boarding: 6000, activity: 1000, total: 23000 },
+        { semester: 'Term 3 (Teaching Practicum)', tuition: 18000, boarding: 6000, activity: 2500, total: 26500 },
+        { semester: 'Term 4 (KNEC Evaluation)', tuition: 16000, boarding: 6000, activity: 1500, total: 23500 },
+      ]),
+    },
+    {
+      name: 'Upgrade Diploma in Early Childhood Teacher Education (UDECTE)',
+      code: 'UDECTE',
+      level: 'Diploma Upgrade',
+      duration: '1 Year (4 Terms / School Holidays & Distance)',
+      intakeCapacity: 150,
+      intakePeriod: 'April / August / December',
+      isActive: true,
+      minGradeRequirement: JSON.stringify({
+        meanGrade: 'ECDE Certificate',
+        subjects: {},
+      }),
+      feesStructure: JSON.stringify([
+        { semester: 'Term 1 (Holiday Module)', tuition: 15000, boarding: 6000, activity: 1500, total: 22500 },
+        { semester: 'Term 2 (Holiday Module)', tuition: 15000, boarding: 6000, activity: 1000, total: 22000 },
+        { semester: 'Term 3 (Teaching Practicum)', tuition: 17000, boarding: 6000, activity: 2500, total: 25500 },
+        { semester: 'Term 4 (KNEC Evaluation)', tuition: 15000, boarding: 6000, activity: 1500, total: 22500 },
+      ]),
+    },
+    {
+      name: 'Diploma in Secondary Teacher Education (DSTE - Junior School)',
+      code: 'DSTE',
+      level: 'Diploma',
+      duration: '3 Years (9 Terms)',
+      intakeCapacity: 180,
+      intakePeriod: 'September / January',
+      isActive: true,
+      minGradeRequirement: JSON.stringify({
+        meanGrade: 'C+',
+        subjects: {
+          subject1: 'C+',
+          subject2: 'C+',
+        },
+      }),
+      feesStructure: JSON.stringify([
+        { semester: 'Year 1 Term 1', tuition: 19500, boarding: 12000, activity: 2500, total: 34000 },
+        { semester: 'Year 1 Term 2', tuition: 17500, boarding: 12000, activity: 1000, total: 30500 },
+        { semester: 'Year 1 Term 3', tuition: 17500, boarding: 12000, activity: 1000, total: 30500 },
+        { semester: 'Year 2 Term 1 (TP Practicum 1)', tuition: 19500, boarding: 12000, activity: 3500, total: 35000 },
+        { semester: 'Year 2 Term 2', tuition: 17500, boarding: 12000, activity: 1000, total: 30500 },
+        { semester: 'Year 2 Term 3 (TP Practicum 2)', tuition: 19500, boarding: 12000, activity: 3500, total: 35000 },
+        { semester: 'Year 3 Term 1', tuition: 19500, boarding: 12000, activity: 2000, total: 33500 },
+        { semester: 'Year 3 Term 2 (Final Practicum)', tuition: 19500, boarding: 12000, activity: 3500, total: 35000 },
+        { semester: 'Year 3 Term 3 (KNEC Exams)', tuition: 17500, boarding: 12000, activity: 2500, total: 32000 },
+      ]),
+    },
+    {
+      name: 'Diploma in Special Needs Education (SNE - Primary/Inclusive Option)',
+      code: 'SNE',
+      level: 'Diploma',
+      duration: '2 Years (6 Terms)',
+      intakeCapacity: 120,
+      intakePeriod: 'September / January',
+      isActive: true,
+      minGradeRequirement: JSON.stringify({
+        meanGrade: 'C',
+        subjects: {
+          english: 'C',
+        },
+      }),
+      feesStructure: JSON.stringify([
+        { semester: 'Year 1 Term 1', tuition: 18000, boarding: 12000, activity: 2500, total: 32500 },
+        { semester: 'Year 1 Term 2', tuition: 16000, boarding: 12000, activity: 1000, total: 29000 },
+        { semester: 'Year 1 Term 3', tuition: 16000, boarding: 12000, activity: 1000, total: 29000 },
+        { semester: 'Year 2 Term 1 (Special School Practicum)', tuition: 19000, boarding: 12000, activity: 3500, total: 34500 },
+        { semester: 'Year 2 Term 2', tuition: 16000, boarding: 12000, activity: 1000, total: 29000 },
+        { semester: 'Year 2 Term 3 (Final Assessment)', tuition: 16000, boarding: 12000, activity: 2500, total: 30500 },
+      ]),
+    },
+    {
+      name: 'Certificate in Early Childhood Development Education (ECDE)',
+      code: 'CECDE',
       level: 'Certificate',
-      duration: '2 Years',
-      minGradeRequirement: JSON.stringify({'meanGrade': 'D', 'subjects': {}}),
-      intakeCapacity: 100,
-      intakePeriod: 'September 2026',
+      duration: '2 Years (6 Terms)',
+      intakeCapacity: 140,
+      intakePeriod: 'September / January / May',
       isActive: true,
-      feesStructure: JSON.stringify([{'semester': 'Year 1 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 37895}, {'semester': 'Year 1 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}, {'semester': 'Year 2 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 33595}, {'semester': 'Year 2 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}])
-    }
-  });
-  await prisma.programme.create({
-    data: {
-      name: 'Diploma in Computer Science',
-      code: 'DCS',
-      level: 'Diploma',
-      duration: '3 Years',
-      minGradeRequirement: JSON.stringify({'meanGrade': 'C-', 'subjects': {}}),
-      intakeCapacity: 100,
-      intakePeriod: 'September 2026',
-      isActive: true,
-      feesStructure: JSON.stringify([{'semester': 'Year 1 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 37895}, {'semester': 'Year 1 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}, {'semester': 'Year 2 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 33595}, {'semester': 'Year 2 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}, {'semester': 'Year 3 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 33595}, {'semester': 'Year 3 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}])
-    }
-  });
-  await prisma.programme.create({
-    data: {
-      name: 'Diploma in Computer Programming',
-      code: 'DCP',
-      level: 'Diploma',
-      duration: '3 Years',
-      minGradeRequirement: JSON.stringify({'meanGrade': 'C-', 'subjects': {}}),
-      intakeCapacity: 100,
-      intakePeriod: 'September 2026',
-      isActive: true,
-      feesStructure: JSON.stringify([{'semester': 'Year 1 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 37895}, {'semester': 'Year 1 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}, {'semester': 'Year 2 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 33595}, {'semester': 'Year 2 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}, {'semester': 'Year 3 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 33595}, {'semester': 'Year 3 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}])
-    }
-  });
-  await prisma.programme.create({
-    data: {
-      name: 'Diploma in Cyber Security',
-      code: 'DCYB',
-      level: 'Diploma',
-      duration: '3 Years',
-      minGradeRequirement: JSON.stringify({'meanGrade': 'C-', 'subjects': {}}),
-      intakeCapacity: 100,
-      intakePeriod: 'September 2026',
-      isActive: true,
-      feesStructure: JSON.stringify([{'semester': 'Year 1 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 37895}, {'semester': 'Year 1 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}, {'semester': 'Year 2 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 33595}, {'semester': 'Year 2 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}, {'semester': 'Year 3 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 33595}, {'semester': 'Year 3 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}])
-    }
-  });
-  await prisma.programme.create({
-    data: {
-      name: 'Diploma in Animation and Digital Media',
-      code: 'DADM',
-      level: 'Diploma',
-      duration: '3 Years',
-      minGradeRequirement: JSON.stringify({'meanGrade': 'C-', 'subjects': {}}),
-      intakeCapacity: 100,
-      intakePeriod: 'September 2026',
-      isActive: true,
-      feesStructure: JSON.stringify([{'semester': 'Year 1 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 37895}, {'semester': 'Year 1 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}, {'semester': 'Year 2 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 33595}, {'semester': 'Year 2 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}, {'semester': 'Year 3 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 33595}, {'semester': 'Year 3 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}])
-    }
-  });
-  await prisma.programme.create({
-    data: {
-      name: 'Diploma in Graphic Design',
-      code: 'DGD',
-      level: 'Diploma',
-      duration: '3 Years',
-      minGradeRequirement: JSON.stringify({'meanGrade': 'C-', 'subjects': {}}),
-      intakeCapacity: 100,
-      intakePeriod: 'September 2026',
-      isActive: true,
-      feesStructure: JSON.stringify([{'semester': 'Year 1 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 37895}, {'semester': 'Year 1 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}, {'semester': 'Year 2 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 33595}, {'semester': 'Year 2 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}, {'semester': 'Year 3 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 33595}, {'semester': 'Year 3 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}])
-    }
-  });
-  await prisma.programme.create({
-    data: {
-      name: 'Diploma in Data Science',
-      code: 'DDS',
-      level: 'Diploma',
-      duration: '3 Years',
-      minGradeRequirement: JSON.stringify({'meanGrade': 'C-', 'subjects': {}}),
-      intakeCapacity: 100,
-      intakePeriod: 'September 2026',
-      isActive: true,
-      feesStructure: JSON.stringify([{'semester': 'Year 1 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 37895}, {'semester': 'Year 1 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}, {'semester': 'Year 2 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 33595}, {'semester': 'Year 2 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}, {'semester': 'Year 3 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 33595}, {'semester': 'Year 3 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}])
-    }
-  });
-  await prisma.programme.create({
-    data: {
-      name: 'Diploma in Cloud Computing',
-      code: 'DCC',
-      level: 'Diploma',
-      duration: '3 Years',
-      minGradeRequirement: JSON.stringify({'meanGrade': 'C-', 'subjects': {}}),
-      intakeCapacity: 100,
-      intakePeriod: 'September 2026',
-      isActive: true,
-      feesStructure: JSON.stringify([{'semester': 'Year 1 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 37895}, {'semester': 'Year 1 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}, {'semester': 'Year 2 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 33595}, {'semester': 'Year 2 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}, {'semester': 'Year 3 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 33595}, {'semester': 'Year 3 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}])
-    }
-  });
-  await prisma.programme.create({
-    data: {
-      name: 'Diploma in Artificial Intelligence and Robotics',
-      code: 'DAIR',
-      level: 'Diploma',
-      duration: '3 Years',
-      minGradeRequirement: JSON.stringify({'meanGrade': 'C-', 'subjects': {}}),
-      intakeCapacity: 100,
-      intakePeriod: 'September 2026',
-      isActive: true,
-      feesStructure: JSON.stringify([{'semester': 'Year 1 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 37895}, {'semester': 'Year 1 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}, {'semester': 'Year 2 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 33595}, {'semester': 'Year 2 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}, {'semester': 'Year 3 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 33595}, {'semester': 'Year 3 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}])
-    }
-  });
-  await prisma.programme.create({
-    data: {
-      name: 'Computer Application Packages',
-      code: 'CAP',
+      minGradeRequirement: JSON.stringify({
+        meanGrade: 'D+',
+        subjects: {
+          english: 'D+',
+        },
+      }),
+      feesStructure: JSON.stringify([
+        { semester: 'Year 1 Term 1', tuition: 14000, boarding: 11000, activity: 2000, total: 27000 },
+        { semester: 'Year 1 Term 2', tuition: 12500, boarding: 11000, activity: 1000, total: 24500 },
+        { semester: 'Year 1 Term 3', tuition: 12500, boarding: 11000, activity: 1000, total: 24500 },
+        { semester: 'Year 2 Term 1 (Teaching Practicum)', tuition: 15000, boarding: 11000, activity: 2500, total: 28500 },
+        { semester: 'Year 2 Term 2', tuition: 12500, boarding: 11000, activity: 1000, total: 24500 },
+        { semester: 'Year 2 Term 3 (KNEC Exam)', tuition: 12500, boarding: 11000, activity: 2000, total: 25500 },
+      ]),
+    },
+    {
+      name: 'Proficiency Certificate in CBC Pedagogical Approaches & Digital Literacy',
+      code: 'CBC-PDL',
       level: 'Short Course',
-      duration: '3 Months',
-      minGradeRequirement: JSON.stringify({'meanGrade': 'Open', 'subjects': {}}),
+      duration: '3 Months (Continuous / Weekends)',
       intakeCapacity: 100,
-      intakePeriod: 'September 2026',
+      intakePeriod: 'Monthly Intake',
       isActive: true,
-      feesStructure: JSON.stringify([{'semester': 'Term 1', 'tuition': 4600, 'boarding': 0, 'activity': 0, 'total': 5400}])
-    }
-  });
-  await prisma.programme.create({
-    data: {
-      name: 'Diploma in Electrical & Electronics Engineering (Power Option)',
-      code: 'DEEE-P',
-      level: 'Diploma',
-      duration: '3 Years',
-      minGradeRequirement: JSON.stringify({'meanGrade': 'C-', 'subjects': {}}),
-      intakeCapacity: 100,
-      intakePeriod: 'September 2026',
-      isActive: true,
-      feesStructure: JSON.stringify([{'semester': 'Year 1 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 37895}, {'semester': 'Year 1 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}, {'semester': 'Year 2 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 33595}, {'semester': 'Year 2 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}, {'semester': 'Year 3 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 33595}, {'semester': 'Year 3 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}])
-    }
-  });
-  await prisma.programme.create({
-    data: {
-      name: 'Diploma in Electrical & Electronics Engineering (Telecommunication)',
-      code: 'DEEE-T',
-      level: 'Diploma',
-      duration: '3 Years',
-      minGradeRequirement: JSON.stringify({'meanGrade': 'C-', 'subjects': {}}),
-      intakeCapacity: 100,
-      intakePeriod: 'September 2026',
-      isActive: true,
-      feesStructure: JSON.stringify([{'semester': 'Year 1 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 37895}, {'semester': 'Year 1 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}, {'semester': 'Year 2 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 33595}, {'semester': 'Year 2 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}, {'semester': 'Year 3 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 33595}, {'semester': 'Year 3 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}])
-    }
-  });
-  await prisma.programme.create({
-    data: {
-      name: 'Diploma in Mechatronic Engineering',
-      code: 'DME',
-      level: 'Diploma',
-      duration: '3 Years',
-      minGradeRequirement: JSON.stringify({'meanGrade': 'C-', 'subjects': {}}),
-      intakeCapacity: 100,
-      intakePeriod: 'September 2026',
-      isActive: true,
-      feesStructure: JSON.stringify([{'semester': 'Year 1 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 37895}, {'semester': 'Year 1 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}, {'semester': 'Year 2 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 33595}, {'semester': 'Year 2 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}, {'semester': 'Year 3 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 33595}, {'semester': 'Year 3 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}])
-    }
-  });
-  await prisma.programme.create({
-    data: {
-      name: 'Certificate in Electrical & Electronics Engineering (Power Option)',
-      code: 'CEEE-P',
-      level: 'Certificate',
-      duration: '2 Years',
-      minGradeRequirement: JSON.stringify({'meanGrade': 'D', 'subjects': {}}),
-      intakeCapacity: 100,
-      intakePeriod: 'September 2026',
-      isActive: true,
-      feesStructure: JSON.stringify([{'semester': 'Year 1 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 37895}, {'semester': 'Year 1 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}, {'semester': 'Year 2 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 33595}, {'semester': 'Year 2 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}])
-    }
-  });
-  await prisma.programme.create({
-    data: {
-      name: 'Certificate in Electrical & Electronics Engineering (Telecommunication)',
-      code: 'CEEE-T',
-      level: 'Certificate',
-      duration: '2 Years',
-      minGradeRequirement: JSON.stringify({'meanGrade': 'D', 'subjects': {}}),
-      intakeCapacity: 100,
-      intakePeriod: 'September 2026',
-      isActive: true,
-      feesStructure: JSON.stringify([{'semester': 'Year 1 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 37895}, {'semester': 'Year 1 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}, {'semester': 'Year 2 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 33595}, {'semester': 'Year 2 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}])
-    }
-  });
-  await prisma.programme.create({
-    data: {
-      name: 'Artisan Certificate in Electrical Installation & Wiring',
-      code: 'AEIW',
-      level: 'Artisan',
-      duration: '1 Year',
-      minGradeRequirement: JSON.stringify({'meanGrade': 'Open', 'subjects': {}}),
-      intakeCapacity: 100,
-      intakePeriod: 'September 2026',
-      isActive: true,
-      feesStructure: JSON.stringify([{'semester': 'Year 1 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 37895}, {'semester': 'Year 1 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}])
-    }
-  });
-  await prisma.programme.create({
-    data: {
-      name: 'Certificate in Solar PV Technology',
-      code: 'CSPV',
+      minGradeRequirement: JSON.stringify({
+        meanGrade: 'Open / Practicing Teacher',
+        subjects: {},
+      }),
+      feesStructure: JSON.stringify([
+        { semester: 'Module 1: CBC Rubrics & Formative Assessment', tuition: 8000, boarding: 0, activity: 1000, total: 9000 },
+        { semester: 'Module 2: Educational Digital Tools & Interactive Media', tuition: 8000, boarding: 0, activity: 1000, total: 9000 },
+      ]),
+    },
+    {
+      name: 'Certificate in Educational Leadership, Management & School Governance',
+      code: 'CELM',
       level: 'Short Course',
-      duration: '3 Months',
-      minGradeRequirement: JSON.stringify({'meanGrade': 'Open', 'subjects': {}}),
-      intakeCapacity: 100,
-      intakePeriod: 'September 2026',
+      duration: '6 Months (School Holidays)',
+      intakeCapacity: 80,
+      intakePeriod: 'April & August Holidays',
       isActive: true,
-      feesStructure: JSON.stringify([{'semester': 'Term 1', 'tuition': 4600, 'boarding': 0, 'activity': 0, 'total': 5400}])
-    }
-  });
-  await prisma.programme.create({
-    data: {
-      name: 'Certificate in Motor Rewinding',
-      code: 'CMR',
+      minGradeRequirement: JSON.stringify({
+        meanGrade: 'Certificate/Diploma/Degree in Education',
+        subjects: {},
+      }),
+      feesStructure: JSON.stringify([
+        { semester: 'Term 1: Strategic Planning & Financial Governance', tuition: 12000, boarding: 5000, activity: 1000, total: 18000 },
+        { semester: 'Term 2: Staff Appraisal (TPAD) & CBC Leadership', tuition: 12000, boarding: 5000, activity: 1000, total: 18000 },
+      ]),
+    },
+    {
+      name: 'Certificate in Guidance, Counseling & Child Protection in Schools',
+      code: 'CGCP',
       level: 'Short Course',
-      duration: '3 Months',
-      minGradeRequirement: JSON.stringify({'meanGrade': 'Open', 'subjects': {}}),
-      intakeCapacity: 100,
-      intakePeriod: 'September 2026',
+      duration: '6 Months',
+      intakeCapacity: 80,
+      intakePeriod: 'April & August Holidays',
       isActive: true,
-      feesStructure: JSON.stringify([{'semester': 'Term 1', 'tuition': 4600, 'boarding': 0, 'activity': 0, 'total': 5400}])
-    }
-  });
-  await prisma.programme.create({
-    data: {
-      name: 'Diploma in Supply Chain Management',
-      code: 'DSCM',
-      level: 'Diploma',
-      duration: '3 Years',
-      minGradeRequirement: JSON.stringify({'meanGrade': 'C-', 'subjects': {}}),
-      intakeCapacity: 100,
-      intakePeriod: 'September 2026',
-      isActive: true,
-      feesStructure: JSON.stringify([{'semester': 'Year 1 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 37895}, {'semester': 'Year 1 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}, {'semester': 'Year 2 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 33595}, {'semester': 'Year 2 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}, {'semester': 'Year 3 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 33595}, {'semester': 'Year 3 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}])
-    }
-  });
-  await prisma.programme.create({
-    data: {
-      name: 'Diploma in Human Resource Management',
-      code: 'DHRM',
-      level: 'Diploma',
-      duration: '3 Years',
-      minGradeRequirement: JSON.stringify({'meanGrade': 'C-', 'subjects': {}}),
-      intakeCapacity: 100,
-      intakePeriod: 'September 2026',
-      isActive: true,
-      feesStructure: JSON.stringify([{'semester': 'Year 1 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 37895}, {'semester': 'Year 1 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}, {'semester': 'Year 2 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 33595}, {'semester': 'Year 2 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}, {'semester': 'Year 3 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 33595}, {'semester': 'Year 3 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}])
-    }
-  });
-  await prisma.programme.create({
-    data: {
-      name: 'Diploma in Cooperative Management',
-      code: 'DCOM',
-      level: 'Diploma',
-      duration: '3 Years',
-      minGradeRequirement: JSON.stringify({'meanGrade': 'C-', 'subjects': {}}),
-      intakeCapacity: 100,
-      intakePeriod: 'September 2026',
-      isActive: true,
-      feesStructure: JSON.stringify([{'semester': 'Year 1 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 37895}, {'semester': 'Year 1 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}, {'semester': 'Year 2 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 33595}, {'semester': 'Year 2 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}, {'semester': 'Year 3 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 33595}, {'semester': 'Year 3 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}])
-    }
-  });
-  await prisma.programme.create({
-    data: {
-      name: 'Diploma in Tax Administration',
-      code: 'DTA',
-      level: 'Diploma',
-      duration: '3 Years',
-      minGradeRequirement: JSON.stringify({'meanGrade': 'C-', 'subjects': {}}),
-      intakeCapacity: 100,
-      intakePeriod: 'September 2026',
-      isActive: true,
-      feesStructure: JSON.stringify([{'semester': 'Year 1 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 37895}, {'semester': 'Year 1 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}, {'semester': 'Year 2 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 33595}, {'semester': 'Year 2 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}, {'semester': 'Year 3 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 33595}, {'semester': 'Year 3 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}])
-    }
-  });
-  await prisma.programme.create({
-    data: {
-      name: 'Diploma in Business Management',
-      code: 'DBM',
-      level: 'Diploma',
-      duration: '3 Years',
-      minGradeRequirement: JSON.stringify({'meanGrade': 'C-', 'subjects': {}}),
-      intakeCapacity: 100,
-      intakePeriod: 'September 2026',
-      isActive: true,
-      feesStructure: JSON.stringify([{'semester': 'Year 1 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 37895}, {'semester': 'Year 1 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}, {'semester': 'Year 2 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 33595}, {'semester': 'Year 2 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}, {'semester': 'Year 3 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 33595}, {'semester': 'Year 3 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}])
-    }
-  });
-  await prisma.programme.create({
-    data: {
-      name: 'Diploma in Secretarial Studies (Office Administration)',
-      code: 'DSS',
-      level: 'Diploma',
-      duration: '3 Years',
-      minGradeRequirement: JSON.stringify({'meanGrade': 'C-', 'subjects': {}}),
-      intakeCapacity: 100,
-      intakePeriod: 'September 2026',
-      isActive: true,
-      feesStructure: JSON.stringify([{'semester': 'Year 1 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 37895}, {'semester': 'Year 1 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}, {'semester': 'Year 2 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 33595}, {'semester': 'Year 2 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}, {'semester': 'Year 3 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 33595}, {'semester': 'Year 3 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}])
-    }
-  });
-  await prisma.programme.create({
-    data: {
-      name: 'Diploma in Fleet Management',
-      code: 'DFM',
-      level: 'Diploma',
-      duration: '3 Years',
-      minGradeRequirement: JSON.stringify({'meanGrade': 'C-', 'subjects': {}}),
-      intakeCapacity: 100,
-      intakePeriod: 'September 2026',
-      isActive: true,
-      feesStructure: JSON.stringify([{'semester': 'Year 1 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 37895}, {'semester': 'Year 1 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}, {'semester': 'Year 2 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 33595}, {'semester': 'Year 2 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}, {'semester': 'Year 3 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 33595}, {'semester': 'Year 3 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}])
-    }
-  });
-  await prisma.programme.create({
-    data: {
-      name: 'Diploma in Accounting',
-      code: 'DACC',
-      level: 'Diploma',
-      duration: '3 Years',
-      minGradeRequirement: JSON.stringify({'meanGrade': 'C-', 'subjects': {}}),
-      intakeCapacity: 100,
-      intakePeriod: 'September 2026',
-      isActive: true,
-      feesStructure: JSON.stringify([{'semester': 'Year 1 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 37895}, {'semester': 'Year 1 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}, {'semester': 'Year 2 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 33595}, {'semester': 'Year 2 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}, {'semester': 'Year 3 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 33595}, {'semester': 'Year 3 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}])
-    }
-  });
-  await prisma.programme.create({
-    data: {
-      name: 'Diploma in Accounting and Finance',
-      code: 'DACF',
-      level: 'Diploma',
-      duration: '3 Years',
-      minGradeRequirement: JSON.stringify({'meanGrade': 'C-', 'subjects': {}}),
-      intakeCapacity: 100,
-      intakePeriod: 'September 2026',
-      isActive: true,
-      feesStructure: JSON.stringify([{'semester': 'Year 1 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 37895}, {'semester': 'Year 1 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}, {'semester': 'Year 2 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 33595}, {'semester': 'Year 2 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}, {'semester': 'Year 3 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 33595}, {'semester': 'Year 3 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}])
-    }
-  });
-  await prisma.programme.create({
-    data: {
-      name: 'Certificate in Supply Chain Management',
-      code: 'CSCM',
-      level: 'Certificate',
-      duration: '2 Years',
-      minGradeRequirement: JSON.stringify({'meanGrade': 'D Plain', 'subjects': {}}),
-      intakeCapacity: 100,
-      intakePeriod: 'September 2026',
-      isActive: true,
-      feesStructure: JSON.stringify([{'semester': 'Year 1 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 37895}, {'semester': 'Year 1 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}, {'semester': 'Year 2 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 33595}, {'semester': 'Year 2 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}])
-    }
-  });
-  await prisma.programme.create({
-    data: {
-      name: 'Certificate in Human Resource Management',
-      code: 'CHRM',
-      level: 'Certificate',
-      duration: '2 Years',
-      minGradeRequirement: JSON.stringify({'meanGrade': 'D Plain', 'subjects': {}}),
-      intakeCapacity: 100,
-      intakePeriod: 'September 2026',
-      isActive: true,
-      feesStructure: JSON.stringify([{'semester': 'Year 1 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 37895}, {'semester': 'Year 1 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}, {'semester': 'Year 2 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 33595}, {'semester': 'Year 2 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}])
-    }
-  });
-  await prisma.programme.create({
-    data: {
-      name: 'Certificate in Cooperative Management',
-      code: 'CCOM',
-      level: 'Certificate',
-      duration: '2 Years',
-      minGradeRequirement: JSON.stringify({'meanGrade': 'D Plain', 'subjects': {}}),
-      intakeCapacity: 100,
-      intakePeriod: 'September 2026',
-      isActive: true,
-      feesStructure: JSON.stringify([{'semester': 'Year 1 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 37895}, {'semester': 'Year 1 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}, {'semester': 'Year 2 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 33595}, {'semester': 'Year 2 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}])
-    }
-  });
-  await prisma.programme.create({
-    data: {
-      name: 'Certificate in Business Management',
-      code: 'CBM',
-      level: 'Certificate',
-      duration: '2 Years',
-      minGradeRequirement: JSON.stringify({'meanGrade': 'D Plain', 'subjects': {}}),
-      intakeCapacity: 100,
-      intakePeriod: 'September 2026',
-      isActive: true,
-      feesStructure: JSON.stringify([{'semester': 'Year 1 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 37895}, {'semester': 'Year 1 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}, {'semester': 'Year 2 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 33595}, {'semester': 'Year 2 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}])
-    }
-  });
-  await prisma.programme.create({
-    data: {
-      name: 'Certificate in Secretarial Studies (Office Administration)',
-      code: 'CSS',
-      level: 'Certificate',
-      duration: '2 Years',
-      minGradeRequirement: JSON.stringify({'meanGrade': 'D Plain', 'subjects': {}}),
-      intakeCapacity: 100,
-      intakePeriod: 'September 2026',
-      isActive: true,
-      feesStructure: JSON.stringify([{'semester': 'Year 1 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 37895}, {'semester': 'Year 1 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}, {'semester': 'Year 2 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 33595}, {'semester': 'Year 2 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}])
-    }
-  });
-  await prisma.programme.create({
-    data: {
-      name: 'Certificate in Tax Administration',
-      code: 'CTA',
-      level: 'Certificate',
-      duration: '2 Years',
-      minGradeRequirement: JSON.stringify({'meanGrade': 'D Plain', 'subjects': {}}),
-      intakeCapacity: 100,
-      intakePeriod: 'September 2026',
-      isActive: true,
-      feesStructure: JSON.stringify([{'semester': 'Year 1 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 37895}, {'semester': 'Year 1 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}, {'semester': 'Year 2 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 33595}, {'semester': 'Year 2 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}])
-    }
-  });
-  await prisma.programme.create({
-    data: {
-      name: 'Certificate in Accounting',
-      code: 'CACC',
-      level: 'Certificate',
-      duration: '2 Years',
-      minGradeRequirement: JSON.stringify({'meanGrade': 'D Plain', 'subjects': {}}),
-      intakeCapacity: 100,
-      intakePeriod: 'September 2026',
-      isActive: true,
-      feesStructure: JSON.stringify([{'semester': 'Year 1 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 37895}, {'semester': 'Year 1 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}, {'semester': 'Year 2 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 33595}, {'semester': 'Year 2 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}])
-    }
-  });
-  await prisma.programme.create({
-    data: {
-      name: 'Certificate in Fleet Management',
-      code: 'CFM',
-      level: 'Certificate',
-      duration: '2 Years',
-      minGradeRequirement: JSON.stringify({'meanGrade': 'D Plain', 'subjects': {}}),
-      intakeCapacity: 100,
-      intakePeriod: 'September 2026',
-      isActive: true,
-      feesStructure: JSON.stringify([{'semester': 'Year 1 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 37895}, {'semester': 'Year 1 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}, {'semester': 'Year 2 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 33595}, {'semester': 'Year 2 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}])
-    }
-  });
-  await prisma.programme.create({
-    data: {
-      name: 'Diploma in Health Records with IT',
-      code: 'DHR-IT',
-      level: 'Diploma',
-      duration: '3 Years',
-      minGradeRequirement: JSON.stringify({'meanGrade': 'C Plain', 'subjects': {'english': 'C', 'biology': 'C-', 'mathematics': 'C-'}}),
-      intakeCapacity: 100,
-      intakePeriod: 'September 2026',
-      isActive: true,
-      feesStructure: JSON.stringify([{'semester': 'Year 1 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 37895}, {'semester': 'Year 1 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}, {'semester': 'Year 2 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 33595}, {'semester': 'Year 2 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}, {'semester': 'Year 3 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 33595}, {'semester': 'Year 3 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}])
-    }
-  });
-  await prisma.programme.create({
-    data: {
-      name: 'Certificate in Health Records and IT',
-      code: 'CHR-IT',
-      level: 'Certificate',
-      duration: '2 Years',
-      minGradeRequirement: JSON.stringify({'meanGrade': 'C-', 'subjects': {'english': 'C-', 'biology': 'D+', 'mathematics': 'D+'}}),
-      intakeCapacity: 100,
-      intakePeriod: 'September 2026',
-      isActive: true,
-      feesStructure: JSON.stringify([{'semester': 'Year 1 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 37895}, {'semester': 'Year 1 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}, {'semester': 'Year 2 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 33595}, {'semester': 'Year 2 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}])
-    }
-  });
-  await prisma.programme.create({
-    data: {
-      name: 'Diploma in Community Health',
-      code: 'DCH',
-      level: 'Diploma',
-      duration: '2 Years',
-      minGradeRequirement: JSON.stringify({'meanGrade': 'C-', 'subjects': {}}),
-      intakeCapacity: 100,
-      intakePeriod: 'September 2026',
-      isActive: true,
-      feesStructure: JSON.stringify([{'semester': 'Year 1 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 37895}, {'semester': 'Year 1 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}, {'semester': 'Year 2 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 33595}, {'semester': 'Year 2 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}])
-    }
-  });
-  await prisma.programme.create({
-    data: {
-      name: 'Diploma in Automotive Engineering',
-      code: 'DAE',
-      level: 'Diploma',
-      duration: '3 Years',
-      minGradeRequirement: JSON.stringify({'meanGrade': 'C-', 'subjects': {}}),
-      intakeCapacity: 100,
-      intakePeriod: 'September 2026',
-      isActive: true,
-      feesStructure: JSON.stringify([{'semester': 'Year 1 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 37895}, {'semester': 'Year 1 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}, {'semester': 'Year 2 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 33595}, {'semester': 'Year 2 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}, {'semester': 'Year 3 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 33595}, {'semester': 'Year 3 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}])
-    }
-  });
-  await prisma.programme.create({
-    data: {
-      name: 'Certificate in Automotive Engineering',
-      code: 'CAE',
-      level: 'Certificate',
-      duration: '2 Years',
-      minGradeRequirement: JSON.stringify({'meanGrade': 'D Plain', 'subjects': {}}),
-      intakeCapacity: 100,
-      intakePeriod: 'September 2026',
-      isActive: true,
-      feesStructure: JSON.stringify([{'semester': 'Year 1 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 37895}, {'semester': 'Year 1 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}, {'semester': 'Year 2 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 33595}, {'semester': 'Year 2 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}])
-    }
-  });
-  await prisma.programme.create({
-    data: {
-      name: 'Certificate in Welding and Fabrication',
-      code: 'CWF',
-      level: 'Certificate',
-      duration: '2 Years',
-      minGradeRequirement: JSON.stringify({'meanGrade': 'D Plain', 'subjects': {}}),
-      intakeCapacity: 100,
-      intakePeriod: 'September 2026',
-      isActive: true,
-      feesStructure: JSON.stringify([{'semester': 'Year 1 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 37895}, {'semester': 'Year 1 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}, {'semester': 'Year 2 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 33595}, {'semester': 'Year 2 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}])
-    }
-  });
-  await prisma.programme.create({
-    data: {
-      name: 'Artisan in Welding and Fabrication',
-      code: 'AWF',
-      level: 'Artisan',
-      duration: '1 Year',
-      minGradeRequirement: JSON.stringify({'meanGrade': 'Open', 'subjects': {}}),
-      intakeCapacity: 100,
-      intakePeriod: 'September 2026',
-      isActive: true,
-      feesStructure: JSON.stringify([{'semester': 'Year 1 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 37895}, {'semester': 'Year 1 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}])
-    }
-  });
-  await prisma.programme.create({
-    data: {
-      name: 'Diploma in Fashion Design & Clothing Technology',
-      code: 'DFD',
-      level: 'Diploma',
-      duration: '3 Years',
-      minGradeRequirement: JSON.stringify({'meanGrade': 'C-', 'subjects': {}}),
-      intakeCapacity: 100,
-      intakePeriod: 'September 2026',
-      isActive: true,
-      feesStructure: JSON.stringify([{'semester': 'Year 1 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 37895}, {'semester': 'Year 1 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}, {'semester': 'Year 2 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 33595}, {'semester': 'Year 2 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}, {'semester': 'Year 3 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 33595}, {'semester': 'Year 3 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}])
-    }
-  });
-  await prisma.programme.create({
-    data: {
-      name: 'Certificate in Fashion Design & Clothing Technology',
-      code: 'CFD',
-      level: 'Certificate',
-      duration: '2 Years',
-      minGradeRequirement: JSON.stringify({'meanGrade': 'D', 'subjects': {}}),
-      intakeCapacity: 100,
-      intakePeriod: 'September 2026',
-      isActive: true,
-      feesStructure: JSON.stringify([{'semester': 'Year 1 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 37895}, {'semester': 'Year 1 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}, {'semester': 'Year 2 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 33595}, {'semester': 'Year 2 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}])
-    }
-  });
-  await prisma.programme.create({
-    data: {
-      name: 'Artisan in Fashion Design & Clothing Technology',
-      code: 'AFD',
-      level: 'Artisan',
-      duration: '1 Year',
-      minGradeRequirement: JSON.stringify({'meanGrade': 'Open', 'subjects': {}}),
-      intakeCapacity: 100,
-      intakePeriod: 'September 2026',
-      isActive: true,
-      feesStructure: JSON.stringify([{'semester': 'Year 1 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 37895}, {'semester': 'Year 1 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}])
-    }
-  });
-  await prisma.programme.create({
-    data: {
-      name: 'Certificate in Cosmetology (Hair Dressing & Beauty)',
-      code: 'CCP',
-      level: 'Certificate',
-      duration: '2 Years',
-      minGradeRequirement: JSON.stringify({'meanGrade': 'D Plain', 'subjects': {}}),
-      intakeCapacity: 100,
-      intakePeriod: 'September 2026',
-      isActive: true,
-      feesStructure: JSON.stringify([{'semester': 'Year 1 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 37895}, {'semester': 'Year 1 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}, {'semester': 'Year 2 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 33595}, {'semester': 'Year 2 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}])
-    }
-  });
-  await prisma.programme.create({
-    data: {
-      name: 'Artisan in Cosmetology (Hair Dressing & Beauty)',
-      code: 'ACP',
-      level: 'Artisan',
-      duration: '1 Year',
-      minGradeRequirement: JSON.stringify({'meanGrade': 'Open', 'subjects': {}}),
-      intakeCapacity: 100,
-      intakePeriod: 'September 2026',
-      isActive: true,
-      feesStructure: JSON.stringify([{'semester': 'Year 1 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 37895}, {'semester': 'Year 1 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}])
-    }
-  });
-  await prisma.programme.create({
-    data: {
-      name: 'Diploma in Building Technology',
-      code: 'DBT',
-      level: 'Diploma',
-      duration: '3 Years',
-      minGradeRequirement: JSON.stringify({'meanGrade': 'C-', 'subjects': {}}),
-      intakeCapacity: 100,
-      intakePeriod: 'September 2026',
-      isActive: true,
-      feesStructure: JSON.stringify([{'semester': 'Year 1 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 37895}, {'semester': 'Year 1 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}, {'semester': 'Year 2 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 33595}, {'semester': 'Year 2 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}, {'semester': 'Year 3 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 33595}, {'semester': 'Year 3 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}])
-    }
-  });
-  await prisma.programme.create({
-    data: {
-      name: 'Certificate in Building Technology',
-      code: 'CBT',
-      level: 'Certificate',
-      duration: '2 Years',
-      minGradeRequirement: JSON.stringify({'meanGrade': 'D', 'subjects': {}}),
-      intakeCapacity: 100,
-      intakePeriod: 'September 2026',
-      isActive: true,
-      feesStructure: JSON.stringify([{'semester': 'Year 1 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 37895}, {'semester': 'Year 1 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}, {'semester': 'Year 2 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 33595}, {'semester': 'Year 2 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}])
-    }
-  });
-  await prisma.programme.create({
-    data: {
-      name: 'Certificate in Wood Technology',
-      code: 'CWT',
-      level: 'Certificate',
-      duration: '2 Years',
-      minGradeRequirement: JSON.stringify({'meanGrade': 'D', 'subjects': {}}),
-      intakeCapacity: 100,
-      intakePeriod: 'September 2026',
-      isActive: true,
-      feesStructure: JSON.stringify([{'semester': 'Year 1 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 37895}, {'semester': 'Year 1 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}, {'semester': 'Year 2 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 33595}, {'semester': 'Year 2 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}])
-    }
-  });
-  await prisma.programme.create({
-    data: {
-      name: 'Certificate in Plumbing',
-      code: 'CPL',
-      level: 'Certificate',
-      duration: '2 Years',
-      minGradeRequirement: JSON.stringify({'meanGrade': 'D', 'subjects': {}}),
-      intakeCapacity: 100,
-      intakePeriod: 'September 2026',
-      isActive: true,
-      feesStructure: JSON.stringify([{'semester': 'Year 1 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 37895}, {'semester': 'Year 1 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}, {'semester': 'Year 2 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 33595}, {'semester': 'Year 2 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}])
-    }
-  });
-  await prisma.programme.create({
-    data: {
-      name: 'Artisan in Plumbing',
-      code: 'APL',
-      level: 'Artisan',
-      duration: '1 Year',
-      minGradeRequirement: JSON.stringify({'meanGrade': 'Open', 'subjects': {}}),
-      intakeCapacity: 100,
-      intakePeriod: 'September 2026',
-      isActive: true,
-      feesStructure: JSON.stringify([{'semester': 'Year 1 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 37895}, {'semester': 'Year 1 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}])
-    }
-  });
-  await prisma.programme.create({
-    data: {
-      name: 'Artisan in Masonry',
-      code: 'AMA',
-      level: 'Artisan',
-      duration: '1 Year',
-      minGradeRequirement: JSON.stringify({'meanGrade': 'Open', 'subjects': {}}),
-      intakeCapacity: 100,
-      intakePeriod: 'September 2026',
-      isActive: true,
-      feesStructure: JSON.stringify([{'semester': 'Year 1 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 37895}, {'semester': 'Year 1 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}])
-    }
-  });
-  await prisma.programme.create({
-    data: {
-      name: 'Diploma in Social Work and Community Development',
-      code: 'DSW',
-      level: 'Diploma',
-      duration: '3 Years',
-      minGradeRequirement: JSON.stringify({'meanGrade': 'C-', 'subjects': {}}),
-      intakeCapacity: 100,
-      intakePeriod: 'September 2026',
-      isActive: true,
-      feesStructure: JSON.stringify([{'semester': 'Year 1 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 37895}, {'semester': 'Year 1 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}, {'semester': 'Year 2 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 33595}, {'semester': 'Year 2 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}, {'semester': 'Year 3 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 33595}, {'semester': 'Year 3 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}])
-    }
-  });
-  await prisma.programme.create({
-    data: {
-      name: 'Diploma in Community Development and Counselling',
-      code: 'DCD',
-      level: 'Diploma',
-      duration: '3 Years',
-      minGradeRequirement: JSON.stringify({'meanGrade': 'C-', 'subjects': {}}),
-      intakeCapacity: 100,
-      intakePeriod: 'September 2026',
-      isActive: true,
-      feesStructure: JSON.stringify([{'semester': 'Year 1 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 37895}, {'semester': 'Year 1 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}, {'semester': 'Year 2 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 33595}, {'semester': 'Year 2 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}, {'semester': 'Year 3 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 33595}, {'semester': 'Year 3 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}])
-    }
-  });
-  await prisma.programme.create({
-    data: {
-      name: 'Certificate in Social Work and Community Development',
-      code: 'CSW',
-      level: 'Certificate',
-      duration: '2 Years',
-      minGradeRequirement: JSON.stringify({'meanGrade': 'D Plain', 'subjects': {}}),
-      intakeCapacity: 100,
-      intakePeriod: 'September 2026',
-      isActive: true,
-      feesStructure: JSON.stringify([{'semester': 'Year 1 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 37895}, {'semester': 'Year 1 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}, {'semester': 'Year 2 Term 1', 'tuition': 33595, 'boarding': 0, 'activity': 0, 'total': 33595}, {'semester': 'Year 2 Term 2', 'tuition': 33594, 'boarding': 0, 'activity': 0, 'total': 33594}])
-    }
-  });
+      minGradeRequirement: JSON.stringify({
+        meanGrade: 'D+',
+        subjects: {},
+      }),
+      feesStructure: JSON.stringify([
+        { semester: 'Term 1: Adolescent Psychology & Crisis Counseling', tuition: 11000, boarding: 5000, activity: 1000, total: 17000 },
+        { semester: 'Term 2: Child Rights, Safety & Case Management', tuition: 11000, boarding: 5000, activity: 1000, total: 17000 },
+      ]),
+    },
+  ];
+
+  for (const prog of programmesData) {
+    await prisma.programme.create({ data: prog });
+  }
 
   // Fetch some seeded courses for applicant assignments
   const allProgs = await prisma.programme.findMany();
-  const dictProg = allProgs.find(p => p.code === 'DICT')!;
-  const citProg = allProgs.find(p => p.code === 'CIT')!;
-  const dcsProg = allProgs.find(p => p.code === 'DCS')!;
+  const dpteProg = allProgs.find((p) => p.code === 'DPTE')!;
+  const decteProg = allProgs.find((p) => p.code === 'DECTE')!;
+  const dsteProg = allProgs.find((p) => p.code === 'DSTE')!;
 
   console.log('Seeding users...');
   const salt = bcrypt.genSaltSync(10);
@@ -776,23 +252,23 @@ async function main() {
   const superAdmin = await prisma.user.create({
     data: {
       fullName: 'Super Admin',
-      email: 'superadmin@borabutti.ac.ke',
+      email: 'superadmin@borabuttc.ac.ke',
       phone: '+254711223344',
       passwordHash: adminPasswordHash,
       role: 'super_admin',
-      isVerified: true
-    }
+      isVerified: true,
+    },
   });
 
   const officer = await prisma.user.create({
     data: {
       fullName: 'Nancy Kemunto (Admissions Registrar)',
-      email: 'officer@borabutti.ac.ke',
+      email: 'officer@borabuttc.ac.ke',
       phone: '+254722334455',
       passwordHash: officerPasswordHash,
       role: 'admissions_officer',
-      isVerified: true
-    }
+      isVerified: true,
+    },
   });
 
   const applicant1 = await prisma.user.create({
@@ -806,49 +282,49 @@ async function main() {
       mailingAddress: 'P.O. Box 45, Nyansiongo',
       kinName: 'Peter Omwamba',
       kinPhone: '+254799887766',
-      kinRelation: 'Father'
-    }
+      kinRelation: 'Father',
+    },
   });
 
   const applicant2 = await prisma.user.create({
     data: {
-      fullName: 'John Doe',
-      email: 'john.doe@gmail.com',
+      fullName: 'John Momanyi',
+      email: 'john.momanyi@gmail.com',
       phone: '+254744556677',
       passwordHash: studentPasswordHash,
       role: 'applicant',
       isVerified: true,
       mailingAddress: 'P.O. Box 92, Keroka',
-      kinName: 'Mary Doe',
+      kinName: 'Mary Momanyi',
       kinPhone: '+254788776655',
-      kinRelation: 'Mother'
-    }
+      kinRelation: 'Mother',
+    },
   });
 
   const applicant3 = await prisma.user.create({
     data: {
-      fullName: 'Jane Smith',
-      email: 'jane.smith@gmail.com',
+      fullName: 'Jane Moraa',
+      email: 'jane.moraa@gmail.com',
       phone: '+254755667788',
       passwordHash: studentPasswordHash,
       role: 'applicant',
       isVerified: true,
       mailingAddress: 'P.O. Box 12, Chepilat',
-      kinName: 'Samuel Smith',
+      kinName: 'Samuel Moraa',
       kinPhone: '+254777665544',
-      kinRelation: 'Guardian'
-    }
+      kinRelation: 'Guardian',
+    },
   });
 
   console.log('Seeding applications...');
-  // 1. Draft application for Kevin -> DICT
+  // 1. Draft application for Kevin -> DPTE
   await prisma.application.create({
     data: {
       userId: applicant1.id,
-      programmeId: dictProg.id,
+      programmeId: dpteProg.id,
       status: 'draft',
       personalDetails: JSON.stringify({
-        dob: '2005-05-15',
+        dob: '2004-05-15',
         gender: 'Male',
         idNumber: '40123456',
         county: 'Nyamira',
@@ -856,7 +332,7 @@ async function main() {
         address: 'P.O. Box 45, Nyansiongo',
         nextOfKinName: 'Peter Omwamba',
         nextOfKinPhone: '+254799887766',
-        nextOfKinRelation: 'Father'
+        nextOfKinRelation: 'Father',
       }),
       kcseIndexNo: '40732101001',
       kcseYear: 2024,
@@ -868,14 +344,14 @@ async function main() {
         biology: 'C-',
         history: 'B',
       }),
-    }
+    },
   });
 
-  // 2. Submitted application for John -> CIT (Eligibility Passed)
+  // 2. Submitted application for John -> DECTE (Eligibility Passed)
   const appJohn = await prisma.application.create({
     data: {
       userId: applicant2.id,
-      programmeId: citProg.id,
+      programmeId: decteProg.id,
       status: 'submitted',
       personalDetails: JSON.stringify({
         dob: '2004-10-20',
@@ -884,45 +360,47 @@ async function main() {
         county: 'Kisii',
         subCounty: 'Masaba South',
         address: 'P.O. Box 92, Keroka',
-        nextOfKinName: 'Mary Doe',
+        nextOfKinName: 'Mary Momanyi',
         nextOfKinPhone: '+254788776655',
-        nextOfKinRelation: 'Mother'
+        nextOfKinRelation: 'Mother',
       }),
       kcseIndexNo: '40711202005',
       kcseYear: 2023,
-      kcseMeanGrade: 'C-',
+      kcseMeanGrade: 'C',
       subjectGrades: JSON.stringify({
-        english: 'C-',
-        kiswahili: 'C',
+        english: 'C',
+        kiswahili: 'C+',
         mathematics: 'D+',
-        physics: 'D',
-        geography: 'C+',
+        biology: 'C',
+        cre: 'B',
       }),
       eligibilityResult: JSON.stringify({
         eligible: true,
-        programme: 'CIT',
+        programme: 'DECTE',
         checks: [
-          { rule: 'Minimum KCSE Mean Grade of D', passed: true, detail: 'Applicant Mean Grade is C-' }
+          { rule: 'Minimum KCSE Mean Grade of C (Plain)', passed: true, detail: 'Applicant Mean Grade is C' },
+          { rule: 'English grade C or above', passed: true, detail: 'Grade C' },
+          { rule: 'Mathematics grade D+ or above', passed: true, detail: 'Grade D+' },
         ],
-        message: 'You provisionally meet the minimum entry requirements. Final admission is subject to verification of your certificates.'
+        message: 'You provisionally meet the minimum entry requirements for Diploma in Early Childhood Teacher Education (DECTE). Final admission is subject to verification of your certificates.',
       }),
       submittedAt: new Date(),
-    }
+    },
   });
 
   await prisma.document.createMany({
     data: [
       { applicationId: appJohn.id, type: 'id_copy', fileName: 'national_id.pdf', fileUrl: '/uploads/mock_id.pdf', verified: false },
       { applicationId: appJohn.id, type: 'kcse_cert', fileName: 'kcse_slip.pdf', fileUrl: '/uploads/mock_kcse.pdf', verified: false },
-      { applicationId: appJohn.id, type: 'photo', fileName: 'passport_photo.png', fileUrl: '/uploads/mock_photo.png', verified: false }
-    ]
+      { applicationId: appJohn.id, type: 'photo', fileName: 'passport_photo.png', fileUrl: '/uploads/mock_photo.png', verified: false },
+    ],
   });
 
-  // 3. Admitted application for Jane -> DCS (Admission Letter Issued)
+  // 3. Admitted application for Jane -> DPTE (Admission Letter Issued)
   const appJane = await prisma.application.create({
     data: {
       userId: applicant3.id,
-      programmeId: dcsProg.id,
+      programmeId: dpteProg.id,
       status: 'letter_issued',
       personalDetails: JSON.stringify({
         dob: '2005-02-12',
@@ -931,9 +409,9 @@ async function main() {
         county: 'Nyamira',
         subCounty: 'Borabu',
         address: 'P.O. Box 12, Chepilat',
-        nextOfKinName: 'Samuel Smith',
+        nextOfKinName: 'Samuel Moraa',
         nextOfKinPhone: '+254777665544',
-        nextOfKinRelation: 'Guardian'
+        nextOfKinRelation: 'Guardian',
       }),
       kcseIndexNo: '40732101015',
       kcseYear: 2024,
@@ -947,28 +425,31 @@ async function main() {
       }),
       eligibilityResult: JSON.stringify({
         eligible: true,
-        programme: 'DCS',
+        programme: 'DPTE',
         checks: [
-          { rule: 'Minimum KCSE Mean Grade of C-', passed: true, detail: 'Applicant Mean Grade is C+' }
+          { rule: 'Minimum KCSE Mean Grade of C (Plain)', passed: true, detail: 'Applicant Mean Grade is C+' },
+          { rule: 'English grade C or above', passed: true, detail: 'Grade B-' },
+          { rule: 'Kiswahili grade C or above', passed: true, detail: 'Grade C+' },
+          { rule: 'Mathematics grade C or above', passed: true, detail: 'Grade C' },
         ],
-        message: 'You provisionally meet the minimum entry requirements. Final admission is subject to verification of your certificates.'
+        message: 'You provisionally meet the minimum entry requirements. Final admission is subject to verification of your certificates.',
       }),
-      submittedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), // 3 days ago
+      submittedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
       reviewedById: officer.id,
-      reviewedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), // 2 days ago
-      reviewNotes: 'Academic credentials verified. Approved for immediate admission.',
-    }
+      reviewedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
+      reviewNotes: 'Academic credentials verified. Approved for Diploma in Primary Teacher Education (DPTE) admission.',
+    },
   });
 
   await prisma.document.createMany({
     data: [
       { applicationId: appJane.id, type: 'id_copy', fileName: 'jane_id.pdf', fileUrl: '/uploads/mock_id.pdf', verified: true },
       { applicationId: appJane.id, type: 'kcse_cert', fileName: 'jane_kcse.pdf', fileUrl: '/uploads/mock_kcse.pdf', verified: true },
-      { applicationId: appJane.id, type: 'photo', fileName: 'jane_photo.png', fileUrl: '/uploads/mock_photo.png', verified: true }
-    ]
+      { applicationId: appJane.id, type: 'photo', fileName: 'jane_photo.png', fileUrl: '/uploads/mock_photo.png', verified: true },
+    ],
   });
 
-  const serial = 'BORABU/2026/DCS/00001';
+  const serial = 'BTTC/2026/DPTE/00001';
   await prisma.admissionLetter.create({
     data: {
       applicationId: appJane.id,
@@ -976,18 +457,18 @@ async function main() {
       pdfUrl: `/api/letters/download/${serial}`,
       reportingDate: '2026-09-07',
       generatedById: officer.id,
-      issuedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000)
-    }
+      issuedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
+    },
   });
 
   await prisma.notification.create({
     data: {
       userId: applicant3.id,
       channel: 'email',
-      subject: 'Admission Letter Issued - Borabu BTTI',
-      message: `Dear Jane Smith, Congratulations! Your application for the Diploma in Computer Science (DCS) has been approved. Your admission letter serial number is ${serial}. You can download it from your portal dashboard.`,
-      status: 'sent'
-    }
+      subject: 'Official Admission Letter Issued - Borabu Teachers Training College',
+      message: `Dear Jane Moraa, Congratulations! Your application for the Diploma in Primary Teacher Education (DPTE) has been approved. Your admission letter serial number is ${serial}. You can download your official letter from your trainee portal.`,
+      status: 'sent',
+    },
   });
 
   await prisma.auditLog.create({
@@ -995,11 +476,11 @@ async function main() {
       actorId: officer.id,
       action: 'approve_application',
       entity: 'Application',
-      entityId: appJane.id
-    }
+      entityId: appJane.id,
+    },
   });
 
-  console.log('Seeding completed successfully!');
+  console.log('Borabu TTC Seeding completed successfully!');
 }
 
 main()
