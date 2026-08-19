@@ -3,7 +3,7 @@ import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: 'Admissions & Entry Requirements',
-  description: 'Learn about the entry qualifications, documents checklist, and student intake calendar at Borabu Technical Training Institute (BTTI).',
+  description: 'Learn about the entry qualifications, documents checklist, and student intake calendar at Borabu Teachers Training College (Borabu TTC).',
 };
 
 export default function AdmissionsPage() {
@@ -13,7 +13,7 @@ export default function AdmissionsPage() {
         <span className="section-tag">Enrollment Guide</span>
         <h1 className="section-title">Admissions & Requirements</h1>
         <p className="section-desc">
-          Everything you need to know about qualifying and applying to join Borabu Technical Training Institute (BTTI).
+          Everything you need to know about qualifying and applying to join Borabu Teachers Training College (Borabu TTC).
         </p>
       </header>
 
@@ -23,28 +23,28 @@ export default function AdmissionsPage() {
           General Entry Qualifications
         </h2>
         <p style={{ marginBottom: '20px' }}>
-          Admission to Borabu Technical Training Institute is open to all qualified applicants who meet the minimum criteria stipulated by the Ministry of Education, TVETA, and CDACC.
+          Admission to Borabu Teachers Training College is open to all qualified applicants who meet the minimum teacher-training entry criteria stipulated by the Ministry of Education and the Teachers Service Commission (TSC).
         </p>
         
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div style={{ background: 'var(--bg-card)', padding: '20px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-light)' }}>
-            <h4 style={{ color: 'var(--primary-blue)', marginBottom: '8px' }}>Diploma Programmes</h4>
-            <p style={{ fontSize: '14px', color: 'var(--text-main)' }}>
-              Requires a KCSE Mean Grade of <strong>C- (Minus)</strong> or above (except Health Records with IT which requires C Plain).
+            <h4 style={{ color: 'var(--primary-blue)', marginBottom: '8px' }}>Diploma in Primary Teacher Education (DPTE)</h4>
+            <p style={{ fontSize: '14px', color: 'var(--text-main)', lineHeight: '1.6' }}>
+              Requires a KCSE Mean Grade of <strong>C (Plain)</strong> or above. Applicants must have secured a C (Plain) in English, Kiswahili, Mathematics, and either one Science or one Humanities subject.
             </p>
           </div>
 
           <div style={{ background: 'var(--bg-card)', padding: '20px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-light)' }}>
-            <h4 style={{ color: 'var(--primary-blue)', marginBottom: '8px' }}>Certificate Programmes</h4>
-            <p style={{ fontSize: '14px', color: 'var(--text-main)' }}>
-              Requires a KCSE Mean Grade of <strong>D (Plain)</strong> or <strong>D+ (Plus)</strong> or above (except Health Records and IT which requires C-).
+            <h4 style={{ color: 'var(--primary-blue)', marginBottom: '8px' }}>Diploma in Early Childhood Teacher Education (DECTE)</h4>
+            <p style={{ fontSize: '14px', color: 'var(--text-main)', lineHeight: '1.6' }}>
+              Requires a KCSE Mean Grade of <strong>C (Plain)</strong> or above. This course equips student-teachers with advanced competencies for early-years education (Pre-Primary 1 & 2).
             </p>
           </div>
 
           <div style={{ background: 'var(--bg-card)', padding: '20px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-light)' }}>
-            <h4 style={{ color: 'var(--primary-blue)', marginBottom: '8px' }}>Artisan & Short Course Programmes</h4>
-            <p style={{ fontSize: '14px', color: 'var(--text-main)' }}>
-              <strong>Open Entry</strong> (no minimum KCSE mean grade required) for vocational skill certificates and computer application packages.
+            <h4 style={{ color: 'var(--primary-blue)', marginBottom: '8px' }}>Certificate in Early Childhood Teacher Education (CECTE)</h4>
+            <p style={{ fontSize: '14px', color: 'var(--text-main)', lineHeight: '1.6' }}>
+              Requires a KCSE Mean Grade of <strong>C- (Minus)</strong> or above. Designed for educators entering early childhood development instruction.
             </p>
           </div>
         </div>
@@ -62,7 +62,7 @@ export default function AdmissionsPage() {
         <ul style={{ display: 'flex', flexDirection: 'column', gap: '12px', listStyle: 'none' }}>
           <li style={{ display: 'flex', gap: '10px', alignItems: 'center', fontSize: '14px' }}>
             <span style={{ color: 'var(--accent-teal)' }}>✔️</span>
-            <strong>National Identity Card / Passport</strong> (Copy of front and back)
+            <strong>National Identity Card / Passport</strong> (Copy of front and back) or Birth Certificate
           </li>
           <li style={{ display: 'flex', gap: '10px', alignItems: 'center', fontSize: '14px' }}>
             <span style={{ color: 'var(--accent-teal)' }}>✔️</span>
@@ -70,7 +70,7 @@ export default function AdmissionsPage() {
           </li>
           <li style={{ display: 'flex', gap: '10px', alignItems: 'center', fontSize: '14px' }}>
             <span style={{ color: 'var(--accent-teal)' }}>✔️</span>
-            <strong>Official Birth Certificate</strong>
+            <strong>Official Leaving Certificate</strong> from secondary school
           </li>
           <li style={{ display: 'flex', gap: '10px', alignItems: 'center', fontSize: '14px' }}>
             <span style={{ color: 'var(--accent-teal)' }}>✔️</span>
@@ -88,7 +88,7 @@ export default function AdmissionsPage() {
           <div>
             <strong>⚠️ Mandatory Physical Verification Notice:</strong>
             <p style={{ fontSize: '13px', marginTop: '6px' }}>
-              Online admission letters are provisional. Upon reporting to the institute for registration, all students MUST bring their original National ID/Birth certificate, original KCSE certificate, and passport photographs. Any discrepancy between details entered online and original physical documents will lead to automatic rejection and cancellation of the admission offer.
+              Online admission letters are provisional. Upon reporting to the college for registration, all students MUST bring their original National ID/Birth certificate, original KCSE certificate, and passport photographs. Any discrepancy between details entered online and original physical documents will lead to automatic rejection and cancellation of the admission offer.
             </p>
           </div>
         </div>

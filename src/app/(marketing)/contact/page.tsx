@@ -116,7 +116,7 @@ export default function ContactPage() {
               </li>
               <li>
                 <strong>📧 General Email:</strong><br />
-                <span style={{ color: 'var(--text-light)' }}>info@borabutti.ac.ke</span>
+                <span style={{ color: 'var(--text-light)' }}>info@borabuttc.ac.ke</span>
               </li>
               <li>
                 <strong>🏫 Working Hours:</strong><br />
@@ -125,14 +125,49 @@ export default function ContactPage() {
             </ul>
           </div>
 
-          {/* Map placeholder */}
-          <div style={{ background: 'var(--primary-navy)', height: '200px', borderRadius: 'var(--radius-lg)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: 'white', textAlign: 'center', padding: '20px' }}>
-            <span style={{ fontSize: '32px', marginBottom: '8px' }}>🗺️</span>
-            <h4>Interactive Map</h4>
-            <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '12px', marginTop: '4px' }}>
-              Located off Kisii – Kericho highway, near Kebirigo Town.
-            </p>
-          </div>
+          {/* Map Section */}
+          <a 
+            href="https://www.google.com/maps/place/-0.824378,35.0268" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            style={{ 
+              display: 'block', 
+              position: 'relative', 
+              borderRadius: 'var(--radius-lg)', 
+              overflow: 'hidden', 
+              border: '1px solid var(--border-light)',
+              boxShadow: 'var(--shadow-sm)',
+              height: '220px'
+            }}
+          >
+            <img 
+              src="/images/map_location.png" 
+              alt="Borabu Teachers Training College Google Map Location" 
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+            />
+            <div style={{ 
+              position: 'absolute', 
+              bottom: 0, 
+              left: 0, 
+              right: 0, 
+              background: 'rgba(30, 41, 59, 0.85)', 
+              color: 'white', 
+              padding: '10px 15px', 
+              fontSize: '12px',
+              backdropFilter: 'blur(5px)',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center'
+            }}>
+              <div>
+                <strong style={{ display: 'block' }}>📍 Borabu TTC Campus Location</strong>
+                <span style={{ color: 'rgba(255,255,255,0.7)' }}>Off Kisii – Kericho highway, near Kebirigo Town</span>
+              </div>
+              <span style={{ background: 'var(--primary-blue)', padding: '4px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 'bold' }}>
+                Open Maps ↗
+              </span>
+            </div>
+          </a>
         </div>
       </div>
     </div>

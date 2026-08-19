@@ -40,13 +40,13 @@ export async function generateAdmissionLetterPdf(
   doc.setTextColor(30, 41, 59);
   doc.setFont('Helvetica', 'bold');
   doc.setFontSize(22);
-  doc.text('BORABU TECHNICAL TRAINING INSTITUTE', 15, 22);
+  doc.text('BORABU TEACHERS TRAINING COLLEGE', 15, 22);
 
   doc.setFont('Helvetica', 'normal');
   doc.setFontSize(9);
   doc.setTextColor(100, 116, 139);
   doc.text('P.O. BOX 9 - 40506, Kebirigo, Kenya  |  Tel: 0746 211 764 | 0727 433 205', 15, 27);
-  doc.text('Email: info@borabutti.ac.ke  |  Website: www.borabutti.ac.ke', 15, 32);
+  doc.text('Email: info@borabuttc.ac.ke  |  Website: www.borabuttc.ac.ke', 15, 32);
 
   // Decorative blue line
   doc.setDrawColor(37, 99, 235);
@@ -88,7 +88,7 @@ export async function generateAdmissionLetterPdf(
   doc.setTextColor(51, 65, 85);
   
   const bodyParagraph1 = 
-    `I am pleased to inform you that you have been offered provisional admission to Borabu Technical Training Institute (BTTI) to pursue a course of study leading to a ${data.programmeName}.`;
+    `I am pleased to inform you that you have been offered provisional admission to Borabu Teachers Training College (Borabu TTC) to pursue a course of study leading to a ${data.programmeName}.`;
   const splitPara1 = doc.splitTextToSize(bodyParagraph1, 180);
   doc.text(splitPara1, 15, 93);
 
@@ -177,7 +177,7 @@ export async function generateAdmissionLetterPdf(
   doc.setFont('Helvetica', 'bold');
   doc.text('NANCY KEMUNTO', 15, currentY);
   doc.setFont('Helvetica', 'normal');
-  doc.text('Institute Registrar (Admissions)', 15, currentY + 5);
+  doc.text('College Registrar (Admissions)', 15, currentY + 5);
 
   // Add signature stamp drawing
   doc.setDrawColor(220, 38, 38);
@@ -187,7 +187,7 @@ export async function generateAdmissionLetterPdf(
   doc.setTextColor(220, 38, 38);
   doc.setFontSize(8);
   doc.text('APPROVED & STAMPED', 18, currentY + 12);
-  doc.text('BORABU BTTI REGISTRAR', 18, currentY + 16);
+  doc.text('BORABU TTC REGISTRAR', 18, currentY + 16);
 
   // Embed QR Code
   doc.setTextColor(30, 41, 59);
@@ -246,13 +246,13 @@ export async function generatePaymentReceiptPdf(
   doc.setTextColor(30, 41, 59);
   doc.setFont('Helvetica', 'bold');
   doc.setFontSize(20);
-  doc.text('BORABU TECHNICAL TRAINING INSTITUTE', 15, 22);
+  doc.text('BORABU TEACHERS TRAINING COLLEGE', 15, 22);
 
   doc.setFont('Helvetica', 'normal');
   doc.setFontSize(9);
   doc.setTextColor(100, 116, 139);
   doc.text('P.O. BOX 9 - 40506, Kebirigo, Kenya', 15, 27);
-  doc.text('Email: info@borabutti.ac.ke  |  Tel: 0746 211 764 | 0727 433 205', 15, 31);
+  doc.text('Email: info@borabuttc.ac.ke  |  Tel: 0746 211 764 | 0727 433 205', 15, 31);
 
   doc.setDrawColor(20, 184, 166); // Teal accent line
   doc.setLineWidth(0.6);
@@ -392,7 +392,7 @@ export async function generateApplicationSummaryPdf(
   doc.setTextColor(30, 41, 59);
   doc.setFont('Helvetica', 'bold');
   doc.setFontSize(18);
-  doc.text('BORABU TECHNICAL TRAINING INSTITUTE', 15, 22);
+  doc.text('BORABU TEACHERS TRAINING COLLEGE', 15, 22);
 
   doc.setFont('Helvetica', 'normal');
   doc.setFontSize(9);

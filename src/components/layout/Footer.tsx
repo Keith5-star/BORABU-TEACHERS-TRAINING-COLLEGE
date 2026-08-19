@@ -10,12 +10,12 @@ export default function Footer() {
       <div className="container">
         <div className="footer-grid">
           <div className="footer-brand">
-            <h2>BORABU BTTI</h2>
+            <h2>BORABU TTC</h2>
             <p className="footer-desc">
-              To provide Competent Human Resource for Sustainable Development in Science and Technology through quality technical training and hands-on skill acquisition.
+              To train competent, value-driven educators through quality teacher education, research, and professional mentorship.
             </p>
             <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.5)', marginTop: '8px' }}>
-              Registered by the Ministry of Education & TVETA.
+              Registered & Licensed by the Ministry of Education (Reg: MOE-TTC/PRIVATE/2021/089) & Accredited for TSC Teacher Training.
             </p>
           </div>
 
@@ -23,18 +23,18 @@ export default function Footer() {
             <h4>Programmes</h4>
             <ul className="footer-links">
               <li>
-                <Link href="/programmes?level=Diploma" className="footer-link">
-                  Diploma Programmes
+                <Link href="/programmes" className="footer-link">
+                  Primary Teacher Ed. (DPTE)
                 </Link>
               </li>
               <li>
-                <Link href="/programmes?level=Certificate" className="footer-link">
-                  Certificate Programmes
+                <Link href="/programmes" className="footer-link">
+                  Early Childhood Ed. (DECTE)
                 </Link>
               </li>
               <li>
-                <Link href="/programmes?level=Artisan" className="footer-link">
-                  Artisan Programmes
+                <Link href="/programmes" className="footer-link">
+                  ECDE Certificate (CECTE)
                 </Link>
               </li>
               <li>
@@ -50,7 +50,7 @@ export default function Footer() {
             <ul className="footer-links">
               <li>
                 <Link href="/about" className="footer-link">
-                  About the Institute
+                  About the College
                 </Link>
               </li>
               <li>
@@ -89,14 +89,14 @@ export default function Footer() {
                 <strong>Phone:</strong> 0746 211 764 | 0727 433 205
               </li>
               <li style={{ marginBottom: '10px' }}>
-                <strong>Email:</strong> info@borabutti.ac.ke
+                <strong>Email:</strong> info@borabuttc.ac.ke
               </li>
             </ul>
           </div>
         </div>
 
         <div className="footer-bottom">
-          <p>&copy; {currentYear} Borabu Technical Training Institute. All Rights Reserved.</p>
+          <p>&copy; {currentYear} Borabu Teachers Training College. All Rights Reserved.</p>
           <div style={{ display: 'flex', gap: '20px' }}>
             <Link href="/verify/check" style={{ color: 'var(--accent-gold)', fontWeight: '600' }}>
               Verify Admission Letter

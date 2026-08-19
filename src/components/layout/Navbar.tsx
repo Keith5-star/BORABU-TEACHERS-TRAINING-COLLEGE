@@ -61,8 +61,8 @@ export default function Navbar() {
         <Link href="/" className="logo-link">
           <div className="logo-icon">B</div>
           <div className="logo-text">
-            <h1>BORABU BTTI</h1>
-            <div className="logo-tagline">Technical Training Institute</div>
+            <h1>BORABU TTC</h1>
+            <div className="logo-tagline">Teachers Training College</div>
           </div>
         </Link>
 
