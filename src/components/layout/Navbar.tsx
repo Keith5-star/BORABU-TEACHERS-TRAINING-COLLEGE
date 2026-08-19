@@ -63,7 +63,8 @@ export default function Navbar() {
   };
 
   const isLinkActive = (path: string) => {
-    return pathname === path ? 'active' : '';
+    if (path === '/') return pathname === '/' ? 'active' : '';
+    return pathname.startsWith(path) ? 'active' : '';
   };
 
   const NAV_LINKS = [
@@ -73,15 +74,14 @@ export default function Navbar() {
     { href: '/admissions', label: 'Admissions' },
     { href: '/fees', label: 'Fees' },
     { href: '/gallery', label: 'Gallery' },
-    { href: '/news', label: 'News' },
-    { href: '/faqs', label: 'FAQs' },
     { href: '/contact', label: 'Contact' },
   ];
 
   return (
     <header className="main-header">
       <div className="container nav-container">
-        <Link href="/" className="logo-link">
+        {/* Brand Logo */}
+        <Link href="/" className="logo-link" style={{ textDecoration: 'none' }}>
           <div className="logo-icon" style={{ background: 'none', width: 'auto', height: 'auto', display: 'flex', alignItems: 'center' }}>
             <svg width="34" height="38" viewBox="0 0 36 40" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M18 2L2 9V18C2 28.5 10.5 35.8 18 38C25.5 35.8 34 28.5 34 18V9L18 2Z" fill="var(--primary-blue)" stroke="var(--accent-gold)" strokeWidth="2.5" strokeLinejoin="round"/>
@@ -90,14 +90,18 @@ export default function Navbar() {
             </svg>
           </div>
           <div className="logo-text">
-            <h1>BORABU TTC</h1>
-            <div className="logo-tagline">Teachers Training College</div>
+            <h1 style={{ fontSize: '18px', fontWeight: '800', letterSpacing: '-0.3px', margin: 0, color: 'var(--primary-blue)' }}>
+              BORABU TTC
+            </h1>
+            <div className="logo-tagline" style={{ fontSize: '10px', color: 'var(--text-light)', textTransform: 'uppercase', letterSpacing: '0.8px', fontWeight: '600' }}>
+              Teachers Training College
+            </div>
           </div>
         </Link>
 
         {/* Desktop Menu */}
         <nav className="desktop-nav">
-          <ul className="nav-menu">
+          <ul className="nav-menu" style={{ display: 'flex', gap: '18px', listStyle: 'none', margin: 0, padding: 0, alignItems: 'center' }}>
             {NAV_LINKS.map((link) => (
               <li key={link.href}>
                 <Link href={link.href} className={`nav-link ${isLinkActive(link.href)}`}>
@@ -109,33 +113,41 @@ export default function Navbar() {
         </nav>
 
         {/* Desktop CTAs */}
-        <div className="nav-cta desktop-cta">
+        <div className="nav-cta desktop-cta" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           {loading ? (
-            <span style={{ fontSize: '13px', color: 'var(--text-light)' }}>Checking session...</span>
+            <span style={{ fontSize: '12px', color: 'var(--text-light)' }}>...</span>
           ) : user ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <Link 
                 href={user.role === 'applicant' ? '/dashboard' : '/admin'} 
                 className="btn btn-secondary"
-                style={{ fontSize: '13px', padding: '8px 14px' }}
+                style={{ fontSize: '12px', padding: '7px 14px', borderRadius: 'var(--radius-sm)' }}
               >
                 {user.role === 'applicant' ? 'Portal Dashboard' : 'Admin Area'}
               </Link>
               <button 
                 onClick={handleLogout} 
-                className="btn btn-primary"
-                style={{ fontSize: '13px', padding: '8px 14px', background: 'hsl(0, 72%, 51%)' }}
+                className="btn"
+                style={{ fontSize: '12px', padding: '7px 12px', background: 'hsl(0, 72%, 51%)', color: 'white', border: 'none', cursor: 'pointer', borderRadius: 'var(--radius-sm)' }}
               >
                 Logout
               </button>
             </div>
           ) : (
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <Link href="/login" className="btn btn-secondary" style={{ fontSize: '13px', padding: '8px 14px' }}>
-                Login
+              <Link 
+                href="/login" 
+                className="btn btn-secondary" 
+                style={{ fontSize: '12px', padding: '7px 14px', borderRadius: 'var(--radius-sm)' }}
+              >
+                Portal Login
               </Link>
-              <Link href="/register" className="btn btn-primary" style={{ fontSize: '13px', padding: '8px 16px' }}>
-                Apply Now
+              <Link 
+                href="/register" 
+                className="btn btn-primary" 
+                style={{ fontSize: '12px', padding: '7px 16px', borderRadius: 'var(--radius-sm)' }}
+              >
+                Apply Online
               </Link>
             </div>
           )}
@@ -155,7 +167,7 @@ export default function Navbar() {
       {/* Mobile Drawer Menu */}
       {mobileMenuOpen && (
         <div className="mobile-nav-drawer">
-          <ul className="mobile-nav-list">
+          <ul className="mobile-nav-list" style={{ listStyle: 'none', padding: 0, margin: '0 0 16px 0', display: 'flex', flexDirection: 'column', gap: '2px' }}>
             {NAV_LINKS.map((link) => (
               <li key={link.href}>
                 <Link
@@ -167,15 +179,34 @@ export default function Navbar() {
                 </Link>
               </li>
             ))}
+            <li>
+              <Link
+                href="/faqs"
+                className={`mobile-nav-link ${isLinkActive('/faqs')}`}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                FAQs & Admissions Help
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/verify/check"
+                className={`mobile-nav-link ${isLinkActive('/verify/check')}`}
+                onClick={() => setMobileMenuOpen(false)}
+                style={{ color: 'var(--accent-gold)' }}
+              >
+                Verify Admission Letter
+              </Link>
+            </li>
           </ul>
 
-          <div className="mobile-nav-actions">
+          <div className="mobile-nav-actions" style={{ paddingTop: '12px', borderTop: '1px solid var(--border-light)' }}>
             {user ? (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '100%' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '100%' }}>
                 <Link 
                   href={user.role === 'applicant' ? '/dashboard' : '/admin'} 
                   className="btn btn-secondary"
-                  style={{ textAlign: 'center', width: '100%', padding: '12px' }}
+                  style={{ textAlign: 'center', width: '100%', padding: '10px' }}
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   {user.role === 'applicant' ? 'Portal Dashboard' : 'Admin Area'}
@@ -185,26 +216,26 @@ export default function Navbar() {
                     setMobileMenuOpen(false);
                     handleLogout();
                   }}
-                  className="btn btn-primary"
-                  style={{ width: '100%', padding: '12px', background: 'hsl(0, 72%, 51%)' }}
+                  className="btn"
+                  style={{ width: '100%', padding: '10px', background: 'hsl(0, 72%, 51%)', color: 'white', border: 'none', cursor: 'pointer', borderRadius: 'var(--radius-sm)' }}
                 >
                   Logout
                 </button>
               </div>
             ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '100%' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '100%' }}>
                 <Link
                   href="/login"
                   className="btn btn-secondary"
-                  style={{ textAlign: 'center', width: '100%', padding: '12px' }}
+                  style={{ textAlign: 'center', width: '100%', padding: '10px' }}
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  Applicant Login
+                  Portal Login
                 </Link>
                 <Link
                   href="/register"
                   className="btn btn-primary"
-                  style={{ textAlign: 'center', width: '100%', padding: '12px' }}
+                  style={{ textAlign: 'center', width: '100%', padding: '10px' }}
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   Apply Online Now
