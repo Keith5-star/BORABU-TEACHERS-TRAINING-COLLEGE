@@ -35,6 +35,10 @@ function LoginForm() {
       }
 
       // Successful login
+      if (data.token && typeof window !== 'undefined') {
+        localStorage.setItem('auth_token', data.token);
+      }
+      
       router.refresh();
       
       // Determine redirection path
@@ -61,7 +65,7 @@ function LoginForm() {
         <div style={{ textAlign: 'center', marginBottom: '24px' }}>
           <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
             <div className="logo-icon" style={{ width: '36px', height: '36px', fontSize: '16px' }}>B</div>
-            <span style={{ fontSize: '18px', fontWeight: '800', color: 'var(--text-dark)' }}>BORABU TTC</span>
+            <span style={{ fontSize: '16px', fontWeight: '800', color: 'var(--text-dark)' }}>BORABU TEACHERS TRAINING COLLEGE</span>
           </Link>
         </div>
 

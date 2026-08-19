@@ -187,7 +187,7 @@ export async function generateAdmissionLetterPdf(
   doc.setTextColor(220, 38, 38);
   doc.setFontSize(8);
   doc.text('APPROVED & STAMPED', 18, currentY + 12);
-  doc.text('BORABU TTC REGISTRAR', 18, currentY + 16);
+  doc.text('BORABU COLLEGE REGISTRAR', 18, currentY + 16);
 
   // Embed QR Code
   doc.setTextColor(30, 41, 59);

@@ -23,8 +23,13 @@ export default function RegisterPage() {
       return;
     }
 
-    if (password.length < 6) {
-      setError('Password must be at least 6 characters long.');
+    if (password.length < 8) {
+      setError('Password must be at least 8 characters long.');
+      return;
+    }
+
+    if (!/[A-Za-z]/.test(password) || !/[0-9]/.test(password)) {
+      setError('Password must contain both letters and numbers.');
       return;
     }
 
@@ -46,12 +51,17 @@ export default function RegisterPage() {
         return;
       }
 
+      // Save token for iframe resilience
+      if (data.token && typeof window !== 'undefined') {
+        localStorage.setItem('auth_token', data.token);
+      }
+
       // Success
       router.refresh();
       router.push('/dashboard');
-    } catch (err) {
+    } catch (err: any) {
       console.error('Registration submit error:', err);
-      setError('A system error occurred. Please try again.');
+      setError(err?.message || 'A network error occurred. Please try again.');
       setLoading(false);
     }
   };
@@ -62,7 +72,7 @@ export default function RegisterPage() {
         <div style={{ textAlign: 'center', marginBottom: '20px' }}>
           <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
             <div className="logo-icon" style={{ width: '36px', height: '36px', fontSize: '16px' }}>B</div>
-            <span style={{ fontSize: '18px', fontWeight: '800', color: 'var(--text-dark)' }}>BORABU TTC</span>
+            <span style={{ fontSize: '16px', fontWeight: '800', color: 'var(--text-dark)' }}>BORABU TEACHERS TRAINING COLLEGE</span>
           </Link>
         </div>
 
@@ -114,11 +124,11 @@ export default function RegisterPage() {
 
           <div className="form-grid" style={{ marginBottom: '0' }}>
             <div className="form-group">
-              <label className="form-label">Password *</label>
+              <label className="form-label">Password * (min 8 chars)</label>
               <input
                 type="password"
                 required
-                placeholder="Min 6 chars"
+                placeholder="Min 8 chars (letters & digits)"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="form-input"

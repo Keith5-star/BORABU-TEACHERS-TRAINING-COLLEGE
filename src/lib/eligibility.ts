@@ -219,16 +219,21 @@ export function getDetailedRequirementBreakdown(
 }
 
 export function checkEligibility(
-  minRequirementsJson: string,
+  minRequirementsInput: string | Record<string, any>,
   kcseMeanGrade: string,
-  subjectGradesJson: string
+  subjectGradesInput: string | Record<string, any>
 ): EligibilityResult {
   const checks: EligibilityCheck[] = [];
   let eligible = true;
 
   try {
-    const requirements = JSON.parse(minRequirementsJson);
-    const applicantGrades = JSON.parse(subjectGradesJson);
+    const requirements = typeof minRequirementsInput === 'string'
+      ? JSON.parse(minRequirementsInput || '{}')
+      : (minRequirementsInput || {});
+      
+    const applicantGrades = typeof subjectGradesInput === 'string'
+      ? JSON.parse(subjectGradesInput || '{}')
+      : (subjectGradesInput || {});
 
     // 1. Check Mean Grade
     const requiredMean = requirements.meanGrade || 'D+';

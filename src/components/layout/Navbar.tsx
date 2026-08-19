@@ -73,6 +73,7 @@ export default function Navbar() {
     { href: '/programmes', label: 'Programmes' },
     { href: '/admissions', label: 'Admissions' },
     { href: '/fees', label: 'Fees' },
+    { href: '/news', label: 'News' },
     { href: '/gallery', label: 'Gallery' },
     { href: '/contact', label: 'Contact' },
   ];
@@ -92,7 +93,7 @@ export default function Navbar() {
           </div>
           <div className="logo-text">
             <span className="logo-title">
-              BORABU TTC
+              BORABU
             </span>
             <span className="logo-subtitle">
               TEACHERS TRAINING COLLEGE

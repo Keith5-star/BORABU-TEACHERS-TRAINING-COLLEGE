@@ -42,13 +42,24 @@ export default function ApplyPage() {
   const handleStartApplication = async (programmeId: string) => {
     setError('');
     try {
+      const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
       const res = await fetch('/api/applications', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({ programmeId }),
       });
 
       const data = await res.json();
+
+      if (res.status === 401) {
+        router.push('/login?redirect=/dashboard/apply');
+        return;
+      }
 
       if (res.ok || res.status === 409) {
         // Redirect to draft editor (if 409, we already have an active application draft or file, let's redirect to it)
@@ -61,9 +72,9 @@ export default function ApplyPage() {
       } else {
         setError(data.error || 'Failed to start application draft.');
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Failed to instantiate application:', err);
-      setError('An error occurred. Please try again.');
+      setError(err?.message || 'An error occurred. Please try again.');
     }
   };
 

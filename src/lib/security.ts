@@ -290,3 +290,20 @@ export function validateCsrfRequest(req: Request | NextRequest): { valid: boolea
 export function validateCsrfOrigin(req: Request): boolean {
   return validateCsrfRequest(req).valid;
 }
+
+/**
+ * Robust JSON parser that never throws on malformed, null, undefined, or pre-parsed inputs.
+ */
+export function safeJsonParse<T>(input: unknown, fallback: T): T {
+  if (input === null || input === undefined) return fallback;
+  if (typeof input === 'object') return input as T;
+  if (typeof input !== 'string') return fallback;
+  try {
+    const trimmed = input.trim();
+    if (!trimmed) return fallback;
+    return JSON.parse(trimmed) as T;
+  } catch {
+    return fallback;
+  }
+}
+

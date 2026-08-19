@@ -71,6 +71,11 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/news" className="footer-link" style={{ fontSize: '13px' }}>
+                  College News & Announcements
+                </Link>
+              </li>
+              <li>
                 <Link href="/gallery" className="footer-link" style={{ fontSize: '13px' }}>
                   Campus Gallery & Grounds
                 </Link>

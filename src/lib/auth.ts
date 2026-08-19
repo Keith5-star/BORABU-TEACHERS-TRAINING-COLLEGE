@@ -31,10 +31,28 @@ export function verifyToken(token: string): { userId: string; role: string } | n
   }
 }
 
-export async function getSessionUser() {
+export async function getSessionUser(req?: Request) {
   try {
-    const cookieStore = await cookies();
-    const token = cookieStore.get('auth-token')?.value;
+    let token: string | undefined;
+
+    // 1. Check Authorization: Bearer <token> header if request is provided
+    if (req) {
+      const authHeader = req.headers.get('authorization');
+      if (authHeader && authHeader.startsWith('Bearer ')) {
+        token = authHeader.substring(7).trim();
+      }
+    }
+
+    // 2. Fall back to reading auth-token from cookies
+    if (!token) {
+      try {
+        const cookieStore = await cookies();
+        token = cookieStore.get('auth-token')?.value;
+      } catch {
+        // cookies() may throw in some contexts if outside request context
+      }
+    }
+
     if (!token) return null;
 
     const payload = verifyToken(token);
@@ -61,8 +79,8 @@ export async function getSessionUser() {
 /**
  * Requires a user session with specific allowed roles (RBAC Guard)
  */
-export async function requireAuth(allowedRoles?: string[]) {
-  const user = await getSessionUser();
+export async function requireAuth(allowedRoles?: string[], req?: Request) {
+  const user = await getSessionUser(req);
   if (!user) {
     return { authorized: false, status: 401, error: 'Authentication required. Please sign in.' };
   }

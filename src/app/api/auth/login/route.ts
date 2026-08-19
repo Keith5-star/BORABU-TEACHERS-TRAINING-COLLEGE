@@ -86,6 +86,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({
       message: 'Login successful',
+      token,
       user: {
         id: user.id,
         fullName: user.fullName,
@@ -97,7 +98,7 @@ export async function POST(req: Request) {
   } catch (error: any) {
     console.error('Login error:', error);
     return NextResponse.json(
-      { error: 'An unexpected authentication error occurred.' },
+      { error: error?.message || 'An unexpected authentication error occurred.' },
       { status: 500 }
     );
   }

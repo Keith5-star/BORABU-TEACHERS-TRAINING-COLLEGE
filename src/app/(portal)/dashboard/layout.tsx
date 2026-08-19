@@ -26,7 +26,7 @@ export default async function DashboardLayout({
           <Link href="/" className="logo-link">
             <div className="logo-icon">B</div>
             <div className="logo-text">
-              <h1>BORABU TTC</h1>
+              <h1>BORABU TEACHERS TRAINING COLLEGE</h1>
               <div className="logo-tagline">Applicant Portal</div>
             </div>
           </Link>

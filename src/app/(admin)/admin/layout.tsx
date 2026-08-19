@@ -33,7 +33,7 @@ export default async function AdminLayout({
           <Link href="/" className="logo-link">
             <div className="logo-icon" style={{ background: 'linear-gradient(135deg, var(--accent-gold), var(--primary-blue))' }}>A</div>
             <div className="logo-text">
-              <h1 style={{ color: 'white' }}>BORABU TTC</h1>
+              <h1 style={{ color: 'white' }}>BORABU TEACHERS TRAINING COLLEGE</h1>
               <div className="logo-tagline" style={{ color: 'rgba(255,255,255,0.6)' }}>Admissions Control Panel</div>
             </div>
           </Link>

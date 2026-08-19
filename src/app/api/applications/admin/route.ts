@@ -8,10 +8,11 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { getSessionUser } from '@/lib/auth';
+import { safeJsonParse } from '@/lib/security';
 
 export async function GET(req: Request) {
   try {
-    const user = await getSessionUser();
+    const user = await getSessionUser(req);
     if (!user || (user.role !== 'admissions_officer' && user.role !== 'admin' && user.role !== 'super_admin')) {
       return NextResponse.json({ error: 'Unauthorized.' }, { status: 401 });
     }
@@ -76,9 +77,9 @@ export async function GET(req: Request) {
 
     const formatted = applications.map((app) => ({
       ...app,
-      personalDetails: JSON.parse(app.personalDetails || '{}'),
-      subjectGrades: JSON.parse(app.subjectGrades || '{}'),
-      eligibilityResult: app.eligibilityResult ? JSON.parse(app.eligibilityResult) : null,
+      personalDetails: safeJsonParse(app.personalDetails, {}),
+      subjectGrades: safeJsonParse(app.subjectGrades, {}),
+      eligibilityResult: app.eligibilityResult ? safeJsonParse(app.eligibilityResult, null) : null,
     }));
 
     return NextResponse.json({ 
@@ -93,7 +94,7 @@ export async function GET(req: Request) {
   } catch (error: any) {
     console.error('Admin fetch applications error:', error);
     return NextResponse.json(
-      { error: 'Internal server error while fetching admin queue.' },
+      { error: error?.message || 'Internal server error while fetching admin queue.' },
       { status: 500 }
     );
   }

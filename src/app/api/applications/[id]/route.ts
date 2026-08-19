@@ -8,6 +8,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { getSessionUser } from '@/lib/auth';
+import { safeJsonParse } from '@/lib/security';
 
 // GET: Fetch detailed application
 export async function GET(
@@ -15,7 +16,7 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const user = await getSessionUser();
+    const user = await getSessionUser(req);
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized.' }, { status: 401 });
     }
@@ -54,18 +55,18 @@ export async function GET(
 
     const formatted = {
       ...application,
-      personalDetails: JSON.parse(application.personalDetails || '{}'),
-      subjectGrades: JSON.parse(application.subjectGrades || '{}'),
-      eligibilityResult: application.eligibilityResult ? JSON.parse(application.eligibilityResult) : null,
-      programme: {
+      personalDetails: safeJsonParse(application.personalDetails, {}),
+      subjectGrades: safeJsonParse(application.subjectGrades, {}),
+      eligibilityResult: application.eligibilityResult ? safeJsonParse(application.eligibilityResult, null) : null,
+      programme: application.programme ? {
         ...application.programme,
-        minGradeRequirement: JSON.parse(application.programme.minGradeRequirement),
-        feesStructure: JSON.parse(application.programme.feesStructure),
-      },
+        minGradeRequirement: safeJsonParse(application.programme.minGradeRequirement, { meanGrade: 'C', subjects: {} }),
+        feesStructure: safeJsonParse(application.programme.feesStructure, []),
+      } : null,
       secondaryProgramme: application.secondaryProgramme ? {
         ...application.secondaryProgramme,
-        minGradeRequirement: JSON.parse(application.secondaryProgramme.minGradeRequirement),
-        feesStructure: JSON.parse(application.secondaryProgramme.feesStructure),
+        minGradeRequirement: safeJsonParse(application.secondaryProgramme.minGradeRequirement, { meanGrade: 'C', subjects: {} }),
+        feesStructure: safeJsonParse(application.secondaryProgramme.feesStructure, []),
       } : null,
     };
 
@@ -73,7 +74,7 @@ export async function GET(
   } catch (error: any) {
     console.error('Fetch application detail error:', error);
     return NextResponse.json(
-      { error: 'Internal server error while fetching application details.' },
+      { error: error?.message || 'Internal server error while fetching application details.' },
       { status: 500 }
     );
   }
@@ -85,7 +86,7 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const user = await getSessionUser();
+    const user = await getSessionUser(req);
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized.' }, { status: 401 });
     }
@@ -117,11 +118,11 @@ export async function PATCH(
     const { personalDetails, kcseIndexNo, kcseYear, kcseMeanGrade, subjectGrades, secondaryProgrammeId } = body;
 
     const updateData: any = {};
-    if (personalDetails) updateData.personalDetails = JSON.stringify(personalDetails);
+    if (personalDetails) updateData.personalDetails = typeof personalDetails === 'string' ? personalDetails : JSON.stringify(personalDetails);
     if (kcseIndexNo !== undefined) updateData.kcseIndexNo = kcseIndexNo;
     if (kcseYear !== undefined) updateData.kcseYear = Number(kcseYear);
     if (kcseMeanGrade !== undefined) updateData.kcseMeanGrade = kcseMeanGrade;
-    if (subjectGrades) updateData.subjectGrades = JSON.stringify(subjectGrades);
+    if (subjectGrades) updateData.subjectGrades = typeof subjectGrades === 'string' ? subjectGrades : JSON.stringify(subjectGrades);
     if (secondaryProgrammeId !== undefined) updateData.secondaryProgrammeId = secondaryProgrammeId;
 
     const updated = await prisma.application.update({
@@ -133,14 +134,14 @@ export async function PATCH(
       message: 'Application draft updated successfully.',
       application: {
         ...updated,
-        personalDetails: JSON.parse(updated.personalDetails || '{}'),
-        subjectGrades: JSON.parse(updated.subjectGrades || '{}'),
+        personalDetails: safeJsonParse(updated.personalDetails, {}),
+        subjectGrades: safeJsonParse(updated.subjectGrades, {}),
       },
     });
   } catch (error: any) {
     console.error('Update application error:', error);
     return NextResponse.json(
-      { error: 'Internal server error while updating application.' },
+      { error: error?.message || 'Internal server error while updating application.' },
       { status: 500 }
     );
   }

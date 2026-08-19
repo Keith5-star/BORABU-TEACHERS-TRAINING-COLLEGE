@@ -8,11 +8,12 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { getSessionUser } from '@/lib/auth';
+import { safeJsonParse } from '@/lib/security';
 
 // GET: Fetch applicant's own applications
-export async function GET() {
+export async function GET(req: Request) {
   try {
-    const user = await getSessionUser();
+    const user = await getSessionUser(req);
     if (!user || user.role !== 'applicant') {
       return NextResponse.json({ error: 'Unauthorized.' }, { status: 401 });
     }
@@ -21,6 +22,7 @@ export async function GET() {
       where: { userId: user.id },
       include: {
         programme: true,
+        secondaryProgramme: true,
         documents: true,
         admissionLetter: true,
       },
@@ -29,21 +31,26 @@ export async function GET() {
 
     const formatted = applications.map((app) => ({
       ...app,
-      personalDetails: JSON.parse(app.personalDetails || '{}'),
-      subjectGrades: JSON.parse(app.subjectGrades || '{}'),
-      eligibilityResult: app.eligibilityResult ? JSON.parse(app.eligibilityResult) : null,
+      personalDetails: safeJsonParse(app.personalDetails, {}),
+      subjectGrades: safeJsonParse(app.subjectGrades, {}),
+      eligibilityResult: app.eligibilityResult ? safeJsonParse(app.eligibilityResult, null) : null,
       programme: {
         ...app.programme,
-        minGradeRequirement: JSON.parse(app.programme.minGradeRequirement),
-        feesStructure: JSON.parse(app.programme.feesStructure),
+        minGradeRequirement: safeJsonParse(app.programme.minGradeRequirement, { meanGrade: 'C', subjects: {} }),
+        feesStructure: safeJsonParse(app.programme.feesStructure, []),
       },
+      secondaryProgramme: app.secondaryProgramme ? {
+        ...app.secondaryProgramme,
+        minGradeRequirement: safeJsonParse(app.secondaryProgramme.minGradeRequirement, { meanGrade: 'C', subjects: {} }),
+        feesStructure: safeJsonParse(app.secondaryProgramme.feesStructure, []),
+      } : null,
     }));
 
     return NextResponse.json({ applications: formatted });
   } catch (error: any) {
     console.error('Fetch applications error:', error);
     return NextResponse.json(
-      { error: 'Internal server error while fetching applications.' },
+      { error: error?.message || 'Internal server error while fetching applications.' },
       { status: 500 }
     );
   }
@@ -52,9 +59,9 @@ export async function GET() {
 // POST: Create a new draft application
 export async function POST(req: Request) {
   try {
-    const user = await getSessionUser();
+    const user = await getSessionUser(req);
     if (!user || user.role !== 'applicant') {
-      return NextResponse.json({ error: 'Unauthorized.' }, { status: 401 });
+      return NextResponse.json({ error: 'Unauthorized. Please sign in.' }, { status: 401 });
     }
 
     const body = await req.json();
@@ -64,9 +71,14 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Programme ID is required.' }, { status: 400 });
     }
 
-    // Verify programme exists
-    const programme = await prisma.programme.findUnique({
-      where: { id: programmeId },
+    // Verify programme exists (by ID or Code)
+    const programme = await prisma.programme.findFirst({
+      where: {
+        OR: [
+          { id: programmeId },
+          { code: programmeId.toUpperCase() },
+        ],
+      },
     });
 
     if (!programme) {
@@ -77,7 +89,7 @@ export async function POST(req: Request) {
     const existing = await prisma.application.findFirst({
       where: {
         userId: user.id,
-        programmeId: programmeId,
+        programmeId: programme.id,
         status: { notIn: ['rejected'] },
       },
     });
@@ -93,7 +105,7 @@ export async function POST(req: Request) {
     const application = await prisma.application.create({
       data: {
         userId: user.id,
-        programmeId: programmeId,
+        programmeId: programme.id,
         status: 'draft',
         personalDetails: JSON.stringify({}),
         kcseIndexNo: '',
@@ -103,14 +115,18 @@ export async function POST(req: Request) {
       },
     });
 
-    await prisma.auditLog.create({
-      data: {
-        actorId: user.id,
-        action: 'create_application',
-        entity: 'Application',
-        entityId: application.id,
-      },
-    });
+    try {
+      await prisma.auditLog.create({
+        data: {
+          actorId: user.id,
+          action: 'create_application',
+          entity: 'Application',
+          entityId: application.id,
+        },
+      });
+    } catch (auditErr) {
+      console.warn('Audit log creation non-fatal error:', auditErr);
+    }
 
     return NextResponse.json(
       {
@@ -122,7 +138,7 @@ export async function POST(req: Request) {
   } catch (error: any) {
     console.error('Create application error:', error);
     return NextResponse.json(
-      { error: 'Internal server error while creating application.' },
+      { error: error?.message || 'Internal server error while creating application.' },
       { status: 500 }
     );
   }

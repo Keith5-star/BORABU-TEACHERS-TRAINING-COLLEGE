@@ -111,11 +111,28 @@ export default function ApplicationWizardPage() {
 
   const GRADE_OPTIONS = ['A', 'A-', 'B+', 'B', 'B-', 'C+', 'C', 'C-', 'D+', 'D', 'D-', 'E'];
 
+  const getAuthHeaders = (extra: Record<string, string> = {}) => {
+    const headers: Record<string, string> = { ...extra };
+    if (typeof window !== 'undefined') {
+      const token = localStorage.getItem('auth_token');
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+    }
+    return headers;
+  };
+
   const loadApplication = async () => {
     try {
       // 1. Fetch application details
-      const res = await fetch(`/api/applications/${applicationId}`);
+      const res = await fetch(`/api/applications/${applicationId}`, {
+        headers: getAuthHeaders(),
+      });
       if (!res.ok) {
+        if (res.status === 401) {
+          router.push('/login?redirect=/dashboard');
+          return;
+        }
         router.push('/dashboard');
         return;
       }
@@ -180,7 +197,7 @@ export default function ApplicationWizardPage() {
     try {
       const res = await fetch(`/api/applications/${applicationId}`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
         body: JSON.stringify({
           personalDetails,
           kcseIndexNo,
@@ -310,6 +327,7 @@ export default function ApplicationWizardPage() {
     try {
       const res = await fetch(`/api/applications/${applicationId}/documents`, {
         method: 'POST',
+        headers: getAuthHeaders(),
         body: formData,
       });
 
@@ -336,6 +354,7 @@ export default function ApplicationWizardPage() {
     try {
       const res = await fetch(`/api/applications/${applicationId}/ocr`, {
         method: 'POST',
+        headers: getAuthHeaders(),
       });
 
       const data = await res.json();
@@ -370,7 +389,7 @@ export default function ApplicationWizardPage() {
     try {
       const res = await fetch('/api/payments/stk', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
         body: JSON.stringify({
           applicationId,
           phone: stkPhone.trim(),
@@ -395,7 +414,9 @@ export default function ApplicationWizardPage() {
     setVerifyingPayment(true);
     setError('');
     try {
-      const res = await fetch(`/api/payments/stk/status?id=${applicationId}`);
+      const res = await fetch(`/api/payments/stk/status?id=${applicationId}`, {
+        headers: getAuthHeaders(),
+      });
       const data = await res.json();
       if (res.ok && data.status === 'paid') {
         showToast('💳 M-Pesa payment received and verified successfully!', 'success');
@@ -433,6 +454,7 @@ export default function ApplicationWizardPage() {
 
       const res = await fetch('/api/payments/manual', {
         method: 'POST',
+        headers: getAuthHeaders(),
         body: formData,
       });
 
@@ -456,6 +478,7 @@ export default function ApplicationWizardPage() {
     try {
       const res = await fetch(`/api/applications/${applicationId}/submit`, {
         method: 'POST',
+        headers: getAuthHeaders(),
       });
 
       const data = await res.json();

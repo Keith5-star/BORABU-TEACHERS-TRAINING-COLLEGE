@@ -101,6 +101,7 @@ export async function POST(req: Request) {
     return NextResponse.json(
       {
         message: 'Registration successful',
+        token,
         user: {
           id: newUser.id,
           fullName: newUser.fullName,
@@ -114,7 +115,7 @@ export async function POST(req: Request) {
   } catch (error: any) {
     console.error('Registration error:', error);
     return NextResponse.json(
-      { error: 'Internal server error during registration.' },
+      { error: error?.message || 'Registration could not be completed. Please check your details and try again.' },
       { status: 500 }
     );
   }
