@@ -26,13 +26,13 @@ export default function HomePage() {
 
             {/* Accreditation inline trust seals */}
             <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginTop: '24px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'var(--bg-main)', padding: '8px 14px', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-light)', fontSize: '12px', color: 'var(--text-main)', fontWeight: '600' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(255, 255, 255, 0.08)', padding: '8px 14px', borderRadius: 'var(--radius-sm)', border: '1px solid rgba(255, 255, 255, 0.15)', fontSize: '12px', color: 'rgba(255, 255, 255, 0.9)', fontWeight: '600' }}>
                 🛡️ TSC Accredited Training
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'var(--bg-main)', padding: '8px 14px', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-light)', fontSize: '12px', color: 'var(--text-main)', fontWeight: '600' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(255, 255, 255, 0.08)', padding: '8px 14px', borderRadius: 'var(--radius-sm)', border: '1px solid rgba(255, 255, 255, 0.15)', fontSize: '12px', color: 'rgba(255, 255, 255, 0.9)', fontWeight: '600' }}>
                 📜 Ministry Licensed (MOE)
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'var(--bg-main)', padding: '8px 14px', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-light)', fontSize: '12px', color: 'var(--text-main)', fontWeight: '600' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(255, 255, 255, 0.08)', padding: '8px 14px', borderRadius: 'var(--radius-sm)', border: '1px solid rgba(255, 255, 255, 0.15)', fontSize: '12px', color: 'rgba(255, 255, 255, 0.9)', fontWeight: '600' }}>
                 🏫 KNEC Examination Center
               </div>
             </div>
@@ -52,14 +52,6 @@ export default function HomePage() {
                 <p>MoE & TSC Registered</p>
               </div>
             </div>
-          </div>
-          
-          <div className="hero-image-container" style={{ padding: 0 }}>
-            <img 
-              src="/images/hero_students.jpg" 
-              alt="Borabu Teachers Training College Campus Life" 
-              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-            />
           </div>
         </div>
       </section>

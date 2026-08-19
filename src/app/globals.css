@@ -317,8 +317,12 @@ button, input, select, textarea {
 
 /* Hero Section */
 .hero {
-  padding: 90px 0;
-  background-color: var(--bg-card);
+  padding: 100px 0;
+  background-image: linear-gradient(rgba(12, 24, 33, 0.85), rgba(12, 24, 33, 0.85)), url('/images/hero_students.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  color: #ffffff;
   border-bottom: 1px solid var(--border-light);
   position: relative;
 }
@@ -335,6 +339,7 @@ button, input, select, textarea {
   font-weight: 700;
   margin-bottom: 24px;
   line-height: 1.2;
+  color: #ffffff;
 }
 
 .hero-title span {
@@ -343,7 +348,7 @@ button, input, select, textarea {
 
 .hero-subtitle {
   font-size: 17px;
-  color: var(--text-main);
+  color: rgba(255, 255, 255, 0.9);
   margin-bottom: 35px;
   max-width: 540px;
   line-height: 1.7;
@@ -377,15 +382,19 @@ button, input, select, textarea {
   display: flex;
   gap: 40px;
   margin-top: 50px;
-  border-top: 2px solid var(--border-light);
+  border-top: 2px solid rgba(255, 255, 255, 0.15);
   padding-top: 30px;
 }
 
 .stat-item h3 {
   font-size: 34px;
-  color: var(--primary-blue);
+  color: var(--accent-gold);
   font-family: 'Lora', 'Georgia', serif;
   font-weight: 700;
+}
+
+.stat-item p {
+  color: rgba(255, 255, 255, 0.8);
 }
 
 .stat-item p {
