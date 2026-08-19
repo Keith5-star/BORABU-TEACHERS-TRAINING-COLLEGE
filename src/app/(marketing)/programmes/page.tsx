@@ -47,7 +47,7 @@ function ProgrammesCatalog() {
           setProgrammes(data.programmes);
         }
       } catch (err) {
-        console.error('Failed to load programs:', err);
+        console.error('Failed to load teacher programmes:', err);
       } finally {
         setLoading(false);
       }
@@ -85,10 +85,10 @@ function ProgrammesCatalog() {
   return (
     <div className="container" style={{ padding: '60px 20px' }}>
       <header className="section-header">
-        <span className="section-tag">Academic Programs</span>
-        <h1 className="section-title">Explore Our Accredited Courses</h1>
+        <span className="section-tag">Teacher Education Programmes</span>
+        <h1 className="section-title">Accredited Teacher Training Courses</h1>
         <p className="section-desc">
-          We offer high-quality technical, vocational, and artisan programs accredited by the Ministry of Education, TVETA, and CDACC.
+          Borabu Teachers Training College offers certified Competency-Based Teacher Education curricula accredited by the Ministry of Education, Teachers Service Commission (TSC), and KNEC.
         </p>
       </header>
 
@@ -106,38 +106,38 @@ function ProgrammesCatalog() {
         }}
       >
         <div style={{ flexGrow: 1, minWidth: '280px' }}>
-          <label className="form-label">Search Courses</label>
+          <label className="form-label">Search Programmes</label>
           <input 
             type="text" 
-            placeholder="Search by program name or code (e.g. ICT, Electrical, Business)..." 
+            placeholder="Search by programme name or code (e.g. DPTE, DECTE, SNE, Upgrade)..." 
             value={search} 
             onChange={(e) => handleSearchChange(e.target.value)} 
             className="form-input"
           />
         </div>
-        <div style={{ width: '180px' }}>
+        <div style={{ width: '200px' }}>
           <label className="form-label">Filter by Level</label>
           <select 
             value={filterLevel} 
             onChange={(e) => handleLevelChange(e.target.value)} 
             className="form-input"
           >
-            <option value="All">All Levels</option>
+            <option value="All">All Qualification Levels</option>
             <option value="Diploma">Diploma Courses</option>
+            <option value="Diploma Upgrade">Diploma Upgrade Courses</option>
             <option value="Certificate">Certificate Courses</option>
-            <option value="Artisan">Artisan Courses</option>
-            <option value="Short Course">Short Courses</option>
+            <option value="Short Course">Continuous CPD & Short Courses</option>
           </select>
         </div>
       </div>
 
       {loading ? (
         <div style={{ textAlign: 'center', padding: '40px', color: 'var(--text-light)' }}>
-          Loading courses catalog...
+          Loading teacher education programmes...
         </div>
       ) : filtered.length === 0 ? (
         <div style={{ textAlign: 'center', padding: '40px', color: 'var(--text-light)', background: 'var(--bg-card)', border: '1px solid var(--border-light)', borderRadius: 'var(--radius-md)' }}>
-          No courses match your criteria. Try adjusting filters or search query.
+          No programmes match your criteria. Try adjusting filters or search query.
         </div>
       ) : (
         <div className="card-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))' }}>
@@ -157,7 +157,7 @@ function ProgrammesCatalog() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '20px', fontSize: '13px', color: 'var(--text-light)' }}>
                 <div>⏰ <strong>Duration:</strong> {prog.duration}</div>
                 <div>📅 <strong>Intake:</strong> {prog.intakePeriod}</div>
-                <div>👥 <strong>Capacity:</strong> {prog.intakeCapacity} Students</div>
+                <div>👥 <strong>Capacity:</strong> {prog.intakeCapacity} Trainees</div>
               </div>
 
               {/* Requirement highlights */}
@@ -175,17 +175,21 @@ function ProgrammesCatalog() {
                 <div style={{ fontWeight: '700', color: 'var(--text-dark)', marginBottom: '8px' }}>Minimum Requirements:</div>
                 <ul style={{ paddingLeft: '20px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
                   <li>KCSE Mean Grade: <strong>{prog.minGradeRequirement.meanGrade}</strong></li>
-                  {Object.entries(prog.minGradeRequirement.subjects).map(([sub, grade]) => (
-                    <li key={sub} style={{ textTransform: 'capitalize' }}>
-                      {sub}: <strong>{grade as string}</strong> or above
-                    </li>
-                  ))}
+                  {prog.minGradeRequirement.subjects && Object.keys(prog.minGradeRequirement.subjects).length > 0 ? (
+                    Object.entries(prog.minGradeRequirement.subjects).map(([sub, grade]) => (
+                      <li key={sub} style={{ textTransform: 'capitalize' }}>
+                        {sub}: <strong>{grade as string}</strong> or above
+                      </li>
+                    ))
+                  ) : (
+                    <li style={{ color: 'var(--text-light)', fontStyle: 'italic' }}>General qualification or prior teacher certificate</li>
+                  )}
                 </ul>
               </div>
 
               <div style={{ display: 'flex', gap: '12px', marginTop: 'auto' }}>
                 <Link href={`/fees`} className="btn btn-secondary" style={{ flexGrow: 1, padding: '10px 0' }}>
-                  View Fees
+                  Fee Structure
                 </Link>
                 <Link href={`/register`} className="btn btn-primary" style={{ flexGrow: 1, padding: '10px 0' }}>
                   Apply Online
@@ -210,4 +214,3 @@ export default function ProgrammesPage() {
     </Suspense>
   );
 }
-

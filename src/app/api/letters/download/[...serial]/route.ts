@@ -1,3 +1,10 @@
+/**
+ * Security: CSRF Protected
+ * All state-changing requests (POST, PUT, PATCH, DELETE) to this route are verified
+ * against Origin, Referer, and Sec-Fetch-Site headers via middleware (src/middleware.ts)
+ * and CSRF validation engine (src/lib/security.ts).
+ */
+
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { generateAdmissionLetterPdf } from '@/lib/pdf';

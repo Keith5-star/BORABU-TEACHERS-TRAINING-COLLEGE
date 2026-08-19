@@ -1,6 +1,14 @@
+/**
+ * Security: CSRF Protected
+ * All state-changing requests (POST, PUT, PATCH, DELETE) to this route are verified
+ * against Origin, Referer, and Sec-Fetch-Site headers via middleware (src/middleware.ts)
+ * and CSRF validation engine (src/lib/security.ts).
+ */
+
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { getSessionUser } from '@/lib/auth';
+import { sanitizeString } from '@/lib/security';
 
 export async function GET(
   req: Request,
@@ -70,9 +78,10 @@ export async function POST(
 
     const { id } = await params;
     const body = await req.json();
-    const { message } = body;
+    const { message: rawMessage } = body;
+    const message = sanitizeString(rawMessage);
 
-    if (!message || !message.trim()) {
+    if (!message) {
       return NextResponse.json({ error: 'Message content cannot be empty.' }, { status: 400 });
     }
 

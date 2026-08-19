@@ -105,7 +105,7 @@ function LoginForm() {
         </form>
 
         <div style={{ marginTop: '24px', textAlign: 'center', fontSize: '14px', color: 'var(--text-light)' }}>
-          Don't have an account?{' '}
+          Don&apos;t have an account?{' '}
           <Link href="/register" className="form-link">
             Apply Now
           </Link>

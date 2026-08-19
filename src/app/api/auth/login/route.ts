@@ -1,21 +1,42 @@
+/**
+ * Security: CSRF Protected
+ * All state-changing requests (POST, PUT, PATCH, DELETE) to this route are verified
+ * against Origin, Referer, and Sec-Fetch-Site headers via middleware (src/middleware.ts)
+ * and CSRF validation engine (src/lib/security.ts).
+ */
+
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { comparePassword, signToken } from '@/lib/auth';
+import { checkRateLimit, sanitizeEmail } from '@/lib/security';
 import { cookies } from 'next/headers';
 
 export async function POST(req: Request) {
   try {
-    const body = await req.json();
-    const { email, password } = body;
+    // 1. Rate Limiting: Max 6 login attempts per minute per IP
+    const rateLimit = checkRateLimit(req, {
+      limit: 6,
+      windowMs: 60 * 1000,
+      keyPrefix: 'auth-login',
+    });
+    if (!rateLimit.allowed && rateLimit.errorResponse) {
+      return rateLimit.errorResponse;
+    }
 
-    if (!email || !password) {
+    const body = await req.json();
+    const { email: rawEmail, password } = body;
+
+    // 2. Input Validation
+    const { valid: emailValid, email } = sanitizeEmail(rawEmail);
+
+    if (!emailValid || !password || typeof password !== 'string') {
       return NextResponse.json(
-        { error: 'Email and password are required.' },
+        { error: 'Valid email and password are required.' },
         { status: 400 }
       );
     }
 
-    // Find user
+    // 3. Look up user
     const user = await prisma.user.findUnique({
       where: { email },
     });
@@ -27,7 +48,7 @@ export async function POST(req: Request) {
       );
     }
 
-    // Compare password
+    // 4. Verify password
     const isMatch = comparePassword(password, user.passwordHash);
     if (!isMatch) {
       return NextResponse.json(
@@ -36,28 +57,32 @@ export async function POST(req: Request) {
       );
     }
 
-    // Sign token
+    // 5. Generate secure JWT token
     const token = signToken({ userId: user.id, role: user.role });
 
-    // Set cookie
+    // 6. Set secure HttpOnly cookie
     const cookieStore = await cookies();
     cookieStore.set('auth-token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      sameSite: 'lax',
       maxAge: 7 * 24 * 60 * 60, // 7 days
       path: '/',
     });
 
-    // Create audit log
-    await prisma.auditLog.create({
-      data: {
-        actorId: user.id,
-        action: 'login',
-        entity: 'User',
-        entityId: user.id,
-      },
-    });
+    // 7. Security Audit Log
+    try {
+      await prisma.auditLog.create({
+        data: {
+          actorId: user.id,
+          action: 'login',
+          entity: 'User',
+          entityId: user.id,
+        },
+      });
+    } catch (auditErr) {
+      console.warn('Audit logging non-fatal error:', auditErr);
+    }
 
     return NextResponse.json({
       message: 'Login successful',
@@ -72,7 +97,7 @@ export async function POST(req: Request) {
   } catch (error: any) {
     console.error('Login error:', error);
     return NextResponse.json(
-      { error: 'Internal server error during login.' },
+      { error: 'An unexpected authentication error occurred.' },
       { status: 500 }
     );
   }

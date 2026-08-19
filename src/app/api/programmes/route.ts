@@ -1,3 +1,10 @@
+/**
+ * Security: CSRF Protected
+ * All state-changing requests (POST, PUT, PATCH, DELETE) to this route are verified
+ * against Origin, Referer, and Sec-Fetch-Site headers via middleware (src/middleware.ts)
+ * and CSRF validation engine (src/lib/security.ts).
+ */
+
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 
@@ -15,7 +22,14 @@ export async function GET() {
       feesStructure: JSON.parse(p.feesStructure),
     }));
 
-    return NextResponse.json({ programmes: formatted });
+    return NextResponse.json(
+      { programmes: formatted },
+      {
+        headers: {
+          'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300',
+        },
+      }
+    );
   } catch (error: any) {
     console.error('Fetch programmes error:', error);
     return NextResponse.json(

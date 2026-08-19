@@ -1,3 +1,10 @@
+/**
+ * Security: CSRF Protected
+ * All state-changing requests (POST, PUT, PATCH, DELETE) to this route are verified
+ * against Origin, Referer, and Sec-Fetch-Site headers via middleware (src/middleware.ts)
+ * and CSRF validation engine (src/lib/security.ts).
+ */
+
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { getSessionUser } from '@/lib/auth';
@@ -90,7 +97,7 @@ export async function POST(req: Request) {
         status: 'draft',
         personalDetails: JSON.stringify({}),
         kcseIndexNo: '',
-        kcseYear: new Date().getFullYear(),
+        kcseYear: 0,
         kcseMeanGrade: '',
         subjectGrades: JSON.stringify({}),
       },

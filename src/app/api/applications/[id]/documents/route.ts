@@ -1,3 +1,10 @@
+/**
+ * Security: CSRF Protected
+ * All state-changing requests (POST, PUT, PATCH, DELETE) to this route are verified
+ * against Origin, Referer, and Sec-Fetch-Site headers via middleware (src/middleware.ts)
+ * and CSRF validation engine (src/lib/security.ts).
+ */
+
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { getSessionUser } from '@/lib/auth';
@@ -74,22 +81,27 @@ export async function POST(
       );
     }
 
-    // Ensure uploads directory exists
-    const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
-    if (!fs.existsSync(uploadsDir)) {
-      fs.mkdirSync(uploadsDir, { recursive: true });
-    }
-
     // Read file buffer
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
-    // Save file
-    const uniqueFileName = `${id}_${type}_${Date.now()}${fileExtension}`;
-    const filePath = path.join(uploadsDir, uniqueFileName);
-    fs.writeFileSync(filePath, buffer);
+    let fileUrl: string;
+    try {
+      // Ensure uploads directory exists if writable
+      const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
+      if (!fs.existsSync(uploadsDir)) {
+        fs.mkdirSync(uploadsDir, { recursive: true });
+      }
 
-    const fileUrl = `/uploads/${uniqueFileName}`;
+      const uniqueFileName = `${id}_${type}_${Date.now()}${fileExtension}`;
+      const filePath = path.join(uploadsDir, uniqueFileName);
+      fs.writeFileSync(filePath, buffer);
+      fileUrl = `/uploads/${uniqueFileName}`;
+    } catch (fsErr) {
+      // Fallback for read-only serverless platforms (e.g. Vercel Lambda)
+      const mimeType = file.type || 'application/octet-stream';
+      fileUrl = `data:${mimeType};base64,${buffer.toString('base64')}`;
+    }
 
     // Upsert document record (replace existing of same type if any)
     const existingDoc = await prisma.document.findFirst({

@@ -1,0 +1,6 @@
+{
+  "name": "Borabu Teachers Training College",
+  "description": "Admissions portal, programme catalog, applicant dashboard, and letter verification for Borabu Teachers Training College (BTTC).",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
