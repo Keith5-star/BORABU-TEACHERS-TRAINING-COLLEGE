@@ -206,6 +206,22 @@ export default function DashboardPage() {
         )}
       </div>
 
+      {/* Support & KUCCPS Notice Banner */}
+      <div style={{ background: 'var(--primary-light)', borderLeft: '4px solid var(--accent-gold)', padding: '16px 20px', borderRadius: 'var(--radius-md)', marginBottom: '24px', boxShadow: 'var(--shadow-sm)' }}>
+        <h4 style={{ fontSize: '15px', color: 'var(--text-dark)', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          📞 Registry & Admissions Support Desk
+        </h4>
+        <p style={{ fontSize: '13px', color: 'var(--text-main)', lineHeight: '1.5', margin: '0 0 10px 0' }}>
+          For inquiries or assistance regarding <strong>Admission/Deferment letters</strong>, <strong>DPTE/DSTE/SNE Applications</strong>, <strong>School-based/Upgrading courses</strong>, or <strong>Unsuccessful applications</strong>, contact the registrar directly. 
+          Additionally, if you or someone you know missed placement under <strong>KUCCPS</strong>, direct applications are currently open!
+        </p>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '15px', fontSize: '13px', fontWeight: 'bold' }}>
+          <a href="tel:0101930121" style={{ color: 'var(--primary-blue)', textDecoration: 'underline' }}>📞 Call/WhatsApp: 0101930121</a>
+          <span style={{ color: 'var(--border-light)' }}>|</span>
+          <a href="https://wa.me/254101930121" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent-teal)', textDecoration: 'underline' }}>💬 Chat on WhatsApp</a>
+        </div>
+      </div>
+
       {loading ? (
         <div style={{ textAlign: 'center', padding: '50px', background: 'var(--bg-card)', borderRadius: 'var(--radius-lg)', border: '1px solid var(--border-light)' }}>
           Loading your application file...

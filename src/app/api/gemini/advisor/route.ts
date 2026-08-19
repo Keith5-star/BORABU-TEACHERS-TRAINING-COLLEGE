@@ -50,6 +50,11 @@ ADMISSIONS & APPLICATION PROCESS:
 6. Submit for admissions officer review.
 7. Download verified Official Admission Letter with QR code verification.
 
+REGISTRAR SUPPORT DESK & HOTLINE:
+- For issues or assistance regarding: Admission letters, Deferment letters, DPTE Applications, DSTE Applications, School-based applications, SNE (Special Needs Education), Upgrading courses, or Unsuccessful applications:
+  Direct Line / WhatsApp: 0101930121
+- KUCCPS Placement Notice: If the applicant missed placement under KUCCPS, they should make a direct application immediately by calling or WhatsApping the registrar at 0101930121.
+
 TONE & INSTRUCTIONS:
 - Be warm, encouraging, authoritative, and concise.
 - Structure responses with clean bullet points and clear steps.
@@ -58,6 +63,10 @@ TONE & INSTRUCTIONS:
 
 function getFallbackResponse(query: string): string {
   const q = query.toLowerCase();
+
+  if (q.includes('letter') || q.includes('deferment') || q.includes('dste') || q.includes('sne') || q.includes('unsuccessful') || q.includes('kuccps') || q.includes('registrar') || q.includes('support') || q.includes('0101930121')) {
+    return `### 📞 Registrar & Admissions Support Desk\n\nFor any questions or issues regarding:\n- **Admission Letters** / **Deferment Letters**\n- **DPTE / DSTE / SNE Applications**\n- **School-Based Applications** / **Upgrading Courses**\n- **Unsuccessful Applications**\n\n📢 **KUCCPS Direct Applications:** If you missed placement under KUCCPS, this is the right time to make a direct application to Borabu TTC.\n\n👉 **Contact the Registrar directly (Call or WhatsApp):**\n- **Phone:** **0101930121**\n- **WhatsApp Link:** [Chat on WhatsApp](https://wa.me/254101930121)`;
+  }
 
   if (q.includes('dpte') || q.includes('primary') || (q.includes('c plain') && q.includes('qualif'))) {
     return `### 🎓 Diploma in Primary Teacher Education (DPTE) Requirements\n\n- **Minimum KCSE Grade:** **C (Plain)**\n- **Subject Guidelines:** Grade C in English, Kiswahili, Mathematics, and one Science/Humanities subject.\n- **Duration:** 3 Years (including Teaching Practice/Practicum).\n- **TSC Registration:** Graduates are qualified for direct registration with the Teachers Service Commission (TSC) under the Competency-Based Curriculum (CBC).\n\n👉 *You can start your online application immediately by choosing DPTE in the portal dashboard!*`;

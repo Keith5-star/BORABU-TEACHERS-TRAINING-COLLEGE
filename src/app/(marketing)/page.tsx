@@ -56,6 +56,40 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Admissions Support & KUCCPS Notice */}
+      <section style={{ background: 'var(--primary-light)', padding: '30px 0', borderBottom: '1px solid var(--border-light)' }}>
+        <div className="container">
+          <div style={{ background: 'var(--bg-card)', borderLeft: '4px solid var(--accent-gold)', padding: '24px 28px', borderRadius: '0 var(--radius-md) var(--radius-md) 0', boxShadow: 'var(--shadow-sm)', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+              <span style={{ background: 'var(--accent-gold)', color: 'white', padding: '4px 8px', fontSize: '11px', fontWeight: 'bold', borderRadius: '2px', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                Urgent Notice
+              </span>
+              <h3 style={{ fontSize: '18px', margin: 0, color: 'var(--text-dark)' }}>
+                Admissions, Upgrading & Application Support Desk
+              </h3>
+            </div>
+            
+            <p style={{ fontSize: '14px', lineHeight: '1.6', color: 'var(--text-main)', margin: 0 }}>
+              If you have queries or are experiencing issues with <strong>Admission letters</strong>, <strong>Deferment letters</strong>, <strong>DPTE/DSTE Applications</strong>, <strong>School-based applications</strong>, <strong>SNE (Special Needs Education)</strong>, <strong>Upgrading courses</strong>, or <strong>Unsuccessful applications</strong>:
+            </p>
+            
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '15px 30px', background: 'var(--bg-main)', padding: '12px 18px', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-light)' }}>
+              <span style={{ fontSize: '13px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                📞 <strong>Direct Line:</strong> <a href="tel:0101930121" style={{ color: 'var(--primary-blue)', fontWeight: 'bold' }}>0101930121</a>
+              </span>
+              <span style={{ fontSize: '13px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                💬 <strong>WhatsApp Chat:</strong> <a href="https://wa.me/254101930121" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent-teal)', fontWeight: 'bold' }}>Chat on WhatsApp</a>
+              </span>
+            </div>
+
+            <div className="alert alert-warning" style={{ margin: 0, padding: '12px 16px', background: 'hsl(38, 100%, 97%)', border: '1px dashed var(--accent-gold)', color: 'hsl(38, 80%, 25%)', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <span>📢</span>
+              <span><strong>KUCCPS Placement Notice:</strong> If you missed placement under KUCCPS, this is the right time to make a direct application to Borabu TTC. Call or WhatsApp the registrar at <strong>0101930121</strong> to secure your slot today!</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Simplified Steps */}
       <section className="section">
         <div className="container" style={{ maxWidth: '900px' }}>
