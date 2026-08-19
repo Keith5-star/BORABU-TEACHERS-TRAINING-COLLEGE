@@ -47,42 +47,42 @@ export default function HomePage() {
       </section>
 
       {/* Simplified 3 Steps - Compact, Clean Spacing */}
-      <section style={{ padding: '36px 0 44px 0', borderBottom: '1px solid var(--border-light)', background: 'var(--bg-main)' }}>
+      <section className="steps-section" style={{ padding: '32px 0 36px 0', borderBottom: '1px solid var(--border-light)', background: 'var(--bg-main)' }}>
         <div className="container" style={{ maxWidth: '960px' }}>
-          <div className="section-header" style={{ marginBottom: '20px' }}>
-            <span className="section-tag" style={{ marginBottom: '6px' }}>How to Apply</span>
-            <h2 className="section-title" style={{ fontSize: '24px', marginBottom: '4px' }}>Join Us in 3 Steps</h2>
-            <p className="section-desc" style={{ fontSize: '14px', margin: 0 }}>Quick, paperless online application with direct eligibility checks.</p>
+          <div className="section-header" style={{ marginBottom: '22px' }}>
+            <span className="section-tag" style={{ marginBottom: '6px', fontSize: '11.5px' }}>How to Apply</span>
+            <h2 className="section-title" style={{ fontSize: '24px', marginBottom: '6px' }}>Join Us in 3 Steps</h2>
+            <p className="section-desc" style={{ fontSize: '14.5px', lineHeight: '1.6', margin: 0 }}>Quick, paperless online application with direct eligibility checks.</p>
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px', marginTop: '20px' }}>
-            <div style={{ background: 'var(--bg-card)', padding: '18px 20px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-light)' }}>
-              <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'var(--primary-blue)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '13px', fontWeight: '700', marginBottom: '10px' }}>
+            <div style={{ background: 'var(--bg-card)', padding: '20px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-light)' }}>
+              <div style={{ width: '30px', height: '30px', borderRadius: '50%', background: 'var(--primary-blue)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '13px', fontWeight: '700', marginBottom: '12px' }}>
                 1
               </div>
-              <h4 style={{ fontSize: '15px', marginBottom: '4px', color: 'var(--text-dark)', fontWeight: '700' }}>Create an Account</h4>
-              <p style={{ color: 'var(--text-light)', fontSize: '12.5px', lineHeight: '1.5', margin: 0 }}>Register with your name, phone number, and email to access the portal.</p>
+              <h4 style={{ fontSize: '15px', marginBottom: '6px', color: 'var(--text-dark)', fontWeight: '700' }}>Create an Account</h4>
+              <p style={{ color: 'var(--text-light)', fontSize: '13px', lineHeight: '1.6', margin: 0 }}>Register with your name, phone number, and email to access the portal.</p>
             </div>
 
-            <div style={{ background: 'var(--bg-card)', padding: '18px 20px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-light)' }}>
-              <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'var(--accent-gold)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '13px', fontWeight: '700', marginBottom: '10px' }}>
+            <div style={{ background: 'var(--bg-card)', padding: '20px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-light)' }}>
+              <div style={{ width: '30px', height: '30px', borderRadius: '50%', background: 'var(--accent-gold)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '13px', fontWeight: '700', marginBottom: '12px' }}>
                 2
               </div>
-              <h4 style={{ fontSize: '15px', marginBottom: '4px', color: 'var(--text-dark)', fontWeight: '700' }}>Fill & Upload</h4>
-              <p style={{ color: 'var(--text-light)', fontSize: '12.5px', lineHeight: '1.5', margin: 0 }}>Enter KCSE grades and upload copies of your ID/birth certificate and result slip.</p>
+              <h4 style={{ fontSize: '15px', marginBottom: '6px', color: 'var(--text-dark)', fontWeight: '700' }}>Fill & Upload</h4>
+              <p style={{ color: 'var(--text-light)', fontSize: '13px', lineHeight: '1.6', margin: 0 }}>Enter KCSE grades and upload copies of your ID/birth certificate and result slip.</p>
             </div>
 
-            <div style={{ background: 'var(--bg-card)', padding: '18px 20px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-light)' }}>
-              <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'var(--accent-teal)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '13px', fontWeight: '700', marginBottom: '10px' }}>
+            <div style={{ background: 'var(--bg-card)', padding: '20px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-light)' }}>
+              <div style={{ width: '30px', height: '30px', borderRadius: '50%', background: 'var(--accent-teal)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '13px', fontWeight: '700', marginBottom: '12px' }}>
                 3
               </div>
-              <h4 style={{ fontSize: '15px', marginBottom: '4px', color: 'var(--text-dark)', fontWeight: '700' }}>Download Letter</h4>
-              <p style={{ color: 'var(--text-light)', fontSize: '12.5px', lineHeight: '1.5', margin: 0 }}>Receive your official QR-verified admission letter and joining instructions.</p>
+              <h4 style={{ fontSize: '15px', marginBottom: '6px', color: 'var(--text-dark)', fontWeight: '700' }}>Download Letter</h4>
+              <p style={{ color: 'var(--text-light)', fontSize: '13px', lineHeight: '1.6', margin: 0 }}>Receive your official QR-verified admission letter and joining instructions.</p>
             </div>
           </div>
 
-          <div style={{ textAlign: 'center', marginTop: '22px' }}>
-            <Link href="/register" className="btn btn-primary" style={{ padding: '10px 22px', fontSize: '14px' }}>
+          <div style={{ textAlign: 'center', marginTop: '24px' }}>
+            <Link href="/register" className="btn btn-primary" style={{ padding: '11px 24px', fontSize: '14px' }}>
               Start Online Application
             </Link>
           </div>

@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useToast } from '@/components/Toast';
+import GradeRequirementBreakdown from '@/components/dashboard/GradeRequirementBreakdown';
 
 interface Document {
   id: string;
@@ -37,6 +38,8 @@ interface Application {
     name: string;
     code: string;
     level: string;
+    minGradeRequirement?: any;
+    feesStructure?: any;
   };
   documents: Document[];
   admissionLetter: AdmissionLetter | null;
@@ -353,6 +356,16 @@ export default function DashboardPage() {
                   </div>
                 </div>
               )}
+
+              {/* Visual Academic Grade Requirement Breakdown Matrix */}
+              <GradeRequirementBreakdown
+                programmeName={app.programme.name}
+                programmeCode={app.programme.code}
+                minGradeRequirement={app.programme.minGradeRequirement}
+                kcseMeanGrade={app.kcseMeanGrade}
+                subjectGrades={app.subjectGrades}
+                applicationStatus={app.status}
+              />
 
               {/* Receipt and Summary Downloads Area */}
               {(app.paymentStatus === 'paid' || app.status !== 'draft') && (

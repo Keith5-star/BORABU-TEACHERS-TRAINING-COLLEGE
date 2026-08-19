@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import { useToast } from '@/components/Toast';
+import GradeRequirementBreakdown from '@/components/dashboard/GradeRequirementBreakdown';
 
 interface Document {
   id: string;
@@ -520,8 +521,6 @@ export default function ApplicationWizardPage() {
       subjectsPassed
     };
   };
-
-  const precheck = runLocalCheck();
 
   // Progress calculations
   const progressPercentage = Math.round(((currentStep - 1) / 5) * 100);
@@ -1223,14 +1222,16 @@ export default function ApplicationWizardPage() {
               </div>
             </div>
 
-            {/* Real-time precheck status */}
+            {/* Real-time Academic Grade Breakdown */}
             <div style={{ marginTop: '20px' }}>
-              <div className={precheck.eligible ? 'alert alert-success' : 'alert alert-danger'} style={{ margin: 0, fontSize: '13px' }}>
-                <div>
-                  <strong>Academic Eligibility Pre-check:</strong>
-                  <p style={{ marginTop: '4px' }}>{precheck.message}</p>
-                </div>
-              </div>
+              <GradeRequirementBreakdown
+                programmeName={app?.programme.name || 'Selected Programme'}
+                programmeCode={app?.programme.code || ''}
+                minGradeRequirement={app?.programme.minGradeRequirement}
+                kcseMeanGrade={kcseMeanGrade}
+                subjectGrades={subjectGrades}
+                showCardWrapper={false}
+              />
             </div>
           </div>
         )}

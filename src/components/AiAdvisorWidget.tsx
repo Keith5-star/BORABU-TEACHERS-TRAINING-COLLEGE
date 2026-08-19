@@ -184,10 +184,11 @@ export default function AiAdvisorWidget() {
     <>
       {/* Floating Launcher Button */}
       <div
+        className="ai-advisor-launcher-wrap"
         style={{
           position: 'fixed',
-          bottom: '24px',
-          right: '24px',
+          bottom: '20px',
+          right: '20px',
           zIndex: 9999,
           display: 'flex',
           flexDirection: 'column',
@@ -199,48 +200,14 @@ export default function AiAdvisorWidget() {
           <button
             onClick={() => setIsOpen(true)}
             id="btn-open-ai-advisor"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '10px',
-              padding: '12px 20px',
-              background: 'linear-gradient(135deg, #0b2545 0%, #134074 100%)',
-              color: '#ffffff',
-              border: '2px solid rgba(205, 163, 79, 0.4)',
-              borderRadius: '30px',
-              boxShadow: '0 8px 24px rgba(11, 37, 69, 0.25)',
-              cursor: 'pointer',
-              fontWeight: '600',
-              fontSize: '14px',
-              transition: 'all 0.2s ease',
-            }}
+            className="ai-advisor-btn"
+            aria-label="Open Admissions AI Advisor"
           >
-            <span
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '28px',
-                height: '28px',
-                borderRadius: '50%',
-                background: '#cda34f',
-                color: '#0b2545',
-                fontSize: '16px',
-                fontWeight: 'bold',
-              }}
-            >
+            <span className="ai-advisor-icon">
               ✦
             </span>
-            <span>Ask Admissions AI</span>
-            <span
-              style={{
-                width: '8px',
-                height: '8px',
-                borderRadius: '50%',
-                background: '#10b981',
-                boxShadow: '0 0 8px #10b981',
-              }}
-            />
+            <span className="ai-advisor-label">Ask Admissions AI</span>
+            <span className="ai-advisor-status-dot" />
           </button>
         )}
 
@@ -248,21 +215,7 @@ export default function AiAdvisorWidget() {
         {isOpen && (
           <div
             id="ai-advisor-window"
-            style={{
-              width: '380px',
-              maxWidth: 'calc(100vw - 32px)',
-              height: '560px',
-              maxHeight: 'calc(100vh - 100px)',
-              background: 'var(--surface-color, #ffffff)',
-              color: 'var(--text-color, #1e293b)',
-              borderRadius: '16px',
-              border: '1px solid rgba(11, 37, 69, 0.12)',
-              boxShadow: '0 20px 40px rgba(0, 0, 0, 0.2)',
-              display: 'flex',
-              flexDirection: 'column',
-              overflow: 'hidden',
-              animation: 'fadeIn 0.2s ease-out',
-            }}
+            className="ai-advisor-window"
           >
             {/* Window Header */}
             <div
