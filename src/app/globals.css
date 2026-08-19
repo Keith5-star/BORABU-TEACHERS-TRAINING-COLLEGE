@@ -317,35 +317,46 @@ button, input, select, textarea {
 
 /* Hero Section */
 .hero {
-  padding: 120px 0 100px 0;
-  background-image: linear-gradient(rgba(12, 24, 33, 0.88), rgba(12, 24, 33, 0.88)), url('/images/hero_students.jpg');
+  padding: 68px 0 44px 0;
+  background-image: linear-gradient(rgba(12, 24, 33, 0.91), rgba(12, 24, 33, 0.93)), url('/images/hero_students.jpg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
   color: #ffffff;
   border-bottom: 1px solid var(--border-light);
   position: relative;
-  min-height: 580px;
   display: flex;
   align-items: center;
 }
 
-.hero-container {
-  width: 100%;
-  max-width: 850px;
-  margin: 0 auto;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
+.hero-content {
+  max-width: 860px;
+  text-align: left;
+}
+
+.hero-tag {
+  display: inline-flex;
   align-items: center;
+  gap: 6px;
+  background: rgba(183, 121, 31, 0.18);
+  color: var(--accent-gold);
+  border: 1px solid rgba(183, 121, 31, 0.35);
+  padding: 5px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 16px;
 }
 
 .hero-title {
-  font-size: 52px;
-  font-weight: 700;
-  margin-bottom: 24px;
+  font-size: 44px;
+  font-weight: 800;
+  margin-bottom: 16px;
   line-height: 1.2;
   color: #ffffff;
+  letter-spacing: -0.5px;
 }
 
 .hero-title span {
@@ -353,44 +364,69 @@ button, input, select, textarea {
 }
 
 .hero-subtitle {
-  font-size: 18px;
-  color: rgba(255, 255, 255, 0.9);
-  margin-bottom: 35px;
-  max-width: 680px;
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.88);
+  margin-bottom: 26px;
   line-height: 1.7;
+  max-width: 760px;
 }
 
 .hero-buttons {
   display: flex;
-  gap: 16px;
-  justify-content: center;
+  gap: 12px;
   flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 22px;
 }
 
-.hero-stats {
+.hero-support-line {
   display: flex;
-  gap: 50px;
-  margin-top: 50px;
-  border-top: 2px solid rgba(255, 255, 255, 0.15);
-  padding-top: 30px;
-  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.hero-support-line a {
+  color: var(--accent-gold);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.hero-support-line a:hover {
+  text-decoration: underline;
+}
+
+.hero-stats-bar {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  margin-top: 40px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
   width: 100%;
-  max-width: 600px;
+}
+
+.stat-item {
+  text-align: left;
 }
 
 .stat-item h3 {
-  font-size: 34px;
+  font-size: 24px;
   color: var(--accent-gold);
   font-family: 'Lora', 'Georgia', serif;
   font-weight: 700;
+  margin-bottom: 2px;
 }
 
 .stat-item p {
   font-size: 12px;
   color: rgba(255, 255, 255, 0.7);
   text-transform: uppercase;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: 0.5px;
+  line-height: 1.4;
 }
 
 /* Feature Grid / Cards */
@@ -763,32 +799,41 @@ button, input, select, textarea {
 }
 
 @media (max-width: 768px) {
+  .hero {
+    padding: 50px 0 40px 0;
+  }
   .hero-grid {
     grid-template-columns: 1fr;
     gap: 32px;
-    text-align: center;
+    text-align: left;
   }
   .hero-title {
-    font-size: 32px;
-    line-height: 1.2;
+    font-size: 30px;
+    line-height: 1.25;
   }
   .hero-subtitle {
-    font-size: 15px;
-    margin: 0 auto 24px auto;
+    font-size: 14px;
+    margin-bottom: 20px;
   }
   .hero-buttons {
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 12px;
+    flex-direction: column;
+    width: 100%;
+    gap: 10px;
   }
   .hero-buttons .btn {
     width: 100%;
     text-align: center;
   }
-  .hero-stats {
-    justify-content: center;
-    gap: 20px;
-    flex-wrap: wrap;
+  .hero-support-line {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+  .hero-stats-bar {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin-top: 32px;
+    padding-top: 20px;
   }
   .footer-grid {
     grid-template-columns: 1fr 1fr;

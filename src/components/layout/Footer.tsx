@@ -6,37 +6,14 @@ export default function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="main-footer" style={{ padding: '48px 0 24px', background: 'var(--primary-deep)', color: 'white', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+    <footer className="main-footer" style={{ padding: '40px 0 20px', background: 'var(--primary-deep)', color: 'white', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
       <div className="container">
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '32px 24px', marginBottom: '36px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '32px', marginBottom: '32px' }}>
           
-          {/* Institution Column */}
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
-              <div style={{ width: '28px', height: '32px' }}>
-                <svg width="28" height="32" viewBox="0 0 36 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M18 2L2 9V18C2 28.5 10.5 35.8 18 38C25.5 35.8 34 28.5 34 18V9L18 2Z" fill="var(--primary-blue)" stroke="var(--accent-gold)" strokeWidth="2.5" strokeLinejoin="round"/>
-                  <path d="M12 18H24M12 22H20" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-                  <path d="M18 10L14 13.5V15H22V13.5L18 10Z" fill="var(--accent-gold)"/>
-                </svg>
-              </div>
-              <h3 style={{ fontSize: '17px', color: 'white', margin: 0, fontWeight: '700', letterSpacing: '-0.3px' }}>
-                BORABU TTC
-              </h3>
-            </div>
-            <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.65)', lineHeight: '1.6', marginBottom: '12px' }}>
-              Premier teacher training college offering accredited DPTE & DECTE diploma courses in Nyamira County.
-            </p>
-            <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)', lineHeight: '1.5', padding: '6px 10px', background: 'rgba(255,255,255,0.05)', borderRadius: 'var(--radius-sm)', border: '1px solid rgba(255,255,255,0.08)' }}>
-              MoE Reg: MOE-TTC/PRIVATE/2021/089<br/>
-              TSC Teacher Education Accredited
-            </div>
-          </div>
-
           {/* Programmes */}
           <div>
             <h4 style={{ fontSize: '14px', color: 'var(--accent-gold)', marginBottom: '14px', textTransform: 'uppercase', letterSpacing: '0.8px', fontWeight: '700' }}>
-              Academic Courses
+              Academic Programmes
             </h4>
             <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '8px' }}>
               <li>
@@ -56,7 +33,7 @@ export default function Footer() {
               </li>
               <li>
                 <Link href="/admissions" className="footer-link" style={{ fontSize: '13px' }}>
-                  Admission Criteria & Checklist
+                  Admission Requirements & Checklist
                 </Link>
               </li>
               <li>

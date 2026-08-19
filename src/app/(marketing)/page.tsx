@@ -5,39 +5,50 @@ export default function HomePage() {
     <div>
       {/* Hero Section */}
       <section className="hero">
-        <div className="container hero-container">
+        <div className="container">
           <div className="hero-content">
-            <span className="section-tag">Train to Become a Certified TSC Teacher</span>
             <h1 className="hero-title">
-              Become a TSC-Registered Teacher at <span>Borabu Teachers Training College</span>
+              Become a TSC-Registered Teacher at <span>Borabu TTC</span>
             </h1>
             <p className="hero-subtitle">
-              Located in Nyamira County, we offer accredited Diploma in Primary Teacher Education (DPTE) and Early Childhood Teacher Education (DECTE/CECTE) programmes.
+              Accredited teacher education college in Nyamira County offering Diploma in Primary Teacher Education (DPTE), Early Childhood Teacher Education (DECTE/CECTE), and CBC Upgrade programmes with full KNEC certification.
             </p>
             
             <div className="hero-buttons">
-              <Link href="/register" className="btn btn-primary">
+              <Link href="/register" className="btn btn-primary" style={{ padding: '12px 24px', fontSize: '15px' }}>
                 Apply Online Now
               </Link>
-              <Link href="/programmes" className="btn btn-secondary">
+              <Link href="/programmes" className="btn btn-secondary" style={{ padding: '12px 20px', fontSize: '15px' }}>
                 Explore Programmes
               </Link>
             </div>
 
-            {/* Key Badges */}
-            <div className="hero-stats">
-              <div className="stat-item">
-                <h3>100%</h3>
-                <p>TSC Alignment Rate</p>
-              </div>
-              <div className="stat-item">
-                <h3>KNEC</h3>
-                <p>National Exam Center</p>
-              </div>
-              <div className="stat-item">
-                <h3>Approved</h3>
-                <p>MoE & TSC Registered</p>
-              </div>
+            <div className="hero-support-line">
+              <span>Direct Admissions Hotline: <a href="tel:0101930121">0101930121</a></span>
+              <span>&bull;</span>
+              <span>WhatsApp: <a href="https://wa.me/254101930121" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent-teal)' }}>Chat 0101930121</a></span>
+              <span>&bull;</span>
+              <span>Campus: Kebirigo, Nyamira County</span>
+            </div>
+          </div>
+
+          {/* Full-width Stats Bar */}
+          <div className="hero-stats-bar">
+            <div className="stat-item">
+              <h3>100%</h3>
+              <p>TSC & CBC Curriculum Alignment</p>
+            </div>
+            <div className="stat-item">
+              <h3>KNEC</h3>
+              <p>Certified National Exam Center</p>
+            </div>
+            <div className="stat-item">
+              <h3>Direct</h3>
+              <p>KUCCPS & Direct College Placement</p>
+            </div>
+            <div className="stat-item">
+              <h3>Instant</h3>
+              <p>QR Verifiable Admission Letters</p>
             </div>
           </div>
         </div>
@@ -109,20 +120,6 @@ export default function HomePage() {
               Start Online Application
             </Link>
           </div>
-        </div>
-      </section>
-
-      {/* Minimal Verification CTA */}
-      <section className="section" style={{ background: 'var(--bg-card)', textAlign: 'center' }}>
-        <div className="container" style={{ maxWidth: '600px' }}>
-          <span className="section-tag" style={{ margin: '0 auto 8px' }}>Verification</span>
-          <h2 style={{ fontSize: '22px', marginBottom: '10px' }}>Verify an Admission Letter</h2>
-          <p style={{ color: 'var(--text-light)', marginBottom: '20px', fontSize: '13px', lineHeight: '1.6' }}>
-            Need to confirm the validity of a Borabu Teachers Training College admission letter? Use our official verification portal.
-          </p>
-          <Link href="/verify/check" className="btn btn-secondary">
-            Verify Letter Authenticity
-          </Link>
         </div>
       </section>
     </div>
