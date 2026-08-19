@@ -56,35 +56,25 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Admissions Support & KUCCPS Notice */}
-      <section style={{ background: 'var(--primary-light)', padding: '30px 0', borderBottom: '1px solid var(--border-light)' }}>
+      {/* Admissions Support & KUCCPS Placement Info */}
+      <section style={{ background: 'var(--bg-main)', padding: '24px 0', borderBottom: '1px solid var(--border-light)' }}>
         <div className="container">
-          <div style={{ background: 'var(--bg-card)', borderLeft: '4px solid var(--accent-gold)', padding: '24px 28px', borderRadius: '0 var(--radius-md) var(--radius-md) 0', boxShadow: 'var(--shadow-sm)', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
-              <span style={{ background: 'var(--accent-gold)', color: 'white', padding: '4px 8px', fontSize: '11px', fontWeight: 'bold', borderRadius: '2px', textTransform: 'uppercase', letterSpacing: '1px' }}>
-                Urgent Notice
-              </span>
-              <h3 style={{ fontSize: '18px', margin: 0, color: 'var(--text-dark)' }}>
-                Admissions, Upgrading & Application Support Desk
-              </h3>
-            </div>
+          <div style={{ background: 'var(--bg-card)', borderLeft: '3px solid var(--primary-blue)', padding: '20px 24px', borderRadius: 'var(--radius-md)', borderTop: '1px solid var(--border-light)', borderRight: '1px solid var(--border-light)', borderBottom: '1px solid var(--border-light)', boxShadow: 'var(--shadow-sm)' }}>
+            <h3 style={{ fontSize: '16px', fontWeight: '700', marginBottom: '8px', color: 'var(--text-dark)' }}>
+              Admissions Support & Direct Applications
+            </h3>
             
-            <p style={{ fontSize: '14px', lineHeight: '1.6', color: 'var(--text-main)', margin: 0 }}>
-              If you have queries or are experiencing issues with <strong>Admission letters</strong>, <strong>Deferment letters</strong>, <strong>DPTE/DSTE Applications</strong>, <strong>School-based applications</strong>, <strong>SNE (Special Needs Education)</strong>, <strong>Upgrading courses</strong>, or <strong>Unsuccessful applications</strong>:
+            <p style={{ fontSize: '14px', lineHeight: '1.6', color: 'var(--text-main)', margin: '0 0 12px 0' }}>
+              For questions or assistance regarding admission letters, deferments, DPTE/DSTE/SNE applications, upgrading programs, or general application status, please reach out to the admissions office. If you missed placement under KUCCPS, you are welcome to submit a direct application to the college.
             </p>
             
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '15px 30px', background: 'var(--bg-main)', padding: '12px 18px', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-light)' }}>
-              <span style={{ fontSize: '13px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                📞 <strong>Direct Line:</strong> <a href="tel:0101930121" style={{ color: 'var(--primary-blue)', fontWeight: 'bold' }}>0101930121</a>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px 24px', alignItems: 'center', fontSize: '13px' }}>
+              <span style={{ color: 'var(--text-light)' }}>
+                📞 <strong>Call Admissions:</strong> <a href="tel:0101930121" style={{ color: 'var(--primary-blue)', fontWeight: '600' }}>0101930121</a>
               </span>
-              <span style={{ fontSize: '13px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                💬 <strong>WhatsApp Chat:</strong> <a href="https://wa.me/254101930121" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent-teal)', fontWeight: 'bold' }}>Chat on WhatsApp</a>
+              <span style={{ color: 'var(--text-light)' }}>
+                💬 <strong>WhatsApp Registrar:</strong> <a href="https://wa.me/254101930121" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent-teal)', fontWeight: '600' }}>Chat on WhatsApp</a>
               </span>
-            </div>
-
-            <div className="alert alert-warning" style={{ margin: 0, padding: '12px 16px', background: 'hsl(38, 100%, 97%)', border: '1px dashed var(--accent-gold)', color: 'hsl(38, 80%, 25%)', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <span>📢</span>
-              <span><strong>KUCCPS Placement Notice:</strong> If you missed placement under KUCCPS, this is the right time to make a direct application to Borabu TTC. Call or WhatsApp the registrar at <strong>0101930121</strong> to secure your slot today!</span>
             </div>
           </div>
         </div>
@@ -194,22 +184,82 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Testimonials Section */}
+      {/* Campus Facilities & Gallery Section */}
       <section className="section" style={{ background: 'var(--bg-main)', borderTop: '1px solid var(--border-light)', borderBottom: '1px solid var(--border-light)' }}>
+        <div className="container">
+          <div className="section-header">
+            <span className="section-tag">Our Campus</span>
+            <h2 className="section-title">Campus Life & Facilities</h2>
+            <p className="section-desc">Take a look at our training facilities, gardens, and vibrant student community in Nyamira County.</p>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px', marginTop: '40px' }}>
+            <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border-light)', borderRadius: 'var(--radius-lg)', overflow: 'hidden', boxShadow: 'var(--shadow-sm)' }}>
+              <div style={{ height: '220px', overflow: 'hidden', background: '#eee' }}>
+                <img 
+                  src="/images/campus_garden.jpg" 
+                  alt="Borabu TTC Campus Gardens" 
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                />
+              </div>
+              <div style={{ padding: '20px' }}>
+                <h4 style={{ fontSize: '16px', color: 'var(--text-dark)', marginBottom: '8px' }}>Campus Facilities & Grounds</h4>
+                <p style={{ fontSize: '13px', color: 'var(--text-light)', lineHeight: '1.5' }}>Our serene and quiet learning environment located in Nyamira County provides the ideal atmosphere for academic focus and professional growth.</p>
+              </div>
+            </div>
+
+            <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border-light)', borderRadius: 'var(--radius-lg)', overflow: 'hidden', boxShadow: 'var(--shadow-sm)' }}>
+              <div style={{ height: '220px', overflow: 'hidden', background: '#eee' }}>
+                <img 
+                  src="/images/campus_students_line.jpg" 
+                  alt="Student Teacher Training" 
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                />
+              </div>
+              <div style={{ padding: '20px' }}>
+                <h4 style={{ fontSize: '16px', color: 'var(--text-dark)', marginBottom: '8px' }}>Practical Teacher Training</h4>
+                <p style={{ fontSize: '13px', color: 'var(--text-light)', lineHeight: '1.5' }}>Student-teachers actively participate in micro-teaching sessions, peer reviews, and local school practicums to master CBC instructional skills.</p>
+              </div>
+            </div>
+
+            <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border-light)', borderRadius: 'var(--radius-lg)', overflow: 'hidden', boxShadow: 'var(--shadow-sm)' }}>
+              <div style={{ height: '220px', overflow: 'hidden', background: '#eee' }}>
+                <img 
+                  src="/images/campus_celebration.jpg" 
+                  alt="Borabu TTC Graduation & Celebration" 
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                />
+              </div>
+              <div style={{ padding: '20px' }}>
+                <h4 style={{ fontSize: '16px', color: 'var(--text-dark)', marginBottom: '8px' }}>KNEC Examination Success</h4>
+                <p style={{ fontSize: '13px', color: 'var(--text-light)', lineHeight: '1.5' }}>Celebrating the achievements of our certified teacher graduates as they enter the workforce and obtain their official TSC registration.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials Section */}
+      <section className="section" style={{ background: 'var(--bg-card)', borderBottom: '1px solid var(--border-light)' }}>
         <div className="container">
           <div className="section-header">
             <span className="section-tag">Student & Community Stories</span>
             <h2 className="section-title">What Our Community Says</h2>
-            <p className="section-desc">Hear from our graduates, lecturers, and parents about our commitment to excellence in teacher education.</p>
+            <p className="section-desc">Hear from our graduates, lecturers, and parents about their actual experiences at the college.</p>
           </div>
 
           <div className="card-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '30px', marginTop: '40px' }}>
-            <div className="card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%', background: 'var(--bg-card)' }}>
+            <div className="card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%', background: 'var(--bg-main)' }}>
               <p style={{ fontStyle: 'italic', color: 'var(--text-main)', fontSize: '14px', lineHeight: '1.6', marginBottom: '20px' }}>
-                "Borabu TTC prepared me for my career. The micro-teaching sessions gave me real classroom confidence, and I got my TSC registration number within a month of graduating! I am now happily teaching at Nyansiongo Primary School."
+                "I joined Borabu in 2022 for the primary teaching diploma. The lecturers are very supportive—they really walk with you during school practice. I completed my KNEC exams last year and I'm already teaching at a local primary school here in Nyamira."
               </p>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'var(--primary-blue)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>MC</div>
+                <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'var(--primary-light)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary-blue)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                  </svg>
+                </div>
                 <div>
                   <h4 style={{ fontSize: '14px', margin: 0 }}>Mercy Chepngetich</h4>
                   <p style={{ fontSize: '12px', color: 'var(--text-light)', margin: 0 }}>DPTE Graduate (Class of 2024)</p>
@@ -217,12 +267,17 @@ export default function HomePage() {
               </div>
             </div>
 
-            <div className="card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%', background: 'var(--bg-card)' }}>
+            <div className="card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%', background: 'var(--bg-main)' }}>
               <p style={{ fontStyle: 'italic', color: 'var(--text-main)', fontSize: '14px', lineHeight: '1.6', marginBottom: '20px' }}>
-                "We don't just teach the curriculum; we mentor future leaders. Our science and micro-teaching labs are fully equipped to ensure student-teachers master instructional skills long before their field placement."
+                "We focus heavily on hands-on practice. Before our student-teachers go for their external teaching practice, we take them through micro-teaching sessions where they practice lesson delivery with their peers. It builds their confidence early."
               </p>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'var(--accent-gold)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>JN</div>
+                <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'hsl(38, 92%, 96%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent-gold)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                  </svg>
+                </div>
                 <div>
                   <h4 style={{ fontSize: '14px', margin: 0 }}>Mr. John Ndwiga</h4>
                   <p style={{ fontSize: '12px', color: 'var(--text-light)', margin: 0 }}>Education Department Lecturer</p>
@@ -230,12 +285,17 @@ export default function HomePage() {
               </div>
             </div>
 
-            <div className="card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%', background: 'var(--bg-card)' }}>
+            <div className="card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%', background: 'var(--bg-main)' }}>
               <p style={{ fontStyle: 'italic', color: 'var(--text-main)', fontSize: '14px', lineHeight: '1.6', marginBottom: '20px' }}>
-                "Kenyan parents are naturally skeptical of small colleges, but Borabu's transparent fee structures, physical campus, and TSC accreditation gave me peace of mind. My son is now a registered primary school teacher."
+                "My daughter finished her DPTE course here. What pleased me most was that the fees were exactly as advertised—no hidden charges midway through the term. She has already received her TSC registration number."
               </p>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'var(--accent-teal)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>SM</div>
+                <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'hsl(172, 45%, 95%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent-teal)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                  </svg>
+                </div>
                 <div>
                   <h4 style={{ fontSize: '14px', margin: 0 }}>Mr. Silas Mwangi</h4>
                   <p style={{ fontSize: '12px', color: 'var(--text-light)', margin: 0 }}>Parent of DPTE Graduate</p>
