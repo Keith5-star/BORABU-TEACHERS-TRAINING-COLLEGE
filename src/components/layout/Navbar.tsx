@@ -3,7 +3,6 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import ContrastToggle from '../ContrastToggle';
 
 interface User {
   id: string;
@@ -17,6 +16,7 @@ export default function Navbar() {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -42,7 +42,12 @@ export default function Navbar() {
     return () => {
       isMounted = false;
     };
-  }, []); // Only check on mount, not on every single pathname change
+  }, []);
+
+  // Close mobile drawer on route navigation
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [pathname]);
 
   const handleLogout = async () => {
     try {
@@ -61,6 +66,18 @@ export default function Navbar() {
     return pathname === path ? 'active' : '';
   };
 
+  const NAV_LINKS = [
+    { href: '/', label: 'Home' },
+    { href: '/about', label: 'About' },
+    { href: '/programmes', label: 'Programmes' },
+    { href: '/admissions', label: 'Admissions' },
+    { href: '/fees', label: 'Fees' },
+    { href: '/gallery', label: 'Gallery' },
+    { href: '/news', label: 'News' },
+    { href: '/faqs', label: 'FAQs' },
+    { href: '/contact', label: 'Contact' },
+  ];
+
   return (
     <header className="main-header">
       <div className="container nav-container">
@@ -73,89 +90,124 @@ export default function Navbar() {
         </Link>
 
         {/* Desktop Menu */}
-        <nav>
+        <nav className="desktop-nav">
           <ul className="nav-menu">
-            <li>
-              <Link href="/" className={`nav-link ${isLinkActive('/')}`}>
-                Home
-              </Link>
-            </li>
-            <li>
-              <Link href="/about" className={`nav-link ${isLinkActive('/about')}`}>
-                About
-              </Link>
-            </li>
-            <li>
-              <Link href="/programmes" className={`nav-link ${isLinkActive('/programmes')}`}>
-                Programmes
-              </Link>
-            </li>
-            <li>
-              <Link href="/admissions" className={`nav-link ${isLinkActive('/admissions')}`}>
-                Admissions
-              </Link>
-            </li>
-            <li>
-              <Link href="/fees" className={`nav-link ${isLinkActive('/fees')}`}>
-                Fees
-              </Link>
-            </li>
-            <li>
-              <Link href="/gallery" className={`nav-link ${isLinkActive('/gallery')}`}>
-                Gallery
-              </Link>
-            </li>
-            <li>
-              <Link href="/news" className={`nav-link ${isLinkActive('/news')}`}>
-                News
-              </Link>
-            </li>
-            <li>
-              <Link href="/faqs" className={`nav-link ${isLinkActive('/faqs')}`}>
-                FAQs
-              </Link>
-            </li>
-            <li>
-              <Link href="/contact" className={`nav-link ${isLinkActive('/contact')}`}>
-                Contact
-              </Link>
-            </li>
+            {NAV_LINKS.map((link) => (
+              <li key={link.href}>
+                <Link href={link.href} className={`nav-link ${isLinkActive(link.href)}`}>
+                  {link.label}
+                </Link>
+              </li>
+            ))}
           </ul>
         </nav>
 
-        <div className="nav-cta" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-          <ContrastToggle />
+        {/* Desktop CTAs */}
+        <div className="nav-cta desktop-cta">
           {loading ? (
-            <span style={{ fontSize: '14px', color: 'var(--text-light)' }}>Loading...</span>
+            <span style={{ fontSize: '13px', color: 'var(--text-light)' }}>Checking session...</span>
           ) : user ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
               <Link 
                 href={user.role === 'applicant' ? '/dashboard' : '/admin'} 
                 className="btn btn-secondary"
-                style={{ fontSize: '13px', padding: '8px 16px' }}
+                style={{ fontSize: '13px', padding: '8px 14px' }}
               >
                 {user.role === 'applicant' ? 'Portal Dashboard' : 'Admin Area'}
               </Link>
               <button 
                 onClick={handleLogout} 
                 className="btn btn-primary"
-                style={{ fontSize: '13px', padding: '8px 16px', background: 'hsl(0, 72%, 51%)' }}
+                style={{ fontSize: '13px', padding: '8px 14px', background: 'hsl(0, 72%, 51%)' }}
               >
                 Logout
               </button>
             </div>
           ) : (
-            <>
-              <Link href="/login" className="btn btn-secondary">
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <Link href="/login" className="btn btn-secondary" style={{ fontSize: '13px', padding: '8px 14px' }}>
                 Login
               </Link>
-              <Link href="/register" className="btn btn-primary">
+              <Link href="/register" className="btn btn-primary" style={{ fontSize: '13px', padding: '8px 16px' }}>
                 Apply Now
               </Link>
-            </>
+            </div>
           )}
         </div>
+
+        {/* Mobile Hamburger Toggle Button */}
+        <button
+          className="mobile-hamburger-btn"
+          onClick={() => setMobileMenuOpen((prev) => !prev)}
+          aria-label={mobileMenuOpen ? 'Close Menu' : 'Open Menu'}
+          aria-expanded={mobileMenuOpen}
+        >
+          {mobileMenuOpen ? '✕' : '☰'}
+        </button>
       </div>
+
+      {/* Mobile Drawer Menu */}
+      {mobileMenuOpen && (
+        <div className="mobile-nav-drawer">
+          <ul className="mobile-nav-list">
+            {NAV_LINKS.map((link) => (
+              <li key={link.href}>
+                <Link
+                  href={link.href}
+                  className={`mobile-nav-link ${isLinkActive(link.href)}`}
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  {link.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+
+          <div className="mobile-nav-actions">
+            {user ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '100%' }}>
+                <Link 
+                  href={user.role === 'applicant' ? '/dashboard' : '/admin'} 
+                  className="btn btn-secondary"
+                  style={{ textAlign: 'center', width: '100%', padding: '12px' }}
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  {user.role === 'applicant' ? 'Portal Dashboard' : 'Admin Area'}
+                </Link>
+                <button 
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    handleLogout();
+                  }}
+                  className="btn btn-primary"
+                  style={{ width: '100%', padding: '12px', background: 'hsl(0, 72%, 51%)' }}
+                >
+                  Logout
+                </button>
+              </div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '100%' }}>
+                <Link
+                  href="/login"
+                  className="btn btn-secondary"
+                  style={{ textAlign: 'center', width: '100%', padding: '12px' }}
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Applicant Login
+                </Link>
+                <Link
+                  href="/register"
+                  className="btn btn-primary"
+                  style={{ textAlign: 'center', width: '100%', padding: '12px' }}
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Apply Online Now
+                </Link>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </header>
   );
 }
