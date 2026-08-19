@@ -22,14 +22,6 @@ export default function HomePage() {
                 Explore Programmes
               </Link>
             </div>
-
-            <div className="hero-support-line">
-              <span>Direct Admissions Hotline: <a href="tel:0101930121">0101930121</a></span>
-              <span>&bull;</span>
-              <span>WhatsApp: <a href="https://wa.me/254101930121" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent-teal)' }}>Chat 0101930121</a></span>
-              <span>&bull;</span>
-              <span>Campus: Kebirigo, Nyamira County</span>
-            </div>
           </div>
 
           {/* Full-width Stats Bar anchored cleanly at the base of the Hero */}
