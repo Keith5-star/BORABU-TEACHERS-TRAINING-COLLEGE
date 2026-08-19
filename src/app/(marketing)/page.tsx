@@ -24,19 +24,7 @@ export default function HomePage() {
               </Link>
             </div>
 
-            {/* Accreditation inline trust seals */}
-            <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginTop: '24px', justifyContent: 'center' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(255, 255, 255, 0.08)', padding: '8px 14px', borderRadius: 'var(--radius-sm)', border: '1px solid rgba(255, 255, 255, 0.15)', fontSize: '12px', color: 'rgba(255, 255, 255, 0.9)', fontWeight: '600' }}>
-                🛡️ TSC Accredited Training
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(255, 255, 255, 0.08)', padding: '8px 14px', borderRadius: 'var(--radius-sm)', border: '1px solid rgba(255, 255, 255, 0.15)', fontSize: '12px', color: 'rgba(255, 255, 255, 0.9)', fontWeight: '600' }}>
-                📜 Ministry Licensed (MOE)
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(255, 255, 255, 0.08)', padding: '8px 14px', borderRadius: 'var(--radius-sm)', border: '1px solid rgba(255, 255, 255, 0.15)', fontSize: '12px', color: 'rgba(255, 255, 255, 0.9)', fontWeight: '600' }}>
-                🏫 KNEC Examination Center
-              </div>
-            </div>
-            
+
             {/* Stats */}
             <div className="hero-stats">
               <div className="stat-item">
