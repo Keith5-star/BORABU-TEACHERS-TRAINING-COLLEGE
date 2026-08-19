@@ -449,7 +449,8 @@ button, input, select, textarea {
 
 .card:hover {
   border-color: var(--primary-blue);
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-4px);
 }
 
 .card-icon {

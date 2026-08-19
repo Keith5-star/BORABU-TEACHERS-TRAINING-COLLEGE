@@ -82,7 +82,13 @@ export default function Navbar() {
     <header className="main-header">
       <div className="container nav-container">
         <Link href="/" className="logo-link">
-          <div className="logo-icon">B</div>
+          <div className="logo-icon" style={{ background: 'none', width: 'auto', height: 'auto', display: 'flex', alignItems: 'center' }}>
+            <svg width="34" height="38" viewBox="0 0 36 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M18 2L2 9V18C2 28.5 10.5 35.8 18 38C25.5 35.8 34 28.5 34 18V9L18 2Z" fill="var(--primary-blue)" stroke="var(--accent-gold)" strokeWidth="2.5" strokeLinejoin="round"/>
+              <path d="M12 18H24M12 22H20" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+              <path d="M18 10L14 13.5V15H22V13.5L18 10Z" fill="var(--accent-gold)"/>
+            </svg>
+          </div>
           <div className="logo-text">
             <h1>BORABU TTC</h1>
             <div className="logo-tagline">Teachers Training College</div>

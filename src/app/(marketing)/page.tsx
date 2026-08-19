@@ -89,32 +89,32 @@ export default function HomePage() {
             <p className="section-desc">Our online portal speeds up registration and provides instant eligibility feedback.</p>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '24px', margin: '40px 0' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', background: 'var(--bg-card)', padding: '30px 24px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-light)', boxShadow: 'var(--shadow-sm)' }}>
-              <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'var(--primary-light)', color: 'var(--primary-blue)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', fontWeight: '800' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '40px 24px', marginTop: '56px', marginBottom: '40px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', background: 'var(--bg-card)', padding: '30px 24px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-light)', borderTop: '4px solid var(--primary-blue)', boxShadow: 'var(--shadow-sm)', position: 'relative' }}>
+              <div style={{ position: 'absolute', top: '-24px', left: '24px', width: '48px', height: '48px', borderRadius: '50%', background: 'var(--primary-blue)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', fontWeight: '800', boxShadow: 'var(--shadow-md)' }}>
                 1
               </div>
-              <div>
+              <div style={{ marginTop: '12px' }}>
                 <h4 style={{ fontSize: '18px', marginBottom: '8px', color: 'var(--text-dark)' }}>Create an Account</h4>
                 <p style={{ color: 'var(--text-light)', fontSize: '14px', lineHeight: '1.6' }}>Sign up using your name, email, and phone number to activate your secure applicant portal dashboard.</p>
               </div>
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', background: 'var(--bg-card)', padding: '30px 24px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-light)', boxShadow: 'var(--shadow-sm)' }}>
-              <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'var(--primary-light)', color: 'var(--primary-blue)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', fontWeight: '800' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', background: 'var(--bg-card)', padding: '30px 24px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-light)', borderTop: '4px solid var(--accent-gold)', boxShadow: 'var(--shadow-sm)', position: 'relative' }}>
+              <div style={{ position: 'absolute', top: '-24px', left: '24px', width: '48px', height: '48px', borderRadius: '50%', background: 'var(--accent-gold)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', fontWeight: '800', boxShadow: 'var(--shadow-md)' }}>
                 2
               </div>
-              <div>
+              <div style={{ marginTop: '12px' }}>
                 <h4 style={{ fontSize: '18px', marginBottom: '8px', color: 'var(--text-dark)' }}>Fill Application & Uploads</h4>
                 <p style={{ color: 'var(--text-light)', fontSize: '14px', lineHeight: '1.6' }}>Fill out personal details, enter your KCSE grades, and upload copies of your ID card, birth certificate, and KCSE result slip.</p>
               </div>
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', background: 'var(--bg-card)', padding: '30px 24px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-light)', boxShadow: 'var(--shadow-sm)' }}>
-              <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'var(--primary-light)', color: 'var(--primary-blue)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', fontWeight: '800' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', background: 'var(--bg-card)', padding: '30px 24px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-light)', borderTop: '4px solid var(--accent-teal)', boxShadow: 'var(--shadow-sm)', position: 'relative' }}>
+              <div style={{ position: 'absolute', top: '-24px', left: '24px', width: '48px', height: '48px', borderRadius: '50%', background: 'var(--accent-teal)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', fontWeight: '800', boxShadow: 'var(--shadow-md)' }}>
                 3
               </div>
-              <div>
+              <div style={{ marginTop: '12px' }}>
                 <h4 style={{ fontSize: '18px', marginBottom: '8px', color: 'var(--text-dark)' }}>Get Letter of Admission</h4>
                 <p style={{ color: 'var(--text-light)', fontSize: '14px', lineHeight: '1.6' }}>The system checks your eligibility immediately. Once verified by the registry panel, download your formal QR-coded admission letter.</p>
               </div>
@@ -139,7 +139,7 @@ export default function HomePage() {
           </div>
 
           <div className="card-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '30px', marginTop: '40px' }}>
-            <div className="card" style={{ padding: '30px', background: 'var(--bg-main)', border: '1px solid var(--border-light)', borderRadius: 'var(--radius-lg)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+            <div className="card" style={{ padding: '30px', background: 'var(--bg-card)', border: '1px solid var(--border-light)', borderTop: '4px solid var(--primary-blue)', borderRadius: 'var(--radius-lg)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', boxShadow: 'var(--shadow-sm)' }}>
               <div>
                 <span style={{ fontSize: '11px', background: 'var(--primary-blue)', color: 'white', padding: '3px 8px', borderRadius: '4px', fontWeight: 'bold', textTransform: 'uppercase' }}>DPTE</span>
                 <h3 style={{ fontSize: '20px', marginTop: '15px', marginBottom: '10px', color: 'var(--text-dark)' }}>Diploma in Primary Teacher Education</h3>
@@ -153,7 +153,7 @@ export default function HomePage() {
               </div>
             </div>
 
-            <div className="card" style={{ padding: '30px', background: 'var(--bg-main)', border: '1px solid var(--border-light)', borderRadius: 'var(--radius-lg)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+            <div className="card" style={{ padding: '30px', background: 'var(--bg-card)', border: '1px solid var(--border-light)', borderTop: '4px solid var(--primary-blue)', borderRadius: 'var(--radius-lg)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', boxShadow: 'var(--shadow-sm)' }}>
               <div>
                 <span style={{ fontSize: '11px', background: 'var(--primary-blue)', color: 'white', padding: '3px 8px', borderRadius: '4px', fontWeight: 'bold', textTransform: 'uppercase' }}>DECTE</span>
                 <h3 style={{ fontSize: '20px', marginTop: '15px', marginBottom: '10px', color: 'var(--text-dark)' }}>Diploma in Early Childhood Teacher Education</h3>
@@ -167,7 +167,7 @@ export default function HomePage() {
               </div>
             </div>
 
-            <div className="card" style={{ padding: '30px', background: 'var(--bg-main)', border: '1px solid var(--border-light)', borderRadius: 'var(--radius-lg)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+            <div className="card" style={{ padding: '30px', background: 'var(--bg-card)', border: '1px solid var(--border-light)', borderTop: '4px solid var(--accent-gold)', borderRadius: 'var(--radius-lg)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', boxShadow: 'var(--shadow-sm)' }}>
               <div>
                 <span style={{ fontSize: '11px', background: 'var(--accent-gold)', color: 'white', padding: '3px 8px', borderRadius: '4px', fontWeight: 'bold', textTransform: 'uppercase' }}>Upgrades</span>
                 <h3 style={{ fontSize: '20px', marginTop: '15px', marginBottom: '10px', color: 'var(--text-dark)' }}>Upgrade Diploma (Primary / ECDE)</h3>
@@ -249,11 +249,14 @@ export default function HomePage() {
           </div>
 
           <div className="card-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '30px', marginTop: '40px' }}>
-            <div className="card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%', background: 'var(--bg-main)' }}>
-              <p style={{ fontStyle: 'italic', color: 'var(--text-main)', fontSize: '14px', lineHeight: '1.6', marginBottom: '20px' }}>
+            <div className="card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%', background: 'var(--bg-main)', position: 'relative', border: '1px solid var(--border-light)', boxShadow: 'var(--shadow-sm)' }}>
+              <div style={{ position: 'absolute', top: '10px', right: '20px', fontSize: '72px', color: 'rgba(0,0,0,0.04)', fontFamily: 'Georgia, serif', lineHeight: '1', userSelect: 'none', pointerEvents: 'none' }}>
+                “
+              </div>
+              <p style={{ fontStyle: 'italic', color: 'var(--text-main)', fontSize: '14px', lineHeight: '1.6', marginBottom: '20px', zIndex: 1 }}>
                 "I joined Borabu in 2022 for the primary teaching diploma. The lecturers are very supportive—they really walk with you during school practice. I completed my KNEC exams last year and I'm already teaching at a local primary school here in Nyamira."
               </p>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', zIndex: 1 }}>
                 <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'var(--primary-light)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary-blue)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
@@ -267,11 +270,14 @@ export default function HomePage() {
               </div>
             </div>
 
-            <div className="card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%', background: 'var(--bg-main)' }}>
-              <p style={{ fontStyle: 'italic', color: 'var(--text-main)', fontSize: '14px', lineHeight: '1.6', marginBottom: '20px' }}>
+            <div className="card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%', background: 'var(--bg-main)', position: 'relative', border: '1px solid var(--border-light)', boxShadow: 'var(--shadow-sm)' }}>
+              <div style={{ position: 'absolute', top: '10px', right: '20px', fontSize: '72px', color: 'rgba(0,0,0,0.04)', fontFamily: 'Georgia, serif', lineHeight: '1', userSelect: 'none', pointerEvents: 'none' }}>
+                “
+              </div>
+              <p style={{ fontStyle: 'italic', color: 'var(--text-main)', fontSize: '14px', lineHeight: '1.6', marginBottom: '20px', zIndex: 1 }}>
                 "We focus heavily on hands-on practice. Before our student-teachers go for their external teaching practice, we take them through micro-teaching sessions where they practice lesson delivery with their peers. It builds their confidence early."
               </p>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', zIndex: 1 }}>
                 <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'hsl(38, 92%, 96%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent-gold)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
@@ -285,11 +291,14 @@ export default function HomePage() {
               </div>
             </div>
 
-            <div className="card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%', background: 'var(--bg-main)' }}>
-              <p style={{ fontStyle: 'italic', color: 'var(--text-main)', fontSize: '14px', lineHeight: '1.6', marginBottom: '20px' }}>
+            <div className="card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%', background: 'var(--bg-main)', position: 'relative', border: '1px solid var(--border-light)', boxShadow: 'var(--shadow-sm)' }}>
+              <div style={{ position: 'absolute', top: '10px', right: '20px', fontSize: '72px', color: 'rgba(0,0,0,0.04)', fontFamily: 'Georgia, serif', lineHeight: '1', userSelect: 'none', pointerEvents: 'none' }}>
+                “
+              </div>
+              <p style={{ fontStyle: 'italic', color: 'var(--text-main)', fontSize: '14px', lineHeight: '1.6', marginBottom: '20px', zIndex: 1 }}>
                 "My daughter finished her DPTE course here. What pleased me most was that the fees were exactly as advertised—no hidden charges midway through the term. She has already received her TSC registration number."
               </p>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', zIndex: 1 }}>
                 <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'hsl(172, 45%, 95%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent-teal)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
