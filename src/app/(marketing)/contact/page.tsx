@@ -28,7 +28,29 @@ export default function ContactPage() {
         </p>
       </header>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '40px', marginTop: '40px' }}>
+      {/* Admissions Office & Direct KUCCPS Placement Card */}
+      <div style={{ background: 'var(--bg-card)', borderLeft: '4px solid var(--primary-blue)', padding: '18px 24px', borderRadius: 'var(--radius-md)', borderTop: '1px solid var(--border-light)', borderRight: '1px solid var(--border-light)', borderBottom: '1px solid var(--border-light)', marginTop: '28px' }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: '14px' }}>
+          <div>
+            <h3 style={{ fontSize: '16px', fontWeight: '700', color: 'var(--text-dark)', margin: 0 }}>
+              Admissions Office & Direct KUCCPS Placement
+            </h3>
+            <p style={{ fontSize: '13px', color: 'var(--text-main)', margin: '4px 0 0 0' }}>
+              Have questions about admission letters, deferments, or direct applications? Contact the registry desk.
+            </p>
+          </div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', alignItems: 'center', fontSize: '13px' }}>
+            <span>
+              📞 <strong>Helpline:</strong> <a href="tel:0101930121" style={{ color: 'var(--primary-blue)', fontWeight: '600' }}>0101930121</a>
+            </span>
+            <span>
+              💬 <strong>WhatsApp:</strong> <a href="https://wa.me/254101930121" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent-teal)', fontWeight: '600' }}>0101930121</a>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '40px', marginTop: '32px' }}>
         {/* Contact Form */}
         <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border-light)', padding: '30px', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-sm)' }}>
           <h3 style={{ fontSize: '20px', marginBottom: '20px', color: 'var(--text-dark)' }}>Send Us a Message</h3>

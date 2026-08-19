@@ -82,20 +82,21 @@ export default function Navbar() {
       <div className="container nav-container">
         {/* Brand Logo */}
         <Link href="/" className="logo-link" style={{ textDecoration: 'none' }}>
-          <div className="logo-icon" style={{ background: 'none', width: 'auto', height: 'auto', display: 'flex', alignItems: 'center' }}>
-            <svg width="34" height="38" viewBox="0 0 36 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M18 2L2 9V18C2 28.5 10.5 35.8 18 38C25.5 35.8 34 28.5 34 18V9L18 2Z" fill="var(--primary-blue)" stroke="var(--accent-gold)" strokeWidth="2.5" strokeLinejoin="round"/>
-              <path d="M12 18H24M12 22H20" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-              <path d="M18 10L14 13.5V15H22V13.5L18 10Z" fill="var(--accent-gold)"/>
+          <div className="logo-icon-wrap" style={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}>
+            <svg width="36" height="40" viewBox="0 0 36 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M18 2L3 8.5V18C3 28 10.5 35.5 18 38C25.5 35.5 33 28 33 18V8.5L18 2Z" fill="var(--primary-navy)" stroke="var(--accent-gold)" strokeWidth="2.5" strokeLinejoin="round"/>
+              <path d="M10 19.5H26M10 23.5H22" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+              <path d="M18 9.5L13 13.5V15H23V13.5L18 9.5Z" fill="var(--accent-gold)"/>
+              <circle cx="18" cy="14" r="1.5" fill="var(--primary-navy)"/>
             </svg>
           </div>
           <div className="logo-text">
-            <h1 style={{ fontSize: '18px', fontWeight: '800', letterSpacing: '-0.3px', margin: 0, color: 'var(--primary-blue)' }}>
+            <span className="logo-title">
               BORABU TTC
-            </h1>
-            <div className="logo-tagline" style={{ fontSize: '10px', color: 'var(--text-light)', textTransform: 'uppercase', letterSpacing: '0.8px', fontWeight: '600' }}>
-              Teachers Training College
-            </div>
+            </span>
+            <span className="logo-subtitle">
+              TEACHERS TRAINING COLLEGE
+            </span>
           </div>
         </Link>
 
