@@ -41,16 +41,31 @@ export default function TicketsPage() {
   // Reply message state
   const [replyText, setReplyText] = useState('');
 
+  const getAuthHeaders = (): Record<string, string> => {
+    const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+    if (typeof window !== 'undefined') {
+      const token = localStorage.getItem('auth_token');
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+    }
+    return headers;
+  };
+
   const loadTickets = async (selectId?: string) => {
     try {
-      const res = await fetch('/api/tickets');
+      const res = await fetch('/api/tickets', {
+        headers: getAuthHeaders(),
+      });
       if (res.ok) {
         const data = await res.json();
-        setTickets(data.tickets || []);
+        const loadedTickets = data.tickets || [];
+        setTickets(loadedTickets);
         
-        // If a ticket ID is passed, refresh active ticket thread
-        if (selectId) {
-          const updated = data.tickets.find((t: Ticket) => t.id === selectId);
+        // If a ticket ID is specified or an active ticket exists, refresh thread
+        const targetId = selectId || activeTicket?.id;
+        if (targetId) {
+          const updated = loadedTickets.find((t: Ticket) => t.id === targetId);
           if (updated) {
             loadTicketThread(updated.id);
           }
@@ -67,7 +82,9 @@ export default function TicketsPage() {
   const loadTicketThread = async (ticketId: string) => {
     setLoadingThread(true);
     try {
-      const res = await fetch(`/api/tickets/${ticketId}`);
+      const res = await fetch(`/api/tickets/${ticketId}`, {
+        headers: getAuthHeaders(),
+      });
       if (res.ok) {
         const data = await res.json();
         setActiveTicket(data.ticket);
@@ -95,7 +112,7 @@ export default function TicketsPage() {
     try {
       const res = await fetch('/api/tickets', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeaders(),
         body: JSON.stringify({
           subject: subject.trim(),
           category,
@@ -109,10 +126,7 @@ export default function TicketsPage() {
         setSubject('');
         setInitMessage('');
         setShowCreateModal(false);
-        await loadTickets();
-        if (data.ticketId) {
-          await loadTicketThread(data.ticketId);
-        }
+        await loadTickets(data.ticketId);
       } else {
         showToast(data.error || 'Failed to submit ticket.', 'error');
       }
@@ -131,14 +145,13 @@ export default function TicketsPage() {
     try {
       const res = await fetch(`/api/tickets/${activeTicket.id}`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeaders(),
         body: JSON.stringify({ message: replyText.trim() }),
       });
 
       const data = await res.json();
       if (res.ok) {
         setReplyText('');
-        // Refresh active ticket and ticket list
         await loadTickets(activeTicket.id);
       } else {
         showToast(data.error || 'Could not post message.', 'error');
@@ -157,6 +170,7 @@ export default function TicketsPage() {
     try {
       const res = await fetch(`/api/tickets/${activeTicket.id}/resolve`, {
         method: 'POST',
+        headers: getAuthHeaders(),
       });
 
       if (res.ok) {
@@ -174,43 +188,46 @@ export default function TicketsPage() {
 
   const getCategoryLabel = (cat: string) => {
     const labels: Record<string, string> = {
-      payment: '💳 Payment Gateway',
+      payment: '💳 Payment & Processing Fee',
       documents: '📁 Document Verification',
-      technical: '💻 Portal Glitch/IT',
+      technical: '💻 Portal Technical Issue',
       other: '❔ General Inquiry',
     };
     return labels[cat] || cat;
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '30px', height: 'calc(100vh - 150px)', minHeight: '500px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', height: 'calc(100vh - 150px)', minHeight: '520px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
         <div>
-          <h1 style={{ fontSize: '28px' }}>Support Ticket Helpdesk</h1>
-          <p style={{ color: 'var(--text-light)', fontSize: '14px' }}>Submit tickets and chat with registry officers about your application file.</p>
+          <h1 style={{ fontSize: '28px', color: 'var(--text-dark)', fontWeight: 700 }}>Support & Inquiry Helpdesk</h1>
+          <p style={{ color: 'var(--text-light)', fontSize: '14px', marginTop: '4px' }}>
+            Directly communicate with the Borabu TTC Admissions Office and Registry officers.
+          </p>
         </div>
-        <button className="btn btn-primary" onClick={() => setShowCreateModal(true)}>
+        <button className="btn btn-primary" onClick={() => setShowCreateModal(true)} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           💬 Open New Ticket
         </button>
       </div>
 
       {loading ? (
-        <div style={{ textAlign: 'center', padding: '50px', background: 'var(--bg-card)', borderRadius: 'var(--radius-lg)' }}>
-          Loading ticket files...
+        <div style={{ textAlign: 'center', padding: '50px', background: 'var(--bg-card)', borderRadius: 'var(--radius-lg)', border: '1px solid var(--border-light)' }}>
+          Loading your support inquiries...
         </div>
       ) : (
-        /* Workspace layout: Left panel ticket list, Right panel chat */
         <div style={{ display: 'grid', gridTemplateColumns: '320px 1fr', gap: '20px', flexGrow: 1, height: '80%', overflow: 'hidden' }}>
           
           {/* Left panel: List */}
           <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border-light)', borderRadius: 'var(--radius-lg)', display: 'flex', flexDirection: 'column', overflowY: 'auto' }}>
-            <div style={{ padding: '16px', borderBottom: '1px solid var(--border-light)', fontWeight: '700', color: 'var(--text-dark)' }}>
-              Your Cases ({tickets.length})
+            <div style={{ padding: '16px', borderBottom: '1px solid var(--border-light)', fontWeight: '700', color: 'var(--text-dark)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span>Your Support Tickets ({tickets.length})</span>
+              <button onClick={() => loadTickets()} style={{ background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '14px' }} title="Refresh">🔄</button>
             </div>
             
             {tickets.length === 0 ? (
-              <div style={{ padding: '24px', textAlign: 'center', color: 'var(--text-light)', fontSize: '13px' }}>
-                No support logs submitted yet. Click above to open a ticket.
+              <div style={{ padding: '30px 20px', textAlign: 'center', color: 'var(--text-light)', fontSize: '13px' }}>
+                <div style={{ fontSize: '32px', marginBottom: '8px' }}>✉️</div>
+                No tickets submitted yet.<br />Click "Open New Ticket" above to reach admissions.
               </div>
             ) : (
               tickets.map((t) => {
@@ -227,20 +244,20 @@ export default function TicketsPage() {
                       border: 'none',
                       borderBottom: '1px solid var(--border-light)',
                       cursor: 'pointer',
-                      transition: 'var(--transition-fast)',
+                      transition: 'background 0.15s ease',
                       display: 'flex',
                       flexDirection: 'column',
                       gap: '4px',
                     }}
                   >
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span style={{ fontSize: '11px', background: 'var(--bg-main)', color: 'var(--text-light)', padding: '2px 6px', borderRadius: '4px', fontWeight: '600' }}>
+                      <span style={{ fontSize: '10px', background: 'var(--bg-main)', color: 'var(--text-light)', padding: '2px 6px', borderRadius: '4px', fontWeight: '600' }}>
                         {t.category.toUpperCase()}
                       </span>
                       <span style={{ 
                         fontSize: '11px', 
                         fontWeight: '700', 
-                        color: t.status === 'open' ? 'var(--accent-gold)' : 'var(--accent-teal)'
+                        color: t.status === 'open' ? 'var(--accent-gold)' : '#10b981'
                       }}>
                         ● {t.status === 'open' ? 'OPEN' : 'RESOLVED'}
                       </span>
@@ -265,14 +282,14 @@ export default function TicketsPage() {
                 {/* Header */}
                 <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--border-light)', background: 'var(--bg-main)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <div>
-                    <h3 style={{ fontSize: '16px', color: 'var(--text-dark)' }}>{activeTicket.subject}</h3>
-                    <p style={{ fontSize: '12px', color: 'var(--text-light)', margin: 0 }}>
-                      Category: {getCategoryLabel(activeTicket.category)} | Status: <strong style={{ color: activeTicket.status === 'open' ? 'var(--accent-gold)' : 'var(--accent-teal)' }}>{activeTicket.status.toUpperCase()}</strong>
+                    <h3 style={{ fontSize: '16px', color: 'var(--text-dark)', fontWeight: 700 }}>{activeTicket.subject}</h3>
+                    <p style={{ fontSize: '12px', color: 'var(--text-light)', margin: '2px 0 0' }}>
+                      Category: {getCategoryLabel(activeTicket.category)} | Status: <strong style={{ color: activeTicket.status === 'open' ? 'var(--accent-gold)' : '#10b981' }}>{activeTicket.status.toUpperCase()}</strong>
                     </p>
                   </div>
                   {activeTicket.status === 'open' && (
                     <button className="btn btn-secondary" onClick={handleResolveTicket} disabled={submitting} style={{ padding: '6px 12px', fontSize: '12px' }}>
-                      ✓ Mark Resolved
+                      ✓ Mark as Resolved
                     </button>
                   )}
                 </div>
@@ -296,15 +313,16 @@ export default function TicketsPage() {
                           }}
                         >
                           <span style={{ fontSize: '11px', color: 'var(--text-light)', marginBottom: '3px' }}>
-                            {msg.sender.fullName} ({msg.sender.role === 'applicant' ? 'You' : 'Officer'})
+                            {msg.sender.fullName} ({isCandidate ? 'You' : 'Admissions Officer'})
                           </span>
                           <div style={{
                             padding: '12px 16px',
                             borderRadius: '12px',
                             borderTopRightRadius: isCandidate ? '2px' : '12px',
                             borderTopLeftRadius: isCandidate ? '12px' : '2px',
-                            background: isCandidate ? 'var(--primary-blue)' : '#e2e8f0',
+                            background: isCandidate ? 'var(--primary-blue)' : '#ffffff',
                             color: isCandidate ? '#ffffff' : 'var(--text-dark)',
+                            border: isCandidate ? 'none' : '1px solid #e2e8f0',
                             fontSize: '13px',
                             lineHeight: '1.5',
                             whiteSpace: 'pre-wrap',

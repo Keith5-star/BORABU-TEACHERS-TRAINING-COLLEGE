@@ -1,10 +1,3 @@
-/**
- * Security: CSRF Protected
- * All state-changing requests (POST, PUT, PATCH, DELETE) to this route are verified
- * against Origin, Referer, and Sec-Fetch-Site headers via middleware (src/middleware.ts)
- * and CSRF validation engine (src/lib/security.ts).
- */
-
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { getSessionUser } from '@/lib/auth';
@@ -13,9 +6,9 @@ import { checkRateLimit, sanitizeString } from '@/lib/security';
 // GET: Fetch tickets
 export async function GET(req: Request) {
   try {
-    const user = await getSessionUser();
+    const user = await getSessionUser(req);
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized.' }, { status: 401 });
+      return NextResponse.json({ error: 'Unauthorized. Please sign in.' }, { status: 401 });
     }
 
     let tickets;
@@ -24,22 +17,39 @@ export async function GET(req: Request) {
         where: { userId: user.id },
         include: {
           messages: {
+            include: {
+              sender: {
+                select: {
+                  fullName: true,
+                  role: true,
+                },
+              },
+            },
             orderBy: { createdAt: 'asc' },
           },
         },
         orderBy: { updatedAt: 'desc' },
       });
     } else {
-      // Admin/Officer
+      // Admin / Admissions Officer / Super Admin
       tickets = await prisma.ticket.findMany({
         include: {
           user: {
             select: {
               fullName: true,
               email: true,
+              phone: true,
             },
           },
           messages: {
+            include: {
+              sender: {
+                select: {
+                  fullName: true,
+                  role: true,
+                },
+              },
+            },
             orderBy: { createdAt: 'asc' },
           },
         },
@@ -60,14 +70,14 @@ export async function GET(req: Request) {
 // POST: Create ticket
 export async function POST(req: Request) {
   try {
-    const user = await getSessionUser();
+    const user = await getSessionUser(req);
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized.' }, { status: 401 });
+      return NextResponse.json({ error: 'Unauthorized. Please sign in.' }, { status: 401 });
     }
 
-    // Rate limit ticket submissions: 10 per minute per IP
+    // Rate limit ticket submissions: 15 per minute per IP
     const rateLimit = checkRateLimit(req, {
-      limit: 10,
+      limit: 15,
       windowMs: 60 * 1000,
       keyPrefix: 'ticket-create',
     });
@@ -111,10 +121,13 @@ export async function POST(req: Request) {
       return newTicket;
     });
 
-    return NextResponse.json({
-      message: 'Support ticket created successfully.',
-      ticketId: ticket.id,
-    }, { status: 201 });
+    return NextResponse.json(
+      {
+        message: 'Support ticket created successfully.',
+        ticketId: ticket.id,
+      },
+      { status: 201 }
+    );
   } catch (error: any) {
     console.error('Create ticket error:', error);
     return NextResponse.json(

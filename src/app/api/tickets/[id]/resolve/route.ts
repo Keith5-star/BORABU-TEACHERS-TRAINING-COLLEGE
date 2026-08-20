@@ -7,9 +7,9 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const user = await getSessionUser();
+    const user = await getSessionUser(req);
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized.' }, { status: 401 });
+      return NextResponse.json({ error: 'Unauthorized. Please sign in.' }, { status: 401 });
     }
 
     const { id } = await params;

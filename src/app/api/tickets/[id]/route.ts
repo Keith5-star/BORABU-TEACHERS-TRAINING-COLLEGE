@@ -1,10 +1,3 @@
-/**
- * Security: CSRF Protected
- * All state-changing requests (POST, PUT, PATCH, DELETE) to this route are verified
- * against Origin, Referer, and Sec-Fetch-Site headers via middleware (src/middleware.ts)
- * and CSRF validation engine (src/lib/security.ts).
- */
-
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { getSessionUser } from '@/lib/auth';
@@ -15,7 +8,7 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const user = await getSessionUser();
+    const user = await getSessionUser(req);
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized.' }, { status: 401 });
     }
@@ -30,6 +23,7 @@ export async function GET(
             id: true,
             fullName: true,
             email: true,
+            phone: true,
             role: true,
           },
         },
@@ -71,7 +65,7 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const user = await getSessionUser();
+    const user = await getSessionUser(req);
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized.' }, { status: 401 });
     }
@@ -98,7 +92,7 @@ export async function POST(
       return NextResponse.json({ error: 'Forbidden.' }, { status: 403 });
     }
 
-    // If ticket is resolved, re-open it if the applicant replies, or just allow posting
+    // If ticket is resolved, re-open it if the applicant replies
     const updatedStatus = ticket.status === 'resolved' && user.role === 'applicant' ? 'open' : ticket.status;
 
     const [ticketMessage] = await prisma.$transaction([
@@ -126,10 +120,13 @@ export async function POST(
       }),
     ]);
 
-    return NextResponse.json({
-      message: 'Reply message posted successfully.',
-      ticketMessage,
-    }, { status: 201 });
+    return NextResponse.json(
+      {
+        message: 'Reply message posted successfully.',
+        ticketMessage,
+      },
+      { status: 201 }
+    );
   } catch (error: any) {
     console.error('Add ticket reply error:', error);
     return NextResponse.json(
