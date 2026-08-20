@@ -467,6 +467,7 @@ export type AdmissionLetterCreateOrConnectWithoutGeneratedByInput = {
 
 export type AdmissionLetterCreateManyGeneratedByInputEnvelope = {
   data: Prisma.AdmissionLetterCreateManyGeneratedByInput | Prisma.AdmissionLetterCreateManyGeneratedByInput[]
+  skipDuplicates?: boolean
 }
 
 export type AdmissionLetterUpsertWithWhereUniqueWithoutGeneratedByInput = {
@@ -1328,6 +1329,7 @@ export type AdmissionLetterCreateManyArgs<ExtArgs extends runtime.Types.Extensio
    * The data used to create many AdmissionLetters.
    */
   data: Prisma.AdmissionLetterCreateManyInput | Prisma.AdmissionLetterCreateManyInput[]
+  skipDuplicates?: boolean
 }
 
 /**
@@ -1346,6 +1348,7 @@ export type AdmissionLetterCreateManyAndReturnArgs<ExtArgs extends runtime.Types
    * The data used to create many AdmissionLetters.
    */
   data: Prisma.AdmissionLetterCreateManyInput | Prisma.AdmissionLetterCreateManyInput[]
+  skipDuplicates?: boolean
   /**
    * Choose, which related nodes to fetch as well
    */

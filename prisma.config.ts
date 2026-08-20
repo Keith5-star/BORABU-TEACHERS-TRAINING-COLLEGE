@@ -1,5 +1,11 @@
 import 'dotenv/config'
-import { defineConfig, env } from 'prisma/config'
+import { defineConfig } from 'prisma/config'
+
+const databaseUrl = process.env.DATABASE_URL;
+const validPostgresUrl =
+  databaseUrl && (databaseUrl.startsWith('postgresql://') || databaseUrl.startsWith('postgres://'))
+    ? databaseUrl
+    : 'postgresql://postgres:postgres@localhost:5432/borabu';
 
 export default defineConfig({
   schema: 'prisma/schema.prisma',
@@ -8,6 +14,6 @@ export default defineConfig({
     seed: 'npx tsx prisma/seed.ts',
   },
   datasource: {
-    url: process.env.DATABASE_URL || 'file:./prisma/dev.db',
+    url: validPostgresUrl,
   },
 })

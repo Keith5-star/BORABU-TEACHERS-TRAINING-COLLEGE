@@ -1105,6 +1105,7 @@ export type ApplicationCreateOrConnectWithoutUserInput = {
 
 export type ApplicationCreateManyUserInputEnvelope = {
   data: Prisma.ApplicationCreateManyUserInput | Prisma.ApplicationCreateManyUserInput[]
+  skipDuplicates?: boolean
 }
 
 export type ApplicationCreateWithoutReviewedByInput = {
@@ -1172,6 +1173,7 @@ export type ApplicationCreateOrConnectWithoutReviewedByInput = {
 
 export type ApplicationCreateManyReviewedByInputEnvelope = {
   data: Prisma.ApplicationCreateManyReviewedByInput | Prisma.ApplicationCreateManyReviewedByInput[]
+  skipDuplicates?: boolean
 }
 
 export type ApplicationUpsertWithWhereUniqueWithoutUserInput = {
@@ -1302,6 +1304,7 @@ export type ApplicationCreateOrConnectWithoutProgrammeInput = {
 
 export type ApplicationCreateManyProgrammeInputEnvelope = {
   data: Prisma.ApplicationCreateManyProgrammeInput | Prisma.ApplicationCreateManyProgrammeInput[]
+  skipDuplicates?: boolean
 }
 
 export type ApplicationCreateWithoutSecondaryProgrammeInput = {
@@ -1369,6 +1372,7 @@ export type ApplicationCreateOrConnectWithoutSecondaryProgrammeInput = {
 
 export type ApplicationCreateManySecondaryProgrammeInputEnvelope = {
   data: Prisma.ApplicationCreateManySecondaryProgrammeInput | Prisma.ApplicationCreateManySecondaryProgrammeInput[]
+  skipDuplicates?: boolean
 }
 
 export type ApplicationUpsertWithWhereUniqueWithoutProgrammeInput = {
@@ -3020,6 +3024,7 @@ export type ApplicationCreateManyArgs<ExtArgs extends runtime.Types.Extensions.I
    * The data used to create many Applications.
    */
   data: Prisma.ApplicationCreateManyInput | Prisma.ApplicationCreateManyInput[]
+  skipDuplicates?: boolean
 }
 
 /**
@@ -3038,6 +3043,7 @@ export type ApplicationCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Ext
    * The data used to create many Applications.
    */
   data: Prisma.ApplicationCreateManyInput | Prisma.ApplicationCreateManyInput[]
+  skipDuplicates?: boolean
   /**
    * Choose, which related nodes to fetch as well
    */

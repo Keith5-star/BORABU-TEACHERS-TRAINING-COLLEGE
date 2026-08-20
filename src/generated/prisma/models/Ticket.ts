@@ -456,6 +456,7 @@ export type TicketCreateOrConnectWithoutUserInput = {
 
 export type TicketCreateManyUserInputEnvelope = {
   data: Prisma.TicketCreateManyUserInput | Prisma.TicketCreateManyUserInput[]
+  skipDuplicates?: boolean
 }
 
 export type TicketUpsertWithWhereUniqueWithoutUserInput = {
@@ -1350,6 +1351,7 @@ export type TicketCreateManyArgs<ExtArgs extends runtime.Types.Extensions.Intern
    * The data used to create many Tickets.
    */
   data: Prisma.TicketCreateManyInput | Prisma.TicketCreateManyInput[]
+  skipDuplicates?: boolean
 }
 
 /**
@@ -1368,6 +1370,7 @@ export type TicketCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensio
    * The data used to create many Tickets.
    */
   data: Prisma.TicketCreateManyInput | Prisma.TicketCreateManyInput[]
+  skipDuplicates?: boolean
   /**
    * Choose, which related nodes to fetch as well
    */
