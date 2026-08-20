@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import SocialFeed from '@/components/social/SocialFeed';
 
 interface Article {
   id: string;
@@ -304,6 +305,11 @@ export default function NewsPage() {
           ))}
         </div>
       )}
+
+      {/* Official Social Media Feed: Latest Posts from X & Facebook */}
+      <section style={{ marginTop: '56px' }}>
+        <SocialFeed />
+      </section>
 
       {/* Article Reader Modal */}
       {activeArticle && (
