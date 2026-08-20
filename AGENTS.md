@@ -7,3 +7,10 @@ This version has breaking changes — APIs, conventions, and file structure may 
 This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
 
 <!-- END:nextjs-agent-rules -->
+
+# Project Maintenance Guidelines
+
+## Dependency Compatibility
+- Periodically check and upgrade third-party packages in `package.json` (such as Prisma, React 19 types, PDF generators, and utility libraries) to keep them in sync with Next.js App Router updates and compatibility releases.
+- Ensure build verification via `compile_applet` after any dependency adjustments.
+

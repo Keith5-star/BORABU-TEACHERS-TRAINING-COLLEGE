@@ -1060,3 +1060,118 @@ button, input, select, textarea {
   }
 }
 
+/* ==========================================================================
+   PRINT MEDIA QUERY - ADMISSION LETTER VERIFICATION & OFFICIAL DOCUMENTS
+   ========================================================================== */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 12mm 15mm;
+  }
+
+  /* Reset layout constraints & backgrounds */
+  html, body {
+    background: #ffffff !important;
+    color: #111827 !important;
+    font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    font-size: 11pt !important;
+    line-height: 1.45 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Hide navigation, footer, interactive widgets, action buttons */
+  header,
+  footer,
+  .main-header,
+  .main-footer,
+  .mobile-nav-drawer,
+  .mobile-hamburger-btn,
+  .ai-advisor-launcher-wrap,
+  .ai-advisor-window,
+  .no-print,
+  .btn,
+  nav,
+  button,
+  .toast,
+  .notification-bell {
+    display: none !important;
+  }
+
+  /* Container adjustments for full paper width */
+  .container {
+    max-width: 100% !important;
+    width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .main-content {
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Verification Certificate Specific Print Rules */
+  .verification-print-page {
+    padding: 0 !important;
+    margin: 0 !important;
+    display: block !important;
+  }
+
+  .verification-cert-card {
+    background: #ffffff !important;
+    border: 2px solid #0f172a !important;
+    border-radius: 4px !important;
+    box-shadow: none !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 24px 28px !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  .print-only-letterhead {
+    display: block !important;
+  }
+
+  .verification-badge-verified {
+    background: #f0fdf4 !important;
+    border: 1.5px solid #16a34a !important;
+    color: #15803d !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .verification-details-table {
+    border: 1px solid #cbd5e1 !important;
+    background: #ffffff !important;
+  }
+
+  .verification-details-row {
+    border-bottom: 1px solid #e2e8f0 !important;
+  }
+
+  .verification-qr-wrap {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border: 1px solid #e2e8f0 !important;
+    background: #ffffff !important;
+  }
+
+  .verification-security-seal {
+    border: 1.5px dashed #0f172a !important;
+    background: #f8fafc !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Links should not display URL in parens on print */
+  a[href]:after {
+    content: none !important;
+  }
+}
+
