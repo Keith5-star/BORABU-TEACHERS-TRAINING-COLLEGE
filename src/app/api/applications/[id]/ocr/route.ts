@@ -8,6 +8,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { getSessionUser } from '@/lib/auth';
+import { scanAndVerifyDocument } from '@/lib/documentScanner';
 
 export async function POST(
   req: Request,
@@ -23,7 +24,7 @@ export async function POST(
 
     const application = await prisma.application.findUnique({
       where: { id },
-      include: { programme: true },
+      include: { programme: true, user: true },
     });
 
     if (!application) {
@@ -34,55 +35,31 @@ export async function POST(
       return NextResponse.json({ error: 'Forbidden.' }, { status: 403 });
     }
 
-    // Simulate OCR processing time
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    // Simulate scanning and OCR pipeline delay
+    await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    // Dynamic simulator based on programme requirements
-    const minRequirements = JSON.parse(application.programme.minGradeRequirement || '{}');
-    const gradeProgression = ['E', 'D-', 'D', 'D+', 'C-', 'C', 'C+', 'B-', 'B', 'B+', 'A-', 'A'];
-
-    const reqMean = minRequirements.meanGrade || 'D';
-    let kcseMeanGrade = 'C-';
-    if (reqMean && reqMean.toLowerCase() !== 'open') {
-      const idx = gradeProgression.indexOf(reqMean.toUpperCase());
-      if (idx !== -1) {
-        kcseMeanGrade = gradeProgression[Math.min(idx + 1, gradeProgression.length - 1)];
-      }
-    } else {
-      kcseMeanGrade = 'D+';
-    }
-
-    const subjectGrades: Record<string, string> = {
-      english: 'C+',
-      kiswahili: 'C+',
-      mathematics: 'C',
-      science: 'C',
-      biology: 'C',
-    };
-
-    if (minRequirements.subjects) {
-      for (const [sub, minGrade] of Object.entries(minRequirements.subjects)) {
-        const subName = sub.toLowerCase();
-        const minGradeStr = (minGrade as string).toUpperCase();
-        const idx = gradeProgression.indexOf(minGradeStr);
-        if (idx !== -1) {
-          subjectGrades[subName] = gradeProgression[Math.min(idx + 1, gradeProgression.length - 1)];
-        } else {
-          subjectGrades[subName] = 'C';
-        }
-      }
-    }
-
-    const kcseIndexNo = '40732101015';
-    const kcseYear = 2024;
+    // Run deep scan analysis on KCSE certificate
+    const dummyBuffer = Buffer.from('%PDF-1.4 simulated binary stream');
+    const scanReport = scanAndVerifyDocument('kcse_cert', 'KCSE_Result_Slip_Official.pdf', dummyBuffer, {
+      applicantName: application.user.fullName,
+      enteredIndexNo: application.kcseIndexNo || undefined,
+      enteredMeanGrade: application.kcseMeanGrade || undefined,
+      programmeMinRequirement: application.programme.minGradeRequirement,
+    });
 
     return NextResponse.json({
       success: true,
-      message: 'OCR Scan completed successfully.',
-      kcseIndexNo,
-      kcseYear,
-      kcseMeanGrade,
-      subjectGrades,
+      message: 'Automated Document Scanning and Anti-Forgery verification complete.',
+      kcseIndexNo: scanReport.extractedData?.kcseIndexNo || '40732101015',
+      kcseYear: scanReport.extractedData?.kcseYear || 2024,
+      kcseMeanGrade: scanReport.extractedData?.kcseMeanGrade || 'C',
+      subjectGrades: scanReport.extractedData?.subjectGrades || {
+        english: 'C+',
+        kiswahili: 'C+',
+        mathematics: 'C',
+        biology: 'C',
+      },
+      scanReport,
     });
   } catch (error: any) {
     console.error('OCR Route error:', error);

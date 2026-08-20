@@ -782,7 +782,7 @@ export default function ApplicationWizardPage() {
             <p style={{ fontSize: '13px', color: 'var(--text-light)', marginBottom: '20px' }}>
               Select grades received in key academic subject groups. These values will be validated by the admissions panel against original result slips.
             </p>
-            <div className="form-grid" style={{ gridTemplateColumns: '1fr 1fr' }}>
+            <div className="form-grid" style={{ gridTemplateColumns: '1fr 1fr', marginBottom: '24px' }}>
               <div>
                 <label className="form-label">English Grade *</label>
                 <select
@@ -839,6 +839,20 @@ export default function ApplicationWizardPage() {
                 </select>
               </div>
             </div>
+
+            {/* Dynamic Academic Grade & Subject Requirements Cumulative Indicator */}
+            {app && (
+              <div style={{ marginTop: '16px' }}>
+                <GradeRequirementBreakdown
+                  programmeName={app.programme.name}
+                  programmeCode={app.programme.code}
+                  minGradeRequirement={app.programme.minGradeRequirement}
+                  kcseMeanGrade={kcseMeanGrade}
+                  subjectGrades={subjectGrades}
+                  showCardWrapper={false}
+                />
+              </div>
+            )}
           </div>
         )}
 

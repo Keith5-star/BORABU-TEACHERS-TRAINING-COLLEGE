@@ -4,6 +4,9 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useToast } from '@/components/Toast';
 import GradeRequirementBreakdown from '@/components/dashboard/GradeRequirementBreakdown';
+import AdmissionLetterVerifier from '@/components/dashboard/AdmissionLetterVerifier';
+import AdmissionLetterPrintModal from '@/components/dashboard/AdmissionLetterPrintModal';
+import { Printer } from 'lucide-react';
 
 interface Document {
   id: string;
@@ -33,6 +36,12 @@ interface Application {
   paymentStatus: string;
   paymentReceiptUrl: string | null;
   summaryReceiptUrl: string | null;
+  user?: {
+    id: string;
+    fullName: string;
+    email: string;
+    phone: string;
+  };
   programme: {
     id: string;
     name: string;
@@ -59,6 +68,7 @@ export default function DashboardPage() {
   const [applications, setApplications] = useState<Application[]>([]);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
+  const [activePrintApp, setActivePrintApp] = useState<Application | null>(null);
   
   // Log Search and Filter state
   const [searchQuery, setSearchQuery] = useState('');
@@ -187,6 +197,13 @@ export default function DashboardPage() {
     );
   };
 
+  const userIssuedLetters = applications
+    .filter((app) => app.admissionLetter && app.admissionLetter.serialNumber)
+    .map((app) => ({
+      serialNumber: app.admissionLetter!.serialNumber,
+      programmeName: app.programme.name,
+    }));
+
   const filteredNotifications = notifications.filter((notif) => {
     const matchesChannel = filterChannel === 'all' ? true : notif.channel === filterChannel;
     const matchesSearch = 
@@ -223,6 +240,11 @@ export default function DashboardPage() {
           <span style={{ color: 'var(--border-light)' }}>|</span>
           <a href="https://wa.me/254101930121" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent-teal)', textDecoration: 'underline' }}>💬 Chat on WhatsApp</a>
         </div>
+      </div>
+
+      {/* Direct Admission Letter Status Verifier */}
+      <div style={{ marginBottom: '28px' }}>
+        <AdmissionLetterVerifier userIssuedLetters={userIssuedLetters} />
       </div>
 
       {loading ? (
@@ -339,7 +361,16 @@ export default function DashboardPage() {
                   <p style={{ fontSize: '13px', lineHeight: '1.6', marginBottom: '14px' }}>
                     Your application for <strong>{app.programme.name}</strong> has been approved. Your official admission letter has been generated with serial number <strong>{app.admissionLetter.serialNumber}</strong>. Please download the PDF letter below, print it, and follow the reporting guidelines.
                   </p>
-                  <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                  <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
+                    <button
+                      type="button"
+                      onClick={() => setActivePrintApp(app)}
+                      className="btn btn-accent"
+                      style={{ fontSize: '13px', padding: '10px 18px', display: 'inline-flex', alignItems: 'center', gap: '6px', fontWeight: 'bold', cursor: 'pointer' }}
+                      id={`print-letter-${app.id}`}
+                    >
+                      <Printer size={15} /> 🖨️ Print Admission Letter
+                    </button>
                     <a 
                       href={`/api/letters/download/${app.admissionLetter.serialNumber}`} 
                       download 
@@ -348,7 +379,14 @@ export default function DashboardPage() {
                       className="btn btn-primary" 
                       style={{ fontSize: '13px', padding: '10px 20px', background: 'var(--accent-gold)', borderColor: 'var(--accent-gold)' }}
                     >
-                      📄 Download Admission Letter (PDF)
+                      📄 Download PDF
+                    </a>
+                    <a
+                      href="#admission-verifier-card"
+                      className="btn btn-secondary"
+                      style={{ fontSize: '13px', padding: '10px 16px', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+                    >
+                      🛡️ Auto-Verify Letter Status
                     </a>
                     <span style={{ fontSize: '12px', color: 'var(--text-main)' }}>
                       Reporting Date: <strong>{new Date(app.admissionLetter.reportingDate).toLocaleDateString('en-KE', { day: 'numeric', month: 'long', year: 'numeric' })}</strong>
@@ -493,6 +531,31 @@ export default function DashboardPage() {
           </div>
 
         </div>
+      )}
+
+      {/* Printable Admission Letter Modal */}
+      {activePrintApp && activePrintApp.admissionLetter && (
+        <AdmissionLetterPrintModal
+          isOpen={!!activePrintApp}
+          onClose={() => setActivePrintApp(null)}
+          serialNumber={activePrintApp.admissionLetter.serialNumber}
+          applicantName={activePrintApp.user?.fullName || activePrintApp.personalDetails?.fullName || 'Applicant'}
+          email={activePrintApp.user?.email || 'applicant@borabuttc.ac.ke'}
+          phone={activePrintApp.user?.phone || activePrintApp.personalDetails?.phone || '+254 700 000 000'}
+          kcseIndexNo={activePrintApp.kcseIndexNo || 'N/A'}
+          kcseMeanGrade={activePrintApp.kcseMeanGrade || 'N/A'}
+          programmeName={activePrintApp.programme.name}
+          programmeCode={activePrintApp.programme.code}
+          reportingDate={activePrintApp.admissionLetter.reportingDate}
+          feesSummary={
+            Array.isArray(activePrintApp.programme.feesStructure) && activePrintApp.programme.feesStructure.length > 0
+              ? activePrintApp.programme.feesStructure.map((fee: any) => ({
+                  semester: fee.semester || 'Semester',
+                  total: fee.total || (fee.tuition || 0) + (fee.boarding || 0) + (fee.activity || 0) || 20000,
+                }))
+              : undefined
+          }
+        />
       )}
     </div>
   );

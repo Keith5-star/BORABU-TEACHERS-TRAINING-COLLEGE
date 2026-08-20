@@ -8,6 +8,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { getSessionUser } from '@/lib/auth';
+import { scanAndVerifyDocument } from '@/lib/documentScanner';
 import fs from 'fs';
 import path from 'path';
 
@@ -26,6 +27,7 @@ export async function POST(
     // Check if application exists and belongs to user
     const application = await prisma.application.findUnique({
       where: { id },
+      include: { programme: true, user: true },
     });
 
     if (!application) {
@@ -85,6 +87,24 @@ export async function POST(
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
+    // Automated Document Autoscan & Anti-Forgery Check
+    const scanReport = scanAndVerifyDocument(type, file.name, buffer, {
+      applicantName: application.user.fullName,
+      enteredIndexNo: application.kcseIndexNo || undefined,
+      enteredMeanGrade: application.kcseMeanGrade || undefined,
+      programmeMinRequirement: application.programme.minGradeRequirement,
+    });
+
+    if (scanReport.antiForgeryStatus === 'REJECTED_FORGERY') {
+      return NextResponse.json(
+        {
+          error: 'Document upload rejected: Anti-forgery or document category check failed. Please ensure the document is genuine and corresponds to the selected category.',
+          scanReport,
+        },
+        { status: 422 }
+      );
+    }
+
     let fileUrl: string;
     try {
       // Ensure uploads directory exists if writable
@@ -125,7 +145,7 @@ export async function POST(
         data: {
           fileName: file.name,
           fileUrl: fileUrl,
-          verified: false,
+          verified: scanReport.verified,
           uploadedAt: new Date(),
         },
       });
@@ -136,14 +156,17 @@ export async function POST(
           type,
           fileName: file.name,
           fileUrl,
-          verified: false,
+          verified: scanReport.verified,
         },
       });
     }
 
     return NextResponse.json({
-      message: 'Document uploaded successfully.',
+      message: scanReport.verified
+        ? 'Document verified and auto-scanned successfully.'
+        : 'Document uploaded. Auto-scanner noted items for registrar review.',
       document,
+      scanReport,
     });
   } catch (error: any) {
     console.error('Document upload error:', error);

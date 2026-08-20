@@ -41,6 +41,27 @@ export default function GradeRequirementBreakdown({
     return null;
   }
 
+  // Calculate dynamic cumulative percentage of requirements met
+  const totalCriteria = summary.totalRequired || items.length || 1;
+  const passedCriteria = summary.passedCount;
+  const cumulativePercentage = Math.min(100, Math.max(0, Math.round((passedCriteria / totalCriteria) * 100)));
+
+  // Subject-only sub calculation (excluding mean grade if present)
+  const subjectItems = items.filter((i) => !i.isMeanGrade);
+  const subjectTotal = subjectItems.length;
+  const subjectPassed = subjectItems.filter((i) => i.status === 'passed').length;
+  const subjectPercentage = subjectTotal > 0 ? Math.round((subjectPassed / subjectTotal) * 100) : cumulativePercentage;
+
+  // Determine indicator color theme based on cumulative percentage
+  const getProgressColor = (pct: number) => {
+    if (pct === 100) return { bar: 'linear-gradient(90deg, #10b981, #059669)', text: '#059669', bg: '#ecfdf5', border: '#a7f3d0' };
+    if (pct >= 75) return { bar: 'linear-gradient(90deg, #0d9488, #059669)', text: '#0d9488', bg: '#f0fdfa', border: '#99f6e4' };
+    if (pct >= 50) return { bar: 'linear-gradient(90deg, #f59e0b, #d97706)', text: '#d97706', bg: '#fffbeb', border: '#fde68a' };
+    return { bar: 'linear-gradient(90deg, #ef4444, #dc2626)', text: '#dc2626', bg: '#fef2f2', border: '#fecaca' };
+  };
+
+  const progressTheme = getProgressColor(cumulativePercentage);
+
   const content = (
     <div className="grade-breakdown-container">
       {/* Header & Status Ribbon */}
@@ -107,7 +128,7 @@ export default function GradeRequirementBreakdown({
               }}
             >
               <span style={{ fontSize: '14px' }}>✓</span>
-              <span>All Requirements Met ({summary.passedCount}/{summary.totalRequired})</span>
+              <span>100% Met ({summary.passedCount}/{summary.totalRequired})</span>
             </div>
           ) : (
             <div
@@ -115,18 +136,18 @@ export default function GradeRequirementBreakdown({
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '6px',
-                background: 'hsl(0, 72%, 95%)',
-                color: 'hsl(0, 72%, 35%)',
-                border: '1px solid hsl(0, 72%, 85%)',
+                background: progressTheme.bg,
+                color: progressTheme.text,
+                border: `1px solid ${progressTheme.border}`,
                 padding: '6px 14px',
                 borderRadius: '20px',
                 fontSize: '12.5px',
                 fontWeight: '700',
               }}
             >
-              <span style={{ fontSize: '14px' }}>✕</span>
+              <span style={{ fontSize: '13px' }}>{cumulativePercentage >= 50 ? '⏳' : '✕'}</span>
               <span>
-                {summary.failedCount} Requirement{summary.failedCount > 1 ? 's' : ''} Unmet ({summary.passedCount}/{summary.totalRequired} Met)
+                {cumulativePercentage}% Requirements Met ({summary.passedCount}/{summary.totalRequired})
               </span>
             </div>
           )}
@@ -177,6 +198,163 @@ export default function GradeRequirementBreakdown({
               Table
             </button>
           </div>
+        </div>
+      </div>
+
+      {/* DYNAMIC PROGRESS BAR & CUMULATIVE INDICATOR */}
+      <div
+        id="grade-requirements-progress-card"
+        style={{
+          background: 'var(--bg-main, #f8fafc)',
+          border: '1px solid var(--border-light, #e2e8f0)',
+          borderRadius: '12px',
+          padding: '16px 18px',
+          marginBottom: '20px',
+        }}
+      >
+        {/* Metric Header */}
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: '10px',
+            flexWrap: 'wrap',
+            gap: '8px',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span style={{ fontSize: '16px' }}>📊</span>
+            <div>
+              <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text-dark, #0b2545)' }}>
+                Cumulative Subject Requirements Progress
+              </span>
+              <span style={{ fontSize: '11px', color: 'var(--text-light, #64748b)', display: 'block' }}>
+                {programmeName} ({programmeCode})
+              </span>
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
+            <span
+              style={{
+                fontSize: '22px',
+                fontWeight: 800,
+                color: progressTheme.text,
+                lineHeight: 1,
+                fontFamily: 'monospace',
+              }}
+            >
+              {cumulativePercentage}%
+            </span>
+            <span style={{ fontSize: '12px', color: 'var(--text-light, #64748b)', fontWeight: 600 }}>
+              ({passedCriteria} of {totalCriteria} requirements met)
+            </span>
+          </div>
+        </div>
+
+        {/* Visual Progress Bar Track */}
+        <div
+          style={{
+            height: '10px',
+            width: '100%',
+            background: '#e2e8f0',
+            borderRadius: '6px',
+            overflow: 'hidden',
+            position: 'relative',
+            marginBottom: '12px',
+            boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.06)',
+          }}
+        >
+          <div
+            id="academic-cumulative-progress-fill"
+            style={{
+              height: '100%',
+              width: `${cumulativePercentage}%`,
+              background: progressTheme.bar,
+              borderRadius: '6px',
+              transition: 'width 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+            }}
+          />
+        </div>
+
+        {/* Individual Requirement Micro-Badges */}
+        <div
+          style={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: '8px',
+            alignItems: 'center',
+          }}
+        >
+          {items.map((item) => {
+            const isPassed = item.status === 'passed';
+            const isMissing = item.status === 'missing';
+
+            const chipBg = isPassed ? '#dcfce7' : isMissing ? '#fef3c7' : '#fee2e2';
+            const chipText = isPassed ? '#166534' : isMissing ? '#92400e' : '#991b1b';
+            const chipBorder = isPassed ? '#86efac' : isMissing ? '#fde68a' : '#fca5a5';
+            const icon = isPassed ? '✓' : isMissing ? '⚠' : '✕';
+
+            return (
+              <div
+                key={item.subjectKey}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '5px',
+                  background: chipBg,
+                  color: chipText,
+                  border: `1px solid ${chipBorder}`,
+                  borderRadius: '16px',
+                  padding: '3px 10px',
+                  fontSize: '11.5px',
+                  fontWeight: 600,
+                }}
+                title={`${item.label}: ${item.applicantGrade} (Min req: ${item.requiredGrade}) - ${item.status.toUpperCase()}`}
+              >
+                <span>{icon}</span>
+                <span>{item.isMeanGrade ? 'Mean Grade' : item.label.split(' ')[0]}</span>
+                <span style={{ opacity: 0.8, fontSize: '10.5px' }}>
+                  ({item.applicantGrade !== 'Not Provided' ? item.applicantGrade : '—'})
+                </span>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Contextual Progress Advice */}
+        <div
+          style={{
+            marginTop: '10px',
+            fontSize: '11.5px',
+            color: 'var(--text-light, #64748b)',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: '6px',
+          }}
+        >
+          <span>
+            {cumulativePercentage === 100 ? (
+              <strong style={{ color: '#16a34a' }}>🎉 All subject criteria fulfilled. Your academic profile meets admission benchmarks.</strong>
+            ) : summary.missingCount > 0 ? (
+              <span>
+                ℹ️ <strong>{summary.missingCount}</strong> subject grade{summary.missingCount > 1 ? 's' : ''} not yet entered. Enter all subject grades to calculate complete eligibility.
+              </span>
+            ) : (
+              <span>
+                ⚠️ <strong>{summary.failedCount}</strong> subject requirement{summary.failedCount > 1 ? 's' : ''} below the mandatory minimum grade threshold.
+              </span>
+            )}
+          </span>
+
+          {subjectTotal > 0 && (
+            <span style={{ fontSize: '11px', color: '#64748b' }}>
+              Subject Clusters: <strong>{subjectPassed}/{subjectTotal} Passed ({subjectPercentage}%)</strong>
+            </span>
+          )}
         </div>
       </div>
 

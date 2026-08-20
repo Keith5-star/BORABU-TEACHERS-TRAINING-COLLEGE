@@ -37,7 +37,7 @@ export default async function AdminLayout({
               <div className="logo-tagline" style={{ color: 'rgba(255,255,255,0.6)' }}>Admissions Control Panel</div>
             </div>
           </Link>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
             <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.8)' }}>
               Logged in as: <strong>{user.fullName}</strong> ({roleDisplay[user.role] || user.role})
             </span>

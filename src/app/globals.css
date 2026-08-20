@@ -33,6 +33,76 @@
   --transition-fast: all 0.1s ease;
 }
 
+/* Dark Mode Theme Variables */
+[data-theme='dark'], .dark {
+  --primary-deep: #080e18;
+  --primary-navy: #e2e8f0;
+  --primary-blue: #38bdf8;
+  --primary-light: #1e293b;
+  --accent-gold: #f59e0b;
+  --accent-teal: #2dd4bf;
+  
+  --bg-main: #0b1120;
+  --bg-card: #151e32;
+  --bg-glass: #151e32;
+  
+  --text-main: #cbd5e1;
+  --text-dark: #f8fafc;
+  --text-light: #94a3b8;
+  
+  --border-light: rgba(255, 255, 255, 0.12);
+  --border-focus: #f59e0b;
+  
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 10px 20px rgba(0, 0, 0, 0.6);
+}
+
+[data-theme='dark'] input,
+[data-theme='dark'] select,
+[data-theme='dark'] textarea,
+.dark input,
+.dark select,
+.dark textarea {
+  background-color: #1e293b !important;
+  color: #f8fafc !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+[data-theme='dark'] input:focus,
+[data-theme='dark'] select:focus,
+[data-theme='dark'] textarea:focus,
+.dark input:focus,
+.dark select:focus,
+.dark textarea:focus {
+  border-color: var(--accent-gold) !important;
+  outline: none;
+}
+
+[data-theme='dark'] input::placeholder,
+[data-theme='dark'] textarea::placeholder,
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: #64748b !important;
+}
+
+[data-theme='dark'] .logo-title,
+.dark .logo-title {
+  color: #f8fafc !important;
+}
+
+[data-theme='dark'] .btn-secondary,
+.dark .btn-secondary {
+  border-color: #38bdf8;
+  color: #38bdf8;
+}
+
+[data-theme='dark'] .btn-secondary:hover,
+.dark .btn-secondary:hover {
+  background-color: #1e293b;
+  color: #7dd3fc;
+}
+
 /* Reset & Base */
 * {
   box-sizing: border-box;
@@ -263,6 +333,9 @@ button, input, select, textarea {
 @media (max-width: 992px) {
   .desktop-nav, .desktop-cta {
     display: none !important;
+  }
+  .mobile-actions-wrap {
+    display: flex !important;
   }
   .mobile-hamburger-btn {
     display: block;
@@ -1118,6 +1191,41 @@ button, input, select, textarea {
     padding: 0 !important;
     margin: 0 !important;
     display: block !important;
+  }
+
+  /* Admission Letter Print Rules */
+  .admission-print-overlay {
+    position: static !important;
+    background: transparent !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    display: block !important;
+    overflow: visible !important;
+  }
+
+  .admission-print-wrapper {
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    max-height: none !important;
+    overflow: visible !important;
+    background: transparent !important;
+  }
+
+  .printable-admission-sheet {
+    box-shadow: none !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    min-height: auto !important;
+    padding: 20px 24px !important;
+    margin: 0 !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    background: #ffffff !important;
+    color: #0f172a !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 
   .verification-cert-card {

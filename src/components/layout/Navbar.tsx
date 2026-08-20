@@ -155,15 +155,18 @@ export default function Navbar() {
           )}
         </div>
 
-        {/* Mobile Hamburger Toggle Button */}
-        <button
-          className="mobile-hamburger-btn"
-          onClick={() => setMobileMenuOpen((prev) => !prev)}
-          aria-label={mobileMenuOpen ? 'Close Menu' : 'Open Menu'}
-          aria-expanded={mobileMenuOpen}
-        >
-          {mobileMenuOpen ? '✕' : '☰'}
-        </button>
+        {/* Mobile Actions Wrap (Hamburger) */}
+        <div style={{ display: 'none', alignItems: 'center', gap: '8px' }} className="mobile-actions-wrap">
+          <button
+            className="mobile-hamburger-btn"
+            style={{ display: 'inline-flex' }}
+            onClick={() => setMobileMenuOpen((prev) => !prev)}
+            aria-label={mobileMenuOpen ? 'Close Menu' : 'Open Menu'}
+            aria-expanded={mobileMenuOpen}
+          >
+            {mobileMenuOpen ? '✕' : '☰'}
+          </button>
+        </div>
       </div>
 
       {/* Mobile Drawer Menu */}

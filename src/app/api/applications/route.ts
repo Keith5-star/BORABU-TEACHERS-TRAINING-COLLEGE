@@ -25,6 +25,7 @@ export async function GET(req: Request) {
         secondaryProgramme: true,
         documents: true,
         admissionLetter: true,
+        user: true,
       },
       orderBy: { updatedAt: 'desc' },
     });

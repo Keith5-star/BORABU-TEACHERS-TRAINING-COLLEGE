@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
+import GradeRequirementBreakdown from '@/components/dashboard/GradeRequirementBreakdown';
 
 interface Document {
   id: string;
@@ -193,46 +194,20 @@ export default function AdminApplicationReviewPage() {
           {/* Card: Grade evaluations */}
           <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border-light)', padding: '24px', borderRadius: 'var(--radius-lg)' }}>
             <h3 style={{ fontSize: '18px', color: 'var(--text-dark)', marginBottom: '16px', borderBottom: '1px solid var(--border-light)', paddingBottom: '10px' }}>
-              🎓 Academic Grade Checks
+              🎓 Academic Grade Checks & Requirements
             </h3>
             
             <div style={{ fontSize: '13px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
               <div>KCSE Index Number: <strong>{app.kcseIndexNo}</strong> ({app.kcseYear})</div>
-              
-              {/* Checklists */}
-              <div style={{ background: 'var(--bg-main)', padding: '12px', borderRadius: 'var(--radius-md)', display: 'flex', flexDirection: 'column', gap: '8px', border: '1px solid var(--border-light)' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span>Mean Grade: <strong>{app.kcseMeanGrade}</strong> (Required: {minReq.meanGrade})</span>
-                  <span style={{ fontWeight: '700', color: meanPassed ? 'var(--accent-teal)' : 'hsl(0, 72%, 51%)' }}>
-                    {meanPassed ? '✓ PASS' : '❌ FAIL'}
-                  </span>
-                </div>
 
-                {Object.entries(minReq.subjects).map(([subject, minG]) => {
-                  const applicantG = applicantGrades[subject.toLowerCase()];
-                  const val = gradeOptions.indexOf(applicantG);
-                  const reqVal = gradeOptions.indexOf(minG);
-                  const passed = val <= reqVal && val !== -1;
-
-                  return (
-                    <div key={subject} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid var(--border-light)', paddingTop: '8px' }}>
-                      <span style={{ textTransform: 'capitalize' }}>
-                        {subject}: <strong>{applicantG || 'N/A'}</strong> (Required: {minG})
-                      </span>
-                      <span style={{ fontWeight: '700', color: passed ? 'var(--accent-teal)' : 'hsl(0, 72%, 51%)' }}>
-                        {passed ? '✓ PASS' : '❌ FAIL'}
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
-
-              <div style={{ background: app.eligibilityResult?.eligible ? 'rgba(20, 184, 166, 0.05)' : 'rgba(239, 68, 68, 0.05)', padding: '12px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-light)' }}>
-                <strong>Auto-Precheck Engine Status:</strong>
-                <p style={{ marginTop: '4px', fontSize: '12px', color: 'var(--text-light)' }}>
-                  {app.eligibilityResult?.message || 'Academic check evaluated failed.'}
-                </p>
-              </div>
+              <GradeRequirementBreakdown
+                programmeName={app.programme.name}
+                programmeCode={app.programme.code}
+                minGradeRequirement={app.programme.minGradeRequirement}
+                kcseMeanGrade={app.kcseMeanGrade}
+                subjectGrades={app.subjectGrades}
+                showCardWrapper={false}
+              />
             </div>
           </div>
 

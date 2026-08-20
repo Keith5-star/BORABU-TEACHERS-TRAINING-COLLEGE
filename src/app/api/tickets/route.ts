@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
-import { getSessionUser } from '@/lib/auth';
+import { getSessionUser, hashPassword } from '@/lib/auth';
 import { checkRateLimit, sanitizeString } from '@/lib/security';
 
 // GET: Fetch tickets
@@ -70,11 +70,6 @@ export async function GET(req: Request) {
 // POST: Create ticket
 export async function POST(req: Request) {
   try {
-    const user = await getSessionUser(req);
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized. Please sign in.' }, { status: 401 });
-    }
-
     // Rate limit ticket submissions: 15 per minute per IP
     const rateLimit = checkRateLimit(req, {
       limit: 15,
@@ -85,6 +80,7 @@ export async function POST(req: Request) {
       return rateLimit.errorResponse;
     }
 
+    let user = await getSessionUser(req);
     const body = await req.json();
     const { subject: rawSubject, category: rawCategory, message: rawMessage } = body;
 
@@ -99,11 +95,46 @@ export async function POST(req: Request) {
       );
     }
 
+    // If no active session, check if guest provided email & fullName
+    if (!user) {
+      const email = sanitizeString(body.email)?.toLowerCase();
+      const fullName = sanitizeString(body.fullName);
+      const phone = sanitizeString(body.phone) || 'N/A';
+
+      if (!email || !fullName) {
+        return NextResponse.json(
+          { error: 'Unauthorized. Please sign in or provide your Name and Email to submit an inquiry.' },
+          { status: 401 }
+        );
+      }
+
+      let existingUser = await prisma.user.findUnique({ where: { email } });
+      if (!existingUser) {
+        existingUser = await prisma.user.create({
+          data: {
+            email,
+            fullName,
+            phone,
+            passwordHash: hashPassword(Math.random().toString(36).slice(-10) + 'A1!'),
+            role: 'applicant',
+          },
+        });
+      }
+      user = {
+        id: existingUser.id,
+        fullName: existingUser.fullName,
+        email: existingUser.email,
+        phone: existingUser.phone,
+        role: existingUser.role,
+        isVerified: existingUser.isVerified,
+      };
+    }
+
     // Create Ticket and initial TicketMessage inside a transaction
     const ticket = await prisma.$transaction(async (tx) => {
       const newTicket = await tx.ticket.create({
         data: {
-          userId: user.id,
+          userId: user!.id,
           subject,
           category,
           status: 'open',
@@ -113,7 +144,7 @@ export async function POST(req: Request) {
       await tx.ticketMessage.create({
         data: {
           ticketId: newTicket.id,
-          senderId: user.id,
+          senderId: user!.id,
           message,
         },
       });
