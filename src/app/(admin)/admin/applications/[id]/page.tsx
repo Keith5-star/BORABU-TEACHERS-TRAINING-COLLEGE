@@ -4,6 +4,11 @@ import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import GradeRequirementBreakdown from '@/components/dashboard/GradeRequirementBreakdown';
+import AdminDocumentScanStatus from '@/components/admin/AdminDocumentScanStatus';
+import AiDocumentValidatorModal from '@/components/dashboard/AiDocumentValidatorModal';
+import { useToast } from '@/components/Toast';
+import { ShieldCheck, ShieldAlert, AlertTriangle, RefreshCw, FileText } from 'lucide-react';
+import type { ApplicationScanSummary } from '@/app/api/applications/[id]/anti-forgery-scan/route';
 
 interface Document {
   id: string;
@@ -55,6 +60,7 @@ export default function AdminApplicationReviewPage() {
   const router = useRouter();
   const params = useParams();
   const applicationId = params.id as string;
+  const { showToast } = useToast();
 
   const [app, setApp] = useState<Application | null>(null);
   const [loading, setLoading] = useState(true);
@@ -64,6 +70,50 @@ export default function AdminApplicationReviewPage() {
   
   // Document preview state
   const [previewDoc, setPreviewDoc] = useState<Document | null>(null);
+
+  // Anti-Forgery Scan state
+  const [scanSummary, setScanSummary] = useState<ApplicationScanSummary | null>(null);
+  const [isScanning, setIsScanning] = useState(false);
+
+  const loadScanReport = async () => {
+    try {
+      const res = await fetch(`/api/applications/${applicationId}/anti-forgery-scan`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.summary) {
+          setScanSummary(data.summary);
+        }
+      }
+    } catch (err) {
+      console.warn('Anti-forgery scan summary fetch error:', err);
+    }
+  };
+
+  const handleLiveReScan = async () => {
+    setIsScanning(true);
+    try {
+      const res = await fetch(`/api/applications/${applicationId}/anti-forgery-scan`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || 'Live anti-forgery scan failed.');
+      }
+
+      const data = await res.json();
+      if (data.summary) {
+        setScanSummary(data.summary);
+        showToast('✓ Real-time anti-forgery scan complete across all uploaded files.', 'success');
+      }
+    } catch (err: any) {
+      console.error('Failed to trigger live scan:', err);
+      showToast(err.message || 'Error occurred while scanning documents.', 'error');
+    } finally {
+      setIsScanning(false);
+    }
+  };
 
   const loadApplication = async () => {
     try {
@@ -82,6 +132,9 @@ export default function AdminApplicationReviewPage() {
       if (data.application?.reviewNotes) {
         setNotes(data.application.reviewNotes);
       }
+
+      // Trigger background anti-forgery scan inspection
+      loadScanReport();
     } catch (err) {
       console.error('Failed to load application detail:', err);
       setError('Could not retrieve candidate details.');
@@ -271,39 +324,171 @@ export default function AdminApplicationReviewPage() {
           )}
         </div>
 
-        {/* Right Side: Document Previewer */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', position: 'sticky', top: '100px' }}>
+        {/* Right Side: Document Previewer & Anti-Forgery Scan Inspector */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', position: 'sticky', top: '90px' }}>
           <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border-light)', padding: '24px', borderRadius: 'var(--radius-lg)' }}>
-            <h3 style={{ fontSize: '18px', color: 'var(--text-dark)', marginBottom: '16px', borderBottom: '1px solid var(--border-light)', paddingBottom: '10px' }}>
-              📂 Uploaded Documents Checklist ({app.documents?.length || 0}/4)
-            </h3>
             
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '20px' }}>
-              {app.documents.map((doc) => (
+            {/* Header with Anti-Forgery Overview and AI Controls */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px', borderBottom: '1px solid var(--border-light)', paddingBottom: '14px', flexWrap: 'wrap', gap: '10px' }}>
+              <div>
+                <h3 style={{ fontSize: '18px', color: 'var(--text-dark)', margin: '0 0 4px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  📂 Uploaded Credentials ({app.documents?.length || 0}/4)
+                </h3>
+                <span style={{ fontSize: '12px', color: 'var(--text-light)' }}>
+                  Real-time KNEC binary verification & anti-forgery analysis
+                </span>
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                {/* Live Re-Scan Button */}
                 <button
-                  key={doc.id}
-                  onClick={() => setPreviewDoc(doc)}
-                  className="btn"
-                  style={{ 
-                    fontSize: '12px', 
+                  type="button"
+                  onClick={handleLiveReScan}
+                  disabled={isScanning || !app.documents?.length}
+                  className="btn btn-secondary"
+                  style={{
+                    fontSize: '11px',
                     padding: '6px 12px',
-                    margin: 0,
-                    borderColor: previewDoc?.id === doc.id ? 'var(--primary-blue)' : 'var(--border-light)',
-                    background: previewDoc?.id === doc.id ? 'var(--primary-light)' : 'transparent',
-                    color: previewDoc?.id === doc.id ? 'var(--primary-blue)' : 'var(--text-dark)',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '5px',
+                    height: '32px',
                   }}
+                  title="Run active real-time anti-forgery check on all candidate documents"
                 >
-                  📁 {getDocLabel(doc.type)}
+                  <RefreshCw size={12} className={isScanning ? 'spin-animation' : ''} />
+                  {isScanning ? 'Scanning...' : 'Live Re-Scan All'}
                 </button>
-              ))}
+
+                {/* AI Document Validator Modal Button */}
+                <AiDocumentValidatorModal
+                  applicationId={applicationId}
+                  applicationTitle={app.programme.name}
+                  documentsCount={app.documents?.length || 0}
+                  onRescanClick={(docType) => {
+                    const doc = app.documents.find(d => d.type === docType);
+                    if (doc) setPreviewDoc(doc);
+                  }}
+                />
+              </div>
             </div>
+
+            {/* Application-Level Anti-Forgery Health Bar */}
+            {scanSummary && (
+              <div
+                style={{
+                  background: scanSummary.overallStatus === 'AUTHENTIC' ? '#f0fdf4' : scanSummary.overallStatus === 'WARNING_FLAGGED' ? '#fffbeb' : '#fef2f2',
+                  border: `1px solid ${scanSummary.overallStatus === 'AUTHENTIC' ? '#bbf7d0' : scanSummary.overallStatus === 'WARNING_FLAGGED' ? '#fde68a' : '#fecaca'}`,
+                  borderRadius: '10px',
+                  padding: '10px 14px',
+                  marginBottom: '16px',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  flexWrap: 'wrap',
+                  gap: '8px',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  {scanSummary.overallStatus === 'AUTHENTIC' ? (
+                    <ShieldCheck size={16} style={{ color: '#16a34a' }} />
+                  ) : scanSummary.overallStatus === 'WARNING_FLAGGED' ? (
+                    <AlertTriangle size={16} style={{ color: '#d97706' }} />
+                  ) : (
+                    <ShieldAlert size={16} style={{ color: '#dc2626' }} />
+                  )}
+                  <div>
+                    <strong style={{ fontSize: '12px', color: scanSummary.overallStatus === 'AUTHENTIC' ? '#14532d' : scanSummary.overallStatus === 'WARNING_FLAGGED' ? '#92400e' : '#991b1b' }}>
+                      Anti-Forgery Service: {scanSummary.allVerified ? 'All Documents Verified Authentic' : scanSummary.overallStatus === 'WARNING_FLAGGED' ? 'Advisory Flags on Candidate Files' : 'Potential Discrepancies Flagged'}
+                    </strong>
+                    <span style={{ fontSize: '11px', color: '#64748b', marginLeft: '6px' }}>
+                      ({scanSummary.overallAuthenticityScore}% Avg Authenticity • KNEC & Registry Linked)
+                    </span>
+                  </div>
+                </div>
+
+                <span style={{ fontSize: '11px', fontWeight: 700, color: scanSummary.overallStatus === 'AUTHENTIC' ? '#166534' : '#b45309' }}>
+                  ✓ Magic-Bytes & Format Passed
+                </span>
+              </div>
+            )}
+            
+            {/* Document Selector Grid with Visual Document Scan Status Indicators */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '8px', marginBottom: '16px' }}>
+              {app.documents.map((doc) => {
+                const docReport = scanSummary?.documents?.find((d) => d.documentId === doc.id || d.docType === doc.type);
+                const isSelected = previewDoc?.id === doc.id;
+
+                return (
+                  <div
+                    key={doc.id}
+                    onClick={() => setPreviewDoc(doc)}
+                    style={{
+                      border: `1px solid ${isSelected ? 'var(--primary-blue)' : 'var(--border-light)'}`,
+                      background: isSelected ? 'var(--primary-light)' : 'var(--bg-main)',
+                      borderRadius: '8px',
+                      padding: '10px 12px',
+                      cursor: 'pointer',
+                      transition: 'all 0.15s ease',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '6px',
+                    }}
+                  >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <strong style={{ fontSize: '12px', color: isSelected ? 'var(--primary-blue)' : 'var(--text-dark)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        📁 {getDocLabel(doc.type)}
+                      </strong>
+
+                      {/* Visual 'Document Scan Status' indicator */}
+                      <AdminDocumentScanStatus
+                        documentReport={docReport}
+                        fileName={doc.fileName}
+                        docType={doc.type}
+                        isVerified={doc.verified}
+                        isLoading={isScanning}
+                        compactBadgeOnly={true}
+                        onRefreshScan={handleLiveReScan}
+                      />
+                    </div>
+
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '11px', color: 'var(--text-light)' }}>
+                      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '130px' }} title={doc.fileName}>
+                        {doc.fileName}
+                      </span>
+                      <span style={{ fontSize: '10px', fontWeight: 600, color: doc.verified ? '#16a34a' : '#d97706' }}>
+                        {doc.verified ? '✓ Verified' : '• Pending'}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Active Document Anti-Forgery Detailed Scan Inspector Card */}
+            {previewDoc && (
+              <div style={{ marginBottom: '16px' }}>
+                <AdminDocumentScanStatus
+                  documentReport={scanSummary?.documents?.find((d) => d.documentId === previewDoc.id || d.docType === previewDoc.type)}
+                  fileName={previewDoc.fileName}
+                  docType={previewDoc.type}
+                  isVerified={previewDoc.verified}
+                  isLoading={isScanning}
+                  showDetailCard={true}
+                  onRefreshScan={handleLiveReScan}
+                />
+              </div>
+            )}
 
             {/* Preview Frame */}
             {previewDoc ? (
               <div style={{ border: '1px solid var(--border-light)', borderRadius: 'var(--radius-md)', overflow: 'hidden', background: 'var(--bg-main)' }}>
-                <div style={{ padding: '8px 12px', borderBottom: '1px solid var(--border-light)', background: 'white', display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: 'var(--text-light)' }}>
-                  <span>File: <strong>{previewDoc.fileName}</strong></span>
-                  <a href={previewDoc.fileUrl} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--primary-blue)', fontWeight: '600' }}>
+                <div style={{ padding: '8px 12px', borderBottom: '1px solid var(--border-light)', background: 'white', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '11px', color: 'var(--text-light)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <FileText size={14} style={{ color: 'var(--primary-blue)' }} />
+                    <span>Inspecting: <strong style={{ color: 'var(--text-dark)' }}>{previewDoc.fileName}</strong></span>
+                  </div>
+                  <a href={previewDoc.fileUrl} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--primary-blue)', fontWeight: '600', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
                     🔗 Open Tab
                   </a>
                 </div>
@@ -326,7 +511,7 @@ export default function AdminApplicationReviewPage() {
               </div>
             ) : (
               <div style={{ height: '300px', border: '1px dashed var(--border-light)', borderRadius: 'var(--radius-md)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-light)', fontSize: '13px' }}>
-                No documents uploaded for this draft application.
+                No documents uploaded for this candidate application.
               </div>
             )}
           </div>

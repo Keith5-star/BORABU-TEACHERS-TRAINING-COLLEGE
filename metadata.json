@@ -1,6 +1,6 @@
 {
   "name": "Borabu Teachers Training College",
-  "description": "Admissions portal with dark mode toggle, admission letter printing, anti-forgery document auto-scanning & eligibility checks, applicant dashboard, and public letter verification for Borabu Teachers Training College.",
+  "description": "Admissions portal with AI document clarity and legibility validation, search-grounded TSC news & registration updates, export PDF capabilities, official letter verification instructions, automated anti-forgery scanning, and applicant dashboard for Borabu Teachers Training College.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

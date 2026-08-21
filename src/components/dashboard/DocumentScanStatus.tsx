@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ShieldCheck, CheckCircle, AlertTriangle, FileText, Info, Eye, X } from 'lucide-react';
+import { ShieldCheck, CheckCircle, AlertTriangle, Info, Eye, X } from 'lucide-react';
 
 export interface DocumentScanInfo {
   type: string;

@@ -27,6 +27,7 @@ export default function AdmissionLetterVerifier({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [verifiedResult, setVerifiedResult] = useState<VerifiedLetterData | null>(null);
+  const [showInstructions, setShowInstructions] = useState(false);
 
   const handleVerify = async (serialToVerify?: string) => {
     const rawSerial = serialToVerify || serialInput;
@@ -136,23 +137,78 @@ export default function AdmissionLetterVerifier({
           </p>
         </div>
 
-        {/* Public portal link indicator */}
-        <Link
-          href="/verify/check"
-          target="_blank"
+        {/* Public portal link & Instructions toggle */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <button
+            type="button"
+            onClick={() => setShowInstructions(!showInstructions)}
+            style={{
+              fontSize: '12px',
+              color: 'var(--primary-blue, #1d4ed8)',
+              background: '#eff6ff',
+              border: '1px solid #bfdbfe',
+              borderRadius: '6px',
+              padding: '4px 10px',
+              cursor: 'pointer',
+              fontWeight: 600,
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '4px',
+            }}
+          >
+            📋 {showInstructions ? 'Hide Instructions' : 'Verification Instructions'}
+          </button>
+          <Link
+            href="/verify/check"
+            target="_blank"
+            style={{
+              fontSize: '12px',
+              color: 'var(--primary-blue, #1d4ed8)',
+              textDecoration: 'none',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '4px',
+              fontWeight: 600,
+            }}
+          >
+            Public Verify Page ↗
+          </Link>
+        </div>
+      </div>
+
+      {/* Collapsible Verification Instructions */}
+      {showInstructions && (
+        <div
           style={{
-            fontSize: '12px',
-            color: 'var(--primary-blue, #1d4ed8)',
-            textDecoration: 'none',
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '4px',
-            fontWeight: 600,
+            background: 'var(--bg-main, #f8fafc)',
+            border: '1px solid var(--border-light, #e2e8f0)',
+            borderRadius: '8px',
+            padding: '14px 18px',
+            marginBottom: '18px',
+            fontSize: '12.5px',
+            lineHeight: '1.5',
+            color: 'var(--text-main, #334155)',
           }}
         >
-          Public Verify Page ↗
-        </Link>
-      </div>
+          <strong style={{ color: 'var(--text-dark, #0f172a)', display: 'block', marginBottom: '6px' }}>
+            📌 Official Admission Letter Verification Instructions:
+          </strong>
+          <ol style={{ margin: 0, paddingLeft: '20px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+            <li>
+              <strong>Locate Serial Number:</strong> Check the header of your letter for the serial format: <code style={{ color: 'var(--primary-blue)' }}>BORABU/YYYY/PROG/XXXXX</code>.
+            </li>
+            <li>
+              <strong>Instant Check:</strong> Input the serial into the field below or click your quick auto-fill buttons.
+            </li>
+            <li>
+              <strong>QR Code Verification:</strong> Scan the cryptographic QR seal at the bottom of the printed letter using any smartphone camera to open the live encrypted validation certificate.
+            </li>
+            <li>
+              <strong>Clearance Requirement:</strong> Bring the physical printed letter along with your original National ID/Birth Certificate and KCSE Result Slip on reporting day.
+            </li>
+          </ol>
+        </div>
+      )}
 
       {/* Quick Auto-Fill suggestions if student has letters */}
       {userIssuedLetters.length > 0 && (
